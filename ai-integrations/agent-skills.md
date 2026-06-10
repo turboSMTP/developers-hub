@@ -58,7 +58,7 @@ Directs the AI to:
 - Iteratively call the [`validate_contact_list`](mcp-server.md) MCP tool
 - Apply strict rules by validation status:
   - `valid` → retain
-  - `catch-all` → flag for manual review
+  - `catch_all` → flag for manual review
   - `invalid` / `disposable` → remove
   - `spamtrap` / `abuse` → **remove immediately, never send**
 - Output a mathematically sanitized list with a summary report
