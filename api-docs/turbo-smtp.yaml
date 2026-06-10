@@ -1,0 +1,339 @@
+openapi: 3.1.0
+info:
+  version: 2.0.0-oas3
+  title: TurboSMTP Public APIs
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+      
+  description: |
+    This document describes all public turboSMTP **V2** API and offers endpoints Descriptions, Parameters, Requests, Responses and Samples of usage.
+    
+    [Click here to view the previous version of turboSMTP Public API Version 1.0](https://www.serversmtp.com/turbo-api-1)
+    
+    
+    # Useful Links for Developers
+
+    - [Email SDKs for Developers](https://serversmtp.com/email-sdks-for-developers)
+    - [Webhooks Reference](https://serversmtp.com/event-webhook-reference/)
+    - [Email API for Developers](https://serversmtp.com/email-api-for-developers)
+
+
+    # Security
+    For the most part (and where not otherwise explicit) turboSMTP’s API requires Authorization. 
+    
+    Authorization to access a user’s resource is granted to clients provided they set  authentication headers into their request, valued with the proper values issued by turboSMTP servers.
+    
+    ## *  Authorization via ConsumerKey/ConsumerSecret
+    
+    This type of authorization consists of a pair of headers, named consumerKey and consumerSecret that are created and granted to the end user to be used in a permanent way (unless they´re deleted of course). This kind of authentication is intended to provide access to endpoints features without the need of providing the user the account details (email address + password).
+    
+    *consumerKey:* Consumer Key Granted.
+    
+    *consumerSecret:* Consumer Secret Granted.
+    
+    (Use [/consumerKeys/create](#/consumerkey/createConsumerKey) create a consumer key/secret pair).    
+    
+    ## *  Authorization via Authentication Key
+    
+    The authentication key is user-based and it is issued by turboSMTP servers upon successful user’s email address + password challenge, performed by means of appropriate request.    
+
+    *Authorization:* Authorization_Key
+    
+    (Use [/authentication/authorize](#/authentication/AuthenticationLogin) to obtain an API Key)
+
+    # Data Interchange Format
+
+    For the most part (and where not otherwise explicit) turboSMTP’s API uses JSON as the data format of choice when it comes to request and response bodies.
+    
+    
+
+      
+  contact:
+    email: api@turbo-smtp.com
+      
+    
+tags:
+  - name: mail
+    description: Send email message     
+    
+  - name: authentication
+    description: Authentication
+    
+  - name: suppressions
+    description: Suppressions
+    
+  - name: meta
+    description: Meta
+    
+  - name: billing
+    description: Billing
+    
+  - name: email-validator
+    description: Email Validator
+    
+  - name: subaccounts
+    description: Subaccounts
+    
+  - name: alerts
+    description: Alerts
+    
+  - name: analytics
+    description: Analytics
+    
+  - name: consumerkey
+    description: Api Keys
+  
+paths:
+  ##### AUTHORIZATION
+  '/authorize':
+    $ref: './Domains/Authentication.yaml#/components/pathItems/authorize'
+    
+  '/deauthorize':
+    $ref: './Domains/Authentication.yaml#/components/pathItems/deauthorize'
+    
+  '/change-password':
+    $ref: './Domains/Authentication.yaml#/components/pathItems/changepassword'
+    
+  '/forgot-password':
+   $ref: './Domains/Authentication.yaml#/components/pathItems/forgotpassword'
+   
+   ###### SEND MAIL
+  '/mail/send':
+    $ref: './Domains/Mail.yaml#/components/pathItems/Send'    
+   
+   ######### ANALYTICS
+   
+  #'/analytics/{analyticId}':
+  #  $ref: 'https://api.swaggerhub.com/domains/turbo-smtp/analytics/1.0.0-oas3#/components/pathitems/AnalyticsById'
+    
+  #'/analytics/csv':
+  #  $ref: 'https://api.swaggerhub.com/domains/turbo-smtp/analytics/1.0.0-oas3#/components/pathitems/AnalyticsCSV'
+    
+    ##### SUPPRESSIONS
+  '/suppressions/import':
+    $ref: './Domains/Suppressions.yaml#/components/pathItems/SuppressionsImport'
+    
+  '/suppressions':
+    $ref: './Domains/Suppressions.yaml#/components/pathItems/Suppressions'
+    
+  '/suppressions/csv':
+    $ref: './Domains/Suppressions.yaml#/components/pathItems/SuppressionsCSV'
+    
+  '/suppressions/bulk_delete':
+    $ref: './Domains/Suppressions.yaml#/components/pathItems/SupressionsBulkDelete'
+    
+  '/suppressions/delete':
+    $ref: './Domains/Suppressions.yaml#/components/pathItems/SuppressionsDeleteFiltered'
+    
+    ######## META
+  '/meta/countries':
+    $ref: './Domains/Meta.yaml#/components/pathItems/Countries'
+    
+  '/meta/state/{isoCode}':
+    $ref: './Domains/Meta.yaml#/components/pathItems/States'
+    
+    ######## BILLING
+  #'/billing/details':
+  #  $ref: 'https://api.swaggerhub.com/domains/turbo-smtp/billing/1.0.0-oas3#/components/pathitems/PersonalDetails'
+    
+  #'/billing/contacts':
+  #  $ref: 'https://api.swaggerhub.com/domains/turbo-smtp/billing/1.0.0-oas3#/components/pathitems/BillingContacts'
+    
+  #'/billing/contacts/{Id}':
+  #  $ref: 'https://api.swaggerhub.com/domains/turbo-smtp/billing/1.0.0-oas3#/components/pathitems/BillingContactsUpdate'
+   
+  '/billing/buy_emailvalidation_credits':
+    $ref: './Domains/Billing.yaml#/components/pathItems/BuyEmailValidatorCredits'
+    
+    ###### EMAIL VALIDATOR
+    
+  '/emailvalidation/subscription':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/Subscription'
+    
+  '/emailvalidation/upload':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/Upload'
+    
+  '/emailvalidation/lists':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/Lists'
+    
+  '/emailvalidation/lists/{Id}':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/List'
+
+  '/emailvalidation/lists/{Id}/validate':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/ValidateEmails'
+
+  '/emailvalidation/lists/{Id}/emails':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/ValidatedEmails'
+    
+  '/emailvalidation/lists/{Id}/emails/{emailId}':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/EmailDataByID'
+
+  '/emailvalidation/lists/{Id}/csv':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/CSV'
+    
+  '/emailvalidation/validateEmail':
+    $ref: './Domains/EmailValidation.yaml#/components/pathItems/Email'
+    
+    ###### SubAccounts
+  '/subaccounts/list': 
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/List'
+    
+  '/subaccounts/email-exists':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/EmailExists'
+    
+  '/subaccounts':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/CreateSubaccount'
+    
+  '/subaccounts/{Id}':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/Subaccount'
+    
+  '/subaccounts/{Id}/updatesubaccountsmtplimit':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/UpdateSubaccountSMTPLimit'
+    
+  '/subaccounts/{Id}/updatesubaccountstatus':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/UpdateSubaccountStatus'
+    
+  '/subaccounts/authorize':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/LoginAsSubaccount'
+    
+  '/subaccounts/{Id}/active-plan':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/GetActivePlan'
+    
+  '/subaccounts/logo':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/Logo'  
+    
+  '/subaccounts/agency':
+    $ref: './Domains/Subaccounts.yaml#/components/pathItems/Agency'
+    
+    ###### Alerts
+  '/tools/alerts': 
+    $ref: './Domains/Meta.yaml#/components/pathItems/Alerts'
+    
+  '/tools/alerts/{Id}':
+    $ref: './Domains/Meta.yaml#/components/pathItems/AlertsID'
+    
+  ### Analytics
+  '/analytics':
+    $ref: './Domains/Meta.yaml#/components/pathItems/Analytics'
+  '/analytics/csv':
+    $ref: './Domains/Meta.yaml#/components/pathItems/AnalyticsCSV' 
+  '/analytics/{Id}':
+    $ref: './Domains/Meta.yaml#/components/pathItems/AnalyticsById'
+    
+  ### APIKeys
+    
+  '/user/consumerKeys':
+     $ref: './Domains/User.yaml#/components/pathItems/ConsumerKeys'
+     
+  '/user/consumerKeys/{consumerKey}':
+    $ref: './Domains/User.yaml#/components/pathItems/ConsumerKeysID'
+  
+components:
+  schemas:
+    # Authentication schemas
+    AuthenticationLoginRequestBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/AuthenticationLoginRequestBody'
+    AuthenticationLoginSucessResponsetBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/AuthenticationLoginSucessResponsetBody'
+    ChangePasswordRequestBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/ChangePasswordRequestBody'
+    SendSecretTokenResetPasswordRequestBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/SendSecretTokenResetPasswordRequestBody'
+    UpdateResetPasswordRequestBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/UpdateResetPasswordRequestBody'
+    
+    # User schemas
+    UserDetails:
+      $ref: './Domains/User.yaml#/components/schemas/UserDetails'
+    ConsumerKeyCreateRequestBody:
+      $ref: './Domains/User.yaml#/components/schemas/ConsumerKeyCreateRequestBody'
+    ConsumerKeyCreateResponseBody:
+      $ref: './Domains/User.yaml#/components/schemas/ConsumerKeyCreateResponseBody'
+    ConsumerKey:
+      $ref: './Domains/User.yaml#/components/schemas/ConsumerKey'
+    ConsumerKeyListSucessResponsetBody:
+      $ref: './Domains/User.yaml#/components/schemas/ConsumerKeyListSucessResponsetBody'
+    
+    # Mail schemas
+    EmailRequestBody:
+      $ref: './Domains/Mail.yaml#/components/schemas/EmailRequestBody'
+    SendSucessResponsetBody:
+      $ref: './Domains/Mail.yaml#/components/schemas/SendSucessResponsetBody'
+    SendBadRequestResponseBody:
+      $ref: './Domains/Mail.yaml#/components/schemas/SendBadRequestResponseBody'
+    SendUnauthorizedResponseBody:
+      $ref: './Domains/Mail.yaml#/components/schemas/SendUnauthorizedResponseBody'
+    
+    # Subaccounts schemas
+    Subaccount:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/Subaccount'
+    SubaccountCreateRequest:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/SubaccountCreateRequest'
+    SubaccountUpdateRequest:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/SubaccountUpdateRequest'
+    SubAccountListSucessResponsetBody:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/SubAccountListSucessResponsetBody'
+    SubaccountActivePlan:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/SubaccountActivePlan'
+    AgencySettings:
+      $ref: './Domains/Subaccounts.yaml#/components/schemas/AgencySettings'
+    
+    # Email Validation schemas
+    EmailValidatorSubscription:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidatorSubscription'
+    EmailValidatorList:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidatorList'
+    EmailValidatorSucessResponsetBody:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidatorSucessResponsetBody'
+    EmailValidationUploadResponse:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidationUploadResponse'
+    EmailValidatorMailDetails:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidatorMailDetails'
+    EmailValidatorValidatedMailsResults:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailValidatorValidatedMailsResults'
+    EmailAddressRequestBody:
+      $ref: './Domains/EmailValidation.yaml#/components/schemas/EmailAddressRequestBody'
+    
+    # Shared schemas
+    CommonSuccessResponseBody:
+      $ref: './Domains/Shared.yaml#/components/schemas/CommonSuccessResponseBody'
+    CommonMessageResponseBody:
+      $ref: './Domains/Shared.yaml#/components/schemas/CommonMessageResponseBody'
+    CommonBadRequestResponseBody:
+      $ref: './Domains/Shared.yaml#/components/schemas/CommonBadRequestResponseBody'
+    Email:
+      $ref: './Domains/Shared.yaml#/components/schemas/Email'
+    PhoneNumber:
+      $ref: './Domains/Shared.yaml#/components/schemas/PhoneNumber'
+
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+    consumerKey:
+      type: apiKey
+      in: header
+      name: consumerKey
+    consumerSecret:
+      type: apiKey
+      in: header
+      name: consumerSecret
+      
+
+servers:
+  #- description: turboSMTP Staging Server
+  #  url: https://staging.api.serversmtp.com/api/v2
+  #- description: Radwan Dev Server
+  #  url: http://185.228.39.82:8084/api/v2
+  #- description: Sergio Dev Server
+  #  url: http://199.187.172.80:8085/api/v2    
+  - description: turboSMTP Production Server
+    url: https://pro.api.serversmtp.com/api/v2
+  #- description: turboSMTP Mohamed1
+  #  url: http://199.187.172.80:8080/api/v2/    
+  #- description: turboSMTP Ahmed Dev Server
+  #  url: http://199.187.172.80:8082/turbo-smtp/turboSMTP/1.0.0-oas3/api
+  #- description: turboSMTP M.O. Dev Server
+  #  url: http://199.187.172.80:8080/turbo-smtp/turboSMTP/1.0.0-oas3/api
