@@ -27,6 +27,16 @@ When the spec stabilizes, it will be promoted to `api-reference/turbo-smtp.yaml`
 - Reference the sibling repo as the source of truth
 - If spec examples are needed in the docs, link to the spec in the sibling repo or fetch it programmatically
 
+## API Documentation Sync
+
+The `api-docs/` folder contains a Swagger UI deployment that mirrors `../turbo-smtp-openapi/turbo-api-2/`.
+
+Whenever the OpenAPI spec or Swagger UI assets are updated in `turbo-api-2/`, sync the changes to `api-docs/`:
+
+1. Verify the spec is valid: `npx @redocly/cli lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`
+2. Copy updated files: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Destination "./api-docs/" -Recurse -Force`
+3. Commit and push: `git add api-docs/; git commit -m "sync: update API docs from turbo-api-2"`
+
 ## Documentation Standards
 
 - All content is Markdown. Follow the existing folder structure under `docs/`.
