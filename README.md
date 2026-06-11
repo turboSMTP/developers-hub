@@ -47,8 +47,8 @@ See [Getting Started](docs/getting-started/README.md) for full authentication de
 
 | Language | Status | Install |
 |---|---|---|
-| [C#](sdks/csharp.md) | Stable | `dotnet add package TurboSMTP` |
-| [PHP](sdks/php.md) | Stable | `composer require turbosmtp/turbosmtp-client` |
+| [C#](sdks/csharp.md) | Planned | `dotnet add package TurboSMTP` |
+| [PHP](sdks/php.md) | Planned | `composer require turbosmtp/turbosmtp-client` |
 | [Node.js / TypeScript](sdks/nodejs.md) | Planned | `npm install @turbosmtp/sdk` |
 | [Python](sdks/python.md) | Planned | `pip install turbosmtp` |
 | [Go](sdks/go.md) | Planned | `go get github.com/turboSMTP/turbosmtp-go` |
@@ -73,5 +73,4 @@ We welcome contributions to documentation, SDKs, and AI integrations. See [CONTR
 ## Resources
 
 - [API Reference](api-reference/README.md)
-- [Issue Tracker](.github/ISSUE_TEMPLATE/bug_report.md)
 - [TurboSMTP Website](https://turbo-smtp.com)

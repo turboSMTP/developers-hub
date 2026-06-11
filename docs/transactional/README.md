@@ -1,6 +1,6 @@
 # Transactional Email
 
-Send one-to-one triggered emails — order confirmations, password resets, notifications — via the TurboSMTP send API.
+Send triggered transactional emails — order confirmations, password resets, notifications — to one or more recipients via the TurboSMTP send API.
 
 ---
 
@@ -106,7 +106,9 @@ curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
 
 ## Embedded Images (CID)
 
-To display an image inline rather than as a downloadable attachment, give the attachment a `content_id` and reference it from `html_content` with a `cid:` URL:
+To display an image inline rather than as a downloadable attachment, give the attachment a `content_id` and reference it from `html_content` with a `cid:` URL.
+
+> **How the `cid:` URL must be built:** the server appends `@<sender-domain>` (the domain of your `from` address) to your `content_id` when generating the MIME `Content-ID` header. So the `cid:` reference in `html_content` must be `cid:<content_id>@<sender-domain>`, while the `content_id` field itself must contain **only the bare ID** — no domain. If the two don't match, mail clients show the image as a downloadable attachment instead of rendering it inline.
 
 ```bash
 curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
@@ -117,17 +119,21 @@ curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
     "from": "user@example.com",
     "to": "test@example.com",
     "subject": "This is a Message subject",
-    "html_content": "<p><img src=\"cid:<UNIQUE_ID>@<SENDER_DOMAIN.COM>\"></p>",
+    "html_content": "<p>Inline image below:</p><p><img src=\"cid:550e8400-e29b-41d4-a716-446655440000@example.com\"></p>",
     "attachments": [
       {
-        "content_id": "<UNIQUE_ID>",
-        "content": "data:image/jpeg;base64,/BASE_64_OF_THE_IMAGE",
-        "name": "image.jpg",
-        "type": "image/jpeg"
+        "content_id": "550e8400-e29b-41d4-a716-446655440000",
+        "content": "iVBORw0KGgoAAAANSUhEUgAAAHgAAAB4CAYAAAA5ZDbSAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAJBSURBVHhe7dGxbQNBEENRF+Fy3H8V7sXGBgcbTKXjcHifwEsU6HbwP74/v37Q60N/QBcClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5AperDPzK9L+2qwl8x/QbG60P7Jh+c5O1gSemb9hgXeCE6ZuSrQqcNH1bqhWBk6dvTRMfeMP0zUmiA2+avj1FbOCN0xsSRAbePL1lGoHfPL1lWlzghulNk6ICN01vm0Lgm6a3TYkJ3Di9cQKBb5zeOCEicPP0VjcC3zy91W088BOmNzsR2DC92YnAhunNTqOBnzS93YXApuntLgQ2TW93IbBpersLgU3T210IbJre7kJg0/R2l7HAT5ve7zIW+HjS9HYXApumt7sQ2DS93YXApuntLgQ2TW93IbBpersLgU3T211GAx9PmN7sRGDD9GYnAhumNzuNBz6ap7e6Efjm6a1uEYGPxumNEwh84/TGCTGBj6bpbVMIfNP0tilRgY+G6U2T4gIfm6e3TCPwm6e3TIsMfGyc3pAgNvCxafr2FNGBjw3TNyeJD3wkT9+aZkXgS9L0balWBT4Spm9Kti7wZWL6hg3WBr44pt/cZH3gyx3Tb2xUE/i/V6b/tV1lYPwhcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3A5ApcjcDkClyNwOQKXI3C5X32h3JYu+1zZAAAAAElFTkSuQmCC",
+        "name": "image.png",
+        "type": "image/png"
       }
     ]
   }'
 ```
+
+In this example the `from` domain is `example.com`, so the server generates `Content-ID: <550e8400-e29b-41d4-a716-446655440000@example.com>` and the HTML references exactly that ID.
+
+The `content` value is the **raw Base64 encoding of the image file** — no `data:` URI prefix. The string above is a real, working sample (a 120×120 PNG showing a white circle on a crimson background), so the request is copy-paste-runnable as-is; replace it with your own image's Base64 and keep `name`/`type` consistent with the actual file format. To encode a file: `base64 -w0 image.png` (Linux), `base64 -i image.png` (macOS), or `[Convert]::ToBase64String([IO.File]::ReadAllBytes("image.png"))` (PowerShell).
 
 Valid `content_id` formats include a UUID (`550e8400-e29b-41d4-a716-446655440000`), timestamp + suffix (`20231012-abc123`), a simple incremental ID (`1`), a Base64 string, or any custom format (`img_001_2023`).
 

@@ -24,8 +24,8 @@
 
 | # | Task | Status | Weeks Effort | Notes |
 |---|---|---|---|---|
-| 2.1 | Write full `getting-started` documentation | REVIEW | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
-| 2.2 | Write full `transactional` documentation | REVIEW | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.1 | Write full `getting-started` documentation | DONE | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.2 | Write full `transactional` documentation | DONE | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
 | 2.3 | Write full `validation` documentation | REVIEW | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
 | 2.4 | Write full `webhooks` documentation | REVIEW | 0.5 | Rewritten from official Event Webhook Reference (`feat/docs-core-journey`) |
 | 2.5 | Make repository public | PENDING | 0.5 | Gate: depends on 1.5, 2.1–2.4, 2.6–2.9 (docs in REVIEW; 1.5 DONE) |
