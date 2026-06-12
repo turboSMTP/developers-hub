@@ -17,7 +17,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/subaccounts/list \
   -H "Authorization: $TURBO_API_KEY" \
   --data-urlencode "page=1" \
   --data-urlencode "limit=10" \
-  --data-urlencode "filterByActive=true"
+  --data-urlencode "filter_by_active=true"
 ```
 
 ### Query Parameters
@@ -25,10 +25,10 @@ curl -G https://pro.api.serversmtp.com/api/v2/subaccounts/list \
 | Parameter | Description |
 |---|---|
 | `page` / `limit` | Paging (defaults `1` / `10`) |
-| `filterByEmail` | Full or partial email match |
-| `filterByActive` | `true` / `false` |
-| `filterByIP[]` | One or more sending IP addresses (repeat the parameter) |
-| `orderby` | `email` (default) or `last_used` |
+| `filter_by_email` | Full or partial email match |
+| `filter_by_active` | `true` / `false` |
+| `filter_by_ip[]` | One or more sending IPv4 addresses (repeat the parameter) |
+| `order_by` | `email` (default) or `last_used` |
 | `ordertype` | `asc` or `desc` |
 
 ### Response
@@ -86,7 +86,7 @@ Returns `201` with the full subaccount object including its `subaccount_id` and 
 |---|---|---|
 | `email` | Yes | Must not already exist on TurboSMTP |
 | `first_name` / `last_name` | Yes | 1–50 characters |
-| `password` / `confirm_password` | Yes | Same rules as account passwords: ≥10 chars, one uppercase, one lowercase, one digit |
+| `password` / `confirm_password` | Yes | ≥10 chars, at least one uppercase character and one digit |
 | `ip` | Yes | Sending IP — **must be an IPv4 address already associated with your (parent) account**, else `400` `ip_not_associated_to_user_account` |
 | `policy_agree` | Yes | Must be `true` |
 | `address_1`, `address_2`, `city`, `region`, `country`, `zip_code`, `phone_number`, `company_name`, `site_url` | No | Owner/agency details |

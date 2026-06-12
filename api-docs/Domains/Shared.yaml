@@ -142,14 +142,14 @@ components:
         type: [integer, "null"]
         default: 1
         minimum: 1
-        description: Page number
+        description: Page number. Must be an integer greater than 0.
         example: 1
-        
+
     PageLimit:
         type: [integer, "null"]
         default: 10
         minimum: 1
-        description: The numbers of rows per page to return
+        description: The number of rows per page to return. Must be an integer greater than 0.
         example: 10
     
     EmailAddress:
@@ -226,16 +226,16 @@ components:
       name: from
       schema:
         $ref: '#/components/schemas/FromDate'
-      description: Start date
+      description: Start date (format YYYY-MM-DD). Must be less than or equal to the 'to' parameter.
       example: "2020-01-01"
-    
+
     ToQueryParam:
       in: query
       name: to
       required: true
       schema:
         $ref: '#/components/schemas/ToDate'
-      description: End date
+      description: End date (format YYYY-MM-DD). Must be greater than or equal to the 'from' parameter.
       example: "2025-12-31"
       
     OrderTypeQueryParam:

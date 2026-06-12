@@ -111,11 +111,11 @@ components:
         summary: Change turboSMTP password
         security:
           - ApiKeyAuth: [ ]
-          - consumerKey: [ ]
-            consumerSecret: [ ]          
         operationId: ChangePassword
         description: |
           **This endpoint allows you to change your current password**
+
+          Note: Only ApiKeyAuth is supported. ConsumerKey/ConsumerSecret authentication will return 403.
           
           ## PASSWORD RULES
           

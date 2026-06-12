@@ -108,7 +108,7 @@ The email contains a **Reset Password** button and a secret token for the API fl
 
 ### 2. (Optional) Check the token
 
-**`GET /forgot-password?token=<token>`** — returns `{"message": "success"}` if valid, `403` with `token_is_invalid` otherwise.
+**`GET /forgot-password?token=<token>`** — returns `{"message": "success"}` if valid, `403` with `token_is_invalid` otherwise. Unlike the other two steps, this check requires authentication (`Authorization` header).
 
 ### 3. Set the new password
 
@@ -192,7 +192,7 @@ See [Email Validation](../validation/README.md#credits) for how credits are cons
 
 ## Reference Data
 
-Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](../subaccounts/README.md)).
+Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](../subaccounts/README.md)). Both endpoints are **public** — no authentication required.
 
 **`GET /meta/countries`** — all countries:
 
@@ -205,8 +205,7 @@ Country and state lookups, useful for building address forms (e.g. when creating
 **`GET /meta/state/{isoCode}`** — states/regions for a country ISO code:
 
 ```bash
-curl https://pro.api.serversmtp.com/api/v2/meta/state/US \
-  -H "Authorization: $TURBO_API_KEY"
+curl https://pro.api.serversmtp.com/api/v2/meta/state/US
 ```
 
 ```json

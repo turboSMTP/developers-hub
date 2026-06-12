@@ -348,14 +348,21 @@ components:
            
         
         requestBody:
+          required: true
           content:
             multipart/form-data:
               schema:
                 type: object
+                required: [file]
                 properties:
                   file:
                     type: string
                     format: binary
+                    description: |
+                      CSV or TXT file containing email addresses (one per line).
+                      Supported formats: text/csv (CSV), text/plain (TXT).
+                      The file may contain invalid email addresses; these will be
+                      processed and flagged as invalid in the validation results.
         responses:
           '201':
             description: |
@@ -389,8 +396,7 @@ components:
               * missing_upload_file
               * invalid_mail_address_list
               * unsupported_file_format
-
-
+              
             content:
               application/json:
                 schema:
@@ -434,12 +440,12 @@ components:
           '400':
             description: |
               Bad Request
-              
+
               ###### Produces:
-              
-              * invalid_mail_address
+
+              * invalid_email_address
               * missing_required_parameter_email
-              
+
             content:
               application/json:
                 schema:
@@ -661,9 +667,13 @@ components:
     EmailValidatorListEmailDetails:
       unevaluatedProperties: false
       allOf:
-        - $ref: './Shared.yaml#/components/schemas/Email'      
+        - $ref: './Shared.yaml#/components/schemas/Email'
         - type: object
           properties:
+            email:
+              type: string
+              example: "username@gmail.com"
+              description: Email address. May contain invalid formats (e.g., '@') when validation fails, to show what was submitted.
             account_id:
               type: integer
               example: 20823223
@@ -690,14 +700,23 @@ components:
   
     EmailValidatorMailDetailsBasic:
       unevaluatedProperties: false
+      type: object
+      properties:
+        email:
+          type: string
+          description: |
+            Email address as submitted. May contain invalid formats
+            (e.g., '@') for failed validations. Check 'status' field
+            to determine if address is valid.
+          example: "username@gmail.com"
+        id:
+          type: integer
+          example: 2047
+          description: The id of the email address
+      required:
+        - email
+        - id
       allOf:
-        - $ref: './Shared.yaml#/components/schemas/Email'
-        -  type: object
-           properties:
-              id: 
-                    type: integer
-                    example: 2047
-                    description: the id of the email address
         - $ref: '#/components/schemas/EmailValidatorMailSharedDetails'
                     
     EmailValidatorMailDetails:
@@ -707,6 +726,10 @@ components:
         - $ref: '#/components/schemas/EmailValidatorMailSharedDetails'
         -  type: object
            properties:
+              email:
+                type: string
+                example: "username@gmail.com"
+                description: Email address. May contain invalid formats (e.g., '@') when validation fails, to show what was submitted.
               did_you_mean:
                     type: [string, "null"]
                     example: the-user@gmail.com
@@ -954,16 +977,17 @@ components:
                   properties:
                     message:
                       type: string
-                      enum: [ 
-                        'invalid_mail_address',
+                      enum: [
+                        'invalid_email_address',
                         'missing_required_parameter_email'
                         ]
                   example:
-                        message: 'invalid_mail_address'
+                        message: 'invalid_email_address'
                         
     EmailAddressRequestBody:
       type: object
       additionalProperties: false
+      required: [email]
       properties:
         email:
           type: string

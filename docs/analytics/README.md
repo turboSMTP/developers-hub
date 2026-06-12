@@ -66,7 +66,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
 | `limit` | No | Rows per page (default `10`) |
 | `status[]` | No | Filter by status — repeat the parameter for multiple values (see encoding above) |
 | `filter` | No | Text to search (recipient, sender, subject, domain, or campaign ID) |
-| `filter_by` | No | Which fields `filter` applies to: `subject`, `sender`, `recipient`, `domain`, `x_campaign_id` |
+| `filter_by` | No | Which fields `filter` applies to: `subject`, `sender`, `recipient`, `domain` |
 | `smart_search` | No | `true`/`false` (default `false`) |
 | `orderby` | No | Sort field: `send_time` (default), `sender`, `recipient`, `subject` |
 | `ordertype` | No | `asc` or `desc` (default `desc`) |
@@ -165,16 +165,17 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
    { "from": "...", "to": "...", "subject": "...", "X-campaign-ID": "spring-launch" }
    ```
 
-2. Query results for that campaign only:
+2. Search results for the campaign label (each result carries it back as `x_campaign_id`):
 
    ```bash
    curl -G https://pro.api.serversmtp.com/api/v2/analytics \
      -H "Authorization: $TURBO_API_KEY" \
      --data-urlencode "from=2026-01-01" \
      --data-urlencode "to=2026-01-31" \
-     --data-urlencode "filter=spring-launch" \
-     --data-urlencode "filter_by=x_campaign_id"
+     --data-urlencode "filter=spring-launch"
    ```
+
+   > `filter_by` accepts only `subject`, `sender`, `recipient`, or `domain` — it cannot target `x_campaign_id` directly. Use the campaign label as the free-text `filter` value and check `x_campaign_id` in the results.
 
 ---
 
@@ -187,6 +188,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
 - `page_should_be_integer`, `page_should_be_greater_than_0`
 - `limit_should_be_integer`, `limit_should_be_greater_than_0`
 - `invalid_status_value`
+- `missing_required_parameter_filter_by`
 - `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`
 - `smart_search_should_be_true_or_false`
 - `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`

@@ -117,9 +117,7 @@ Useful fields beyond `status`/`sub_status`:
 | `smtp_provider` | Detected provider, or `null` |
 | `did_you_mean` | Suggested fix for a probable typo, or `null` |
 
-`400` errors: `invalid_mail_address`, `missing_required_parameter_email`.
-
-> **Known behavior difference:** the live API may currently return `domain_age_days` and `mx_found` as strings (e.g. `"true"`) instead of the documented integer/boolean types. Parse defensively until the backend fix lands.
+`400` errors: `invalid_email_address`, `missing_required_parameter_email`.
 
 [Try it in the API reference →](../../api-docs/index.html#/email-validator/validateEmail)
 
