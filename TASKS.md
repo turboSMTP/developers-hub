@@ -12,7 +12,7 @@
 |---|---|---|---|---|
 | 1.1 | Complete Hurl test suite against all TurboSMTP endpoints | DONE | 1 | Covers drift mapping for all sub-systems |
 | 1.2 | Complete Schemathesis test suite against all TurboSMTP endpoints | DONE | 2 | Covers schema conformance and edge case generation |
-| 1.3 | Rectify all discovered backend vs. spec discrepancies (patch backend or update schema) | STAGING | 2 | Depends on 1.1–1.2; requires coordination with TS backend developers; blocked pending Keycloak fixes |
+| 1.3 | Rectify all discovered backend vs. spec discrepancies (patch backend or update schema) | DONE | 2 | Depends on 1.1–1.2; requires coordination with TS backend developers; blocked pending Keycloak fixes |
 | 1.4 | Final clean regeneration of core API projects with `openapi-generator-cli v7.18.0` | DONE | 1 | Depends on 1.3 |
 | 1.5 | Commit finalized OpenAPI 3.1 spec to `api-reference/openapi.yaml` | DONE | 0.5 | Depends on 1.4 |
 | 1.6 | Manually deploy Swagger UI to GitHub Pages | PENDING | 1 | Executes out of sequence — depends on 1.5 and 2.5 (repo must be public); push static files to `gh-pages` branch and enable Pages in repo settings |
