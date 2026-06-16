@@ -31,7 +31,7 @@ curl https://pro.api.serversmtp.com/api/v2/emailvalidation/subscription \
 
 The two credit types work differently:
 
-- **Free credits** are measured in units — 1 credit validates 1 email — and renew each period (see `latest_period_start_date` / `period_expiration_date`).
+- **`free_credits`** are measured in units — 1 credit validates 1 email — and renew each period (see `latest_period_start_date` / `period_expiration_date`).
 - **`paid_credits`** is a monetary balance. As validations are performed the balance is deducted; the cost per validation is variable and depends on the amount of validated emails.
 
 To top up, **`POST /billing/buy_emailvalidation_credits`** with `{"amount": <integer>}` (15–1800, currency-dependent; requires an active plan) returns a `url` to the billing system where you complete the payment — it is not an instant charge.
@@ -216,7 +216,7 @@ Response:
 For one address's full record (including `did_you_mean` and `created_at`), use **`GET /emailvalidation/lists/{Id}/emails/{emailId}`** with the `id` from the results:
 
 ```bash
-curl https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails/500157 \
+curl https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails/{emailId} \
   -H "consumerKey: $CONSUMER_KEY" \
   -H "consumerSecret: $CONSUMER_SECRET"
 ```
