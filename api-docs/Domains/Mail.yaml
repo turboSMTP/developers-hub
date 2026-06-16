@@ -39,7 +39,14 @@ components:
         operationId: sendEmail
         description: |
           Send email message
-          
+
+          ###### Servers
+
+          | Host | Region |
+          |---|---|
+          | `https://api.turbo-smtp.com/api/v2` | Global (default) |
+          | `https://api.eu.turbo-smtp.com/api/v2` | European infrastructure — use for EU data residency |
+
           ###### **Notes:**
           **- ConsumerKey / ConsumerSecret headers should be used. This endpoint does not support Authorization header**
           
