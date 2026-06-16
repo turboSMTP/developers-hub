@@ -20,12 +20,12 @@ curl https://pro.api.serversmtp.com/api/v2/emailvalidation/subscription \
 {
   "currency": "$",
   "free_credits": 3000,
-  "free_credits_used": 200,
-  "remaining_free_credit": 2800,
-  "paid_credits": 437.456,
-  "latest_period_start_date": "2022-11-09 00:00:00",
-  "period_expiration_date": "2022-12-09 00:00:00",
-  "last_used_period": "2022-11-20 00:00:00"
+  "free_credits_used": 473,
+  "remaining_free_credit": 2527,
+  "paid_credits": 500.00,
+  "latest_period_start_date": "2026-06-01 00:00:00",
+  "period_expiration_date": "2026-07-01 00:00:00",
+  "last_used_period": "2026-06-01 00:00:00"
 }
 ```
 
@@ -36,38 +36,25 @@ The two credit types work differently:
 
 To top up, **`POST /billing/buy_emailvalidation_credits`** with `{"amount": <integer>}` (15–1800, currency-dependent; requires an active plan) returns a `url` to the billing system where you complete the payment — it is not an instant charge.
 
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/billing/buy_emailvalidation_credits \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"amount": 500}'
+```
+
+Response:
+
+```json
+{
+  "url": "https://billing.serversmtp.com/index.php/guest/payment_information/form/IUZXLEg3iWqRfhY5jdCHKGVO6a02ym8J"
+}
+```
+
+Visit the returned `url` to complete payment in the billing system.
+
 [Try it in the API reference →](../../api-docs/index.html#/email-validator/getEmailValidationSubscription)
-
----
-
-## Validation Statuses
-
-Every validated address gets a `status` and, where applicable, a `sub_status`.
-
-| `status` | Meaning | Recommended action |
-|---|---|---|
-| `valid` | Deliverable — expected bounce rate under 2% | Safe to send |
-| `invalid` | Address does not exist or cannot receive mail | Remove from your list |
-| `catch_all` | Domain accepts all addresses; deliverability unverifiable | Segment separately; expect some bounces |
-| `unknown` | Could not be validated (server down, anti-spam blocking, …) | Treat with caution — roughly 80% of unknowns are bad addresses |
-| `spamtrap` | Believed to be a spam trap | **Never send** |
-| `abuse` | Owner is known to mark mail as spam | Do not send |
-| `do_not_mail` | Valid address you generally shouldn't mail (see sub-statuses) | Decide per sub-category |
-
-### `do_not_mail` Sub-Statuses
-
-| `sub_status` | Meaning |
-|---|---|
-| `disposable` | Temporary/throwaway address (lifespan from 15 minutes to ~6 months) |
-| `toxic` | Known abuse, spam, or bot-created address |
-| `role_based` | Position or group address (`sales@`, `info@`, `contact@`) — strongly correlated with spam complaints |
-| `role_based_catch_all` | Role-based address on a catch-all domain |
-| `global_suppression` | Found on popular global suppression lists (ISP complainers, litigators, purchased addresses) |
-| `possible_trap` | Contains keywords correlated with spam traps (e.g. `spam@`) |
-
-### Other Sub-Statuses
-
-Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for example `alias_address` and `leading_period_removed` (valid), `mailbox_not_found`, `failed_syntax_check`, `possible_typo`, `no_dns_entries`, `mailbox_quota_exceeded`, `does_not_accept_mail`, `unroutable_ip_address` (invalid), and `antispam_system`, `greylisted`, `timeout_exceeded`, `failed_smtp_connection`, `forcible_disconnect`, `mail_server_did_not_respond`, `mail_server_temporary_error`, `exception_occurred` (unknown). `greylisted` addresses often validate successfully on a second pass. The full catalog with explanations is in the [API reference](../../api-docs/index.html#/email-validator/validateEmail).
 
 ---
 
@@ -228,6 +215,37 @@ For one address's full record (including `did_you_mean` and `created_at`), use *
 Unknown list IDs return `404` with `{"message": "list_not_found"}` on all list endpoints.
 
 [Try it in the API reference →](../../api-docs/index.html#/email-validator/uploadEmailValidationFile)
+
+---
+
+## Validation Statuses
+
+Every validated address gets a `status` and, where applicable, a `sub_status`.
+
+| `status` | Meaning | Recommended action |
+|---|---|---|
+| `valid` | Deliverable — expected bounce rate under 2% | Safe to send |
+| `invalid` | Address does not exist or cannot receive mail | Remove from your list |
+| `catch_all` | Domain accepts all addresses; deliverability unverifiable | Segment separately; expect some bounces |
+| `unknown` | Could not be validated (server down, anti-spam blocking, …) | Treat with caution — roughly 80% of unknowns are bad addresses |
+| `spamtrap` | Believed to be a spam trap | **Never send** |
+| `abuse` | Owner is known to mark mail as spam | Do not send |
+| `do_not_mail` | Valid address you generally shouldn't mail (see sub-statuses) | Decide per sub-category |
+
+### `do_not_mail` Sub-Statuses
+
+| `sub_status` | Meaning |
+|---|---|
+| `disposable` | Temporary/throwaway address (lifespan from 15 minutes to ~6 months) |
+| `toxic` | Known abuse, spam, or bot-created address |
+| `role_based` | Position or group address (`sales@`, `info@`, `contact@`) — strongly correlated with spam complaints |
+| `role_based_catch_all` | Role-based address on a catch-all domain |
+| `global_suppression` | Found on popular global suppression lists (ISP complainers, litigators, purchased addresses) |
+| `possible_trap` | Contains keywords correlated with spam traps (e.g. `spam@`) |
+
+### Other Sub-Statuses
+
+Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for example `alias_address` and `leading_period_removed` (valid), `mailbox_not_found`, `failed_syntax_check`, `possible_typo`, `no_dns_entries`, `mailbox_quota_exceeded`, `does_not_accept_mail`, `unroutable_ip_address` (invalid), and `antispam_system`, `greylisted`, `timeout_exceeded`, `failed_smtp_connection`, `forcible_disconnect`, `mail_server_did_not_respond`, `mail_server_temporary_error`, `exception_occurred` (unknown). `greylisted` addresses often validate successfully on a second pass. The full catalog with explanations is in the [API reference](../../api-docs/index.html#/email-validator/validateEmail).
 
 ---
 
