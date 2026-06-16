@@ -144,7 +144,8 @@ Get an email notification when your plan usage crosses a threshold. Each alert i
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/tools/alerts \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"email": "alert@example.com", "percentage": 80}'
 ```
@@ -169,7 +170,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/tools/alerts \
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/billing/buy_emailvalidation_credits \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"amount": 320}'
 ```

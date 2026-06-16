@@ -8,11 +8,12 @@ Verify email addresses before sending to protect your sender reputation and redu
 
 ## Credits
 
-Validation consumes credits. Check your balance with **`GET /emailvalidation/subscription`**:
+The Email Validation feature uses its own **Email Validation Credits** — separate from the Email Sending Credits used for outbound mail. A free quota is included with every TurboSMTP plan; when that quota is exhausted, additional credits can be purchased. Check your balance with **`GET /emailvalidation/subscription`**:
 
 ```bash
 curl https://pro.api.serversmtp.com/api/v2/emailvalidation/subscription \
-  -H "Authorization: $TURBO_API_KEY"
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
 ```
 
 ```json
@@ -76,7 +77,8 @@ Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for exam
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/validateEmail \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{"email": "developer@yourcompany.com"}'
 ```
@@ -133,7 +135,8 @@ Bulk validation is asynchronous and list-based: upload a file, trigger validatio
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/upload \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -F "file=@prospects.csv"
 ```
 
@@ -154,7 +157,8 @@ Response (`201 Created`):
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/10093/validate \
-  -H "Authorization: $TURBO_API_KEY"
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
 ```
 
 `400` errors: `list_already_validated`, `insufficient_credit`.
@@ -165,7 +169,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/10093/v
 
 ```bash
 curl https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/10093 \
-  -H "Authorization: $TURBO_API_KEY"
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
 ```
 
 ```json

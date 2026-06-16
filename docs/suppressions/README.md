@@ -37,7 +37,8 @@ Each suppression has these fields:
 
 ```bash
 curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
   --data-urlencode "to=2026-01-31" \
   --data-urlencode "filter_by=bounce" \
@@ -96,7 +97,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{
     "from": "2026-01-01",
@@ -129,7 +131,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions \
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/import \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{
     "type": "manual",
@@ -142,7 +145,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/import \
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/import \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -F "type=file" \
   -F "reason=imported removal requests" \
   -F "file=@suppressions.csv"
@@ -174,7 +178,8 @@ Response — addresses are partitioned into accepted and rejected:
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/bulk_delete \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '["user1@example.com", "user2@example.com"]'
 ```
@@ -189,7 +194,8 @@ Response: `{"success": true}`. Sending an empty list returns `400` with `no_cont
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/delete \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{
     "from": "2026-01-01",
@@ -211,7 +217,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/delete \
 
 ```bash
 curl -G https://pro.api.serversmtp.com/api/v2/suppressions/csv \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
   --data-urlencode "to=2026-01-31" \
   -o suppressions-january.csv

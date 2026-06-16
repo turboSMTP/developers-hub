@@ -47,7 +47,8 @@ TurboSMTP aggregates these statuses into the groups you see in the dashboard:
 
 ```bash
 curl -G https://pro.api.serversmtp.com/api/v2/analytics \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
   --data-urlencode "to=2026-01-31" \
   --data-urlencode "status[]=FAIL" \
@@ -125,7 +126,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
 
 ```bash
 curl https://pro.api.serversmtp.com/api/v2/analytics/1800872493473406976 \
-  -H "Authorization: $TURBO_API_KEY"
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
 ```
 
 Returns a single message object (same shape as the list `results` items). An unknown ID returns `404` with `{"message": "email_not_found"}`.
@@ -142,7 +144,8 @@ Returns a single message object (same shape as the list `results` items). An unk
 
 ```bash
 curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
-  -H "Authorization: $TURBO_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
   --data-urlencode "to=2026-01-31" \
   -o analytics-january.csv
@@ -169,7 +172,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
 
    ```bash
    curl -G https://pro.api.serversmtp.com/api/v2/analytics \
-     -H "Authorization: $TURBO_API_KEY" \
+     -H "consumerKey: $CONSUMER_KEY" \
+     -H "consumerSecret: $CONSUMER_SECRET" \
      --data-urlencode "from=2026-01-01" \
      --data-urlencode "to=2026-01-31" \
      --data-urlencode "filter=spring-launch"
