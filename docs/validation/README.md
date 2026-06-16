@@ -143,7 +143,7 @@ Response (`201 Created`):
 **`POST /emailvalidation/lists/{Id}/validate`** — this is the step that consumes credits:
 
 ```bash
-curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/10093/validate \
+curl -X POST https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/validate \
   -H "consumerKey: $CONSUMER_KEY" \
   -H "consumerSecret: $CONSUMER_SECRET"
 ```
@@ -182,10 +182,18 @@ Poll until `is_processed` is `true` (`percentage` reaches 100). `GET /emailvalid
 
 **`GET /emailvalidation/lists/{Id}/emails`** — paged results (`page`, `limit`):
 
+```bash
+curl "https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails?page=1&limit=10" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response:
+
 ```json
 {
-  "count": 2,
-  "processed": 2,
+  "count": 1,
+  "processed": 1,
   "results": [
     {
       "email": "mail@thearter-gallery.eu",
@@ -205,12 +213,53 @@ Poll until `is_processed` is `true` (`percentage` reaches 100). `GET /emailvalid
 
 > Before validation completes, this endpoint returns `processed: 0` with an empty `results` array — not an error.
 
-For one address's full record (including `did_you_mean` and `created_at`), use **`GET /emailvalidation/lists/{Id}/emails/{emailId}`** with the `id` from the results.
+For one address's full record (including `did_you_mean` and `created_at`), use **`GET /emailvalidation/lists/{Id}/emails/{emailId}`** with the `id` from the results:
 
-### 5. Export and clean up
+```bash
+curl https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails/500157 \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
 
-- **`GET /emailvalidation/lists/{Id}/csv`** — download all results as `text/csv`.
-- **`DELETE /emailvalidation/lists/{Id}`** — delete the list when you're done; returns `{"success": true}`.
+### 5. Export to CSV
+
+**`GET /emailvalidation/lists/{Id}/csv`** — download all results as a `text/csv` file:
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/csv \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response (`text/csv`):
+
+```csv
+email,id,status,sub_status,free_email,domain,domain_age_days,smtp_provider,mx_found,mx_record,did_you_mean,score
+john.doe@gmail.com,34497675,invalid,mailbox_not_found,1,gmail.com,11265,google,1,alt1.gmail-smtp-in.l.google.com,,
+sarah.smith@microsoft.com,34497679,invalid,mailbox_not_found,0,microsoft.com,12829,microsoft,1,microsoft-com.mail.protection.outlook.com,,
+contact@startup.io,34497677,do_not_mail,role_based,0,startup.io,5758,g-suite,1,aspmx.l.google.com,,
+noreply@company.org,34497681,invalid,no_dns_entries,0,company.org,10571,,0,,,
+```
+
+---
+
+### 6. Delete the list
+
+**`DELETE /emailvalidation/lists/{Id}`** — delete the list when you're done:
+
+```bash
+curl -X DELETE https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id} \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response:
+
+```json
+{
+  "success": true
+}
+```
 
 Unknown list IDs return `404` with `{"message": "list_not_found"}` on all list endpoints.
 
