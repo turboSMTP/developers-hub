@@ -88,6 +88,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
 
 [Try it in the API reference →](../../api-docs/index.html#/analytics/getAnalyticsData)
 
+`400` errors: `missing_required_parameter_from`, `missing_required_parameter_to`, `from_format_should_be_yyyy-mm-dd`, `to_format_should_be_yyyy-mm-dd`, `page_should_be_integer`, `page_should_be_greater_than_0`, `limit_should_be_integer`, `limit_should_be_greater_than_0`, `invalid_status_value`, `missing_required_parameter_filter_by`, `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`, `ordertype_should_be_asc_or_desc`.
+
 ---
 
 ## Get a Single Message
@@ -122,6 +124,8 @@ Returns a single message object (same shape as the list `results` items). An unk
 
 [Try it in the API reference →](../../api-docs/index.html#/analytics/getAnalyticsDataByID)
 
+`400` errors: `invalid_id` (non-integer). `404` errors: `email_not_found`.
+
 ---
 
 ## Export to CSV
@@ -143,6 +147,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
 ```
 
 [Try it in the API reference →](../../api-docs/index.html#/analytics/exportAnalyticsDataCSV)
+
+`400` errors: `missing_required_parameter_from`, `missing_required_parameter_to`, `from_format_should_be_yyyy-mm-dd`, `to_format_should_be_yyyy-mm-dd`, `invalid_status_value`, `missing_required_parameter_filter_by`, `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`, `ordertype_should_be_asc_or_desc`.
 
 ---
 
@@ -199,23 +205,6 @@ TurboSMTP aggregates these statuses into the groups you see in the [TurboSMTP We
    ```
 
    > `filter_by` accepts only `subject`, `sender`, `recipient`, or `domain` — it cannot target `x_campaign_id` directly. Use the campaign label as the free-text `filter` value and check `x_campaign_id` in the results.
-
----
-
-## Error Responses
-
-`400 Bad Request` messages include:
-
-- `missing_required_parameter_from` / `missing_required_parameter_to`
-- `from_format_should_be_yyyy-mm-dd` / `to_format_should_be_yyyy-mm-dd`
-- `page_should_be_integer`, `page_should_be_greater_than_0`
-- `limit_should_be_integer`, `limit_should_be_greater_than_0`
-- `invalid_status_value`
-- `missing_required_parameter_filter_by`
-- `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`
-- `smart_search_should_be_true_or_false`
-- `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`
-- `ordertype_should_be_asc_or_desc`
 
 ---
 
