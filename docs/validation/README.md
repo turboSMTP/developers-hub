@@ -183,9 +183,11 @@ Poll until `is_processed` is `true` (`percentage` reaches 100). `GET /emailvalid
 **`GET /emailvalidation/lists/{Id}/emails`** — paged results (`page`, `limit`):
 
 ```bash
-curl "https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails?page=1&limit=10" \
+curl -G https://pro.api.serversmtp.com/api/v2/emailvalidation/lists/{Id}/emails \
   -H "consumerKey: $CONSUMER_KEY" \
-  -H "consumerSecret: $CONSUMER_SECRET"
+  -H "consumerSecret: $CONSUMER_SECRET" \
+  --data-urlencode "page=1" \
+  --data-urlencode "limit=10"
 ```
 
 Response:

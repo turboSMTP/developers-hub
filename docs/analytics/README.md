@@ -17,7 +17,10 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
   -H "consumerKey: $CONSUMER_KEY" \
   -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
-  --data-urlencode "to=2026-01-31" \
+  --data-urlencode "to=2026-12-31" \
+  --data-urlencode "status[]=SUCCESS" \
+  --data-urlencode "status[]=OPEN" \
+  --data-urlencode "status[]=CLICK" \
   --data-urlencode "status[]=FAIL" \
   --data-urlencode "status[]=SYSFAIL" \
   --data-urlencode "limit=10" \
