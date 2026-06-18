@@ -100,9 +100,25 @@ curl https://pro.api.serversmtp.com/api/v2/analytics/1800872493473406976 \
   -H "consumerSecret: $CONSUMER_SECRET"
 ```
 
-Returns a single message object (same shape as the list `results` items). An unknown ID returns `404` with `{"message": "email_not_found"}`.
+Response:
 
-> **Known behavior:** passing a non-integer ID currently returns `500` rather than `400`. This is a known limitation of the live API.
+```json
+{
+  "id": 1800872493473406976,
+  "subject": "Newsletter update",
+  "sender": "sample@gmail.com",
+  "recipient": "robert-doe@electronic-arts.com",
+  "send_time": "2023-08-10 04:04:21",
+  "status": "SUCCESS",
+  "domain": "gmail.com",
+  "error": "",
+  "recipient_domain": "electronic-arts.com",
+  "contact_domain": "electronic-arts.com",
+  "x_campaign_id": "Offer AB Test."
+}
+```
+
+Returns a single message object (same shape as the list `results` items). An unknown ID returns `404` with `{"message": "email_not_found"}`.
 
 [Try it in the API reference →](../../api-docs/index.html#/analytics/getAnalyticsDataByID)
 
