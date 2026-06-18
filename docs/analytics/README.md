@@ -1,43 +1,10 @@
 # Analytics
 
-Query per-message delivery events — queued, delivered, opened, clicked, bounced, reported as spam — for everything you send through TurboSMTP.
+Look up individual messages and their delivery and engagement lifecycle — queued, delivered, opened, clicked, bounced, reported as spam — for everything you send through TurboSMTP. These endpoints return per-message records, not pre-computed totals; any aggregate figures you report are derived from these records.
 
 > **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](../getting-started/README.md).
 >
 > Analytics lives on the **main host** `https://pro.api.serversmtp.com/api/v2` — not on the send host.
-
----
-
-## Message Statuses
-
-Every sent message has exactly one current status:
-
-| Status | Meaning |
-|---|---|
-| `NEW` | Email has been queued for delivery |
-| `DEFER` | Email is in the queue for delivery |
-| `SUCCESS` | Email has been delivered |
-| `OPEN` | Email has been opened |
-| `CLICK` | Email has been clicked |
-| `REPORT` | Email has been reported as spam |
-| `FAIL` | Email has bounced |
-| `SYSFAIL` | Email was dropped |
-| `UNSUB` | Recipient unsubscribed |
-
-TurboSMTP aggregates these statuses into the groups you see in the dashboard:
-
-| Group | Statuses included |
-|---|---|
-| Queued | `NEW`, `DEFER` |
-| Delivered | `SUCCESS`, `OPEN`, `CLICK`, `UNSUB`, `REPORT` |
-| Opens | `OPEN`, `CLICK`, `UNSUB`, `REPORT` |
-| Clicks | `CLICK` |
-| Unsubscribes | `UNSUB` |
-| Spam | `REPORT` |
-| Bounce | `FAIL` |
-| Drop | `SYSFAIL` |
-
-> **Groups overlap.** A clicked message counts toward Delivered, Opens, and Clicks at the same time — the groups are cumulative views over the single underlying status, not mutually exclusive buckets.
 
 ---
 
@@ -157,6 +124,39 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
 ```
 
 [Try it in the API reference →](../../api-docs/index.html#/analytics/exportAnalyticsDataCSV)
+
+---
+
+## Message Statuses
+
+Every sent message has exactly one current status:
+
+| Status | Meaning |
+|---|---|
+| `NEW` | Email has been queued for delivery |
+| `DEFER` | Email is in the queue for delivery |
+| `SUCCESS` | Email has been delivered |
+| `OPEN` | Email has been opened |
+| `CLICK` | Email has been clicked |
+| `REPORT` | Email has been reported as spam |
+| `FAIL` | Email has bounced |
+| `SYSFAIL` | Email was dropped |
+| `UNSUB` | Recipient unsubscribed |
+
+TurboSMTP aggregates these statuses into the groups you see in the [TurboSMTP Web dashboard](https://dashboard.serversmtp.com/dashboard):
+
+| Group | Statuses included |
+|---|---|
+| Queued | `NEW`, `DEFER` |
+| Delivered | `SUCCESS`, `OPEN`, `CLICK`, `UNSUB`, `REPORT` |
+| Opens | `OPEN`, `CLICK`, `UNSUB`, `REPORT` |
+| Clicks | `CLICK` |
+| Unsubscribes | `UNSUB` |
+| Spam | `REPORT` |
+| Bounce | `FAIL` |
+| Drop | `SYSFAIL` |
+
+> **Groups overlap.** A clicked message counts toward Delivered, Opens, and Clicks at the same time — the groups are cumulative views over the single underlying status, not mutually exclusive buckets.
 
 ---
 
