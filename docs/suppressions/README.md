@@ -15,8 +15,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
   -H "consumerKey: $CONSUMER_KEY" \
   -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
-  --data-urlencode "to=2026-01-31" \
-  --data-urlencode "filter_by=bounce" \
+  --data-urlencode "to=2026-12-31" \
+  --data-urlencode "filter_by=manual" \
   --data-urlencode "limit=10" \
   --data-urlencode "page=1"
 ```
@@ -45,20 +45,44 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
   "count": 5,
   "results": [
     {
-      "date": "2021-03-17 00:00:00",
-      "sender": "andrea@emailchef.com",
+      "date": "2026-03-18 14:22:15",
+      "sender": "newsletter@example.com",
       "source": "bounce",
-      "subject": "Newsletter - September 2022",
-      "recipient": "bounce1@turbo-smtp.com",
-      "reason": "550 Error"
+      "subject": "March Newsletter",
+      "recipient": "user1@example.com",
+      "reason": "550 5.1.2 The email account does not exist"
     },
     {
-      "date": "2021-03-15 00:00:00",
-      "sender": "alberto@emailchef.com",
+      "date": "2026-03-17 09:45:30",
+      "sender": "marketing@example.com",
+      "source": "spam",
+      "subject": "Limited Time Offer",
+      "recipient": "user2@example.com",
+      "reason": "Marked as spam"
+    },
+    {
+      "date": "2026-03-16 11:20:00",
+      "sender": "support@example.com",
+      "source": "unsubscribe",
+      "subject": "Support Updates",
+      "recipient": "user3@example.com",
+      "reason": "Unsubscribe link clicked"
+    },
+    {
+      "date": "2026-03-15 16:55:42",
+      "sender": "",
       "source": "manual",
       "subject": "",
-      "recipient": "bounce2@turbo-smtp.com",
-      "reason": "manual inserted"
+      "recipient": "user4@example.com",
+      "reason": "Manually added via dashboard"
+    },
+    {
+      "date": "2026-03-14 08:30:00",
+      "sender": "noreply@example.com",
+      "source": "validation_failed",
+      "subject": "Welcome Email",
+      "recipient": "invalid@test",
+      "reason": "Invalid email format"
     }
   ]
 }
@@ -79,8 +103,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions \
   -H "Content-Type: application/json" \
   -d '{
     "from": "2026-01-01",
-    "to": "2026-01-31",
-    "filter_by": ["bounce"],
+    "to": "2026-12-31",
+    "filter_by": ["manual"],
     "page": 1,
     "limit": 10,
     "restrict": [
@@ -201,8 +225,8 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions/csv \
   -H "consumerKey: $CONSUMER_KEY" \
   -H "consumerSecret: $CONSUMER_SECRET" \
   --data-urlencode "from=2026-01-01" \
-  --data-urlencode "to=2026-01-31" \
-  -o suppressions-january.csv
+  --data-urlencode "to=2026-12-31" \
+  -o suppressions-yearly.csv
 ```
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
