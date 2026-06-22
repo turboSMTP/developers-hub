@@ -231,9 +231,37 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions/csv \
   -o suppressions-yearly.csv
 ```
 
+### Response
+
+```csv
+Status;Subject;From;To;Date;Reason
+MANUAL;;;user5@example.com;2026-06-22T12:36:34.560Z;"imported removal requests"
+MANUAL;;;user4@example.com;2026-06-22T12:36:34.560Z;"imported removal requests"
+FAIL;"March Newsletter";newsletter@example.com;user2@example.com;2026-03-17T09:45:30.000Z;"550 5.1.2 The email account does not exist"
+BOUNCE;"March Newsletter";newsletter@example.com;user3@example.com;2026-03-16T11:20:00.000Z;"Permanent failure"
+```
+
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
-**`POST /suppressions/csv`** — the same export driven by a JSON filter body (including `restrict`), for when GET query strings aren't expressive enough.
+**`POST /suppressions/csv`** — the same export driven by a JSON filter body (including `restrict`), for when GET query strings aren't expressive enough:
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/csv \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "from": "2026-01-01",
+    "to": "2026-12-31",
+    "filter_by": ["manual"],
+    "restrict": [
+      { "by": "recipient", "operator": "exclude", "filter": "@example-test-domain.invalid" }
+    ]
+  }' \
+  -o suppressions-yearly-filtered.csv
+```
+
+Returns the same CSV format as [GET /suppressions/csv](#export-to-csv) above.
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
