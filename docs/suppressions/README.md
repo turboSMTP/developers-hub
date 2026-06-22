@@ -108,10 +108,12 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions \
     "page": 1,
     "limit": 10,
     "restrict": [
-      { "by": "recipient", "operator": "exclude", "filter": "@internal.example.com" }
+      { "by": "recipient", "operator": "exclude", "filter": "@example-test-domain.invalid" }
     ]
   }'
 ```
+
+Returns the same format as [GET /suppressions](#query-suppressions) above (an object with `count` and `results` array).
 
 | `restrict[].field` | Values |
 |---|---|
