@@ -6,31 +6,6 @@ A suppression is an address TurboSMTP will not deliver to — because it bounced
 
 ---
 
-## Suppression Records
-
-Each suppression has these fields:
-
-| Field | Description |
-|---|---|
-| `date` | When the suppression was recorded, `YYYY-MM-DD HH:MM:SS` |
-| `recipient` | The suppressed email address |
-| `sender` | Sender of the message that triggered the suppression (may be `null`) |
-| `source` | How the address was suppressed (see below) |
-| `subject` | Subject of the triggering message (empty for manual entries) |
-| `reason` | Detail string, e.g. an SMTP error (may be `null`) |
-
-### Sources
-
-| `source` | Meaning |
-|---|---|
-| `manual` | Added by you, via dashboard, import, or API |
-| `bounce` | Delivery permanently failed (hard bounce) |
-| `spam` | Recipient reported the message as spam |
-| `unsubscribe` | Recipient unsubscribed |
-| `validation_failed` | Address failed [email validation](../validation/README.md) |
-
----
-
 ## Query Suppressions
 
 **`GET /suppressions`**
@@ -237,6 +212,31 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions/csv \
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
 [Try it in the API reference →](../../api-docs/index.html#/suppressions/exportSuppressionsDataCSV)
+
+---
+
+## Suppression Records
+
+Each suppression has these fields:
+
+| Field | Description |
+|---|---|
+| `date` | When the suppression was recorded, `YYYY-MM-DD HH:MM:SS` |
+| `recipient` | The suppressed email address |
+| `sender` | Sender of the message that triggered the suppression (may be `null`) |
+| `source` | How the address was suppressed (see below) |
+| `subject` | Subject of the triggering message (empty for manual entries) |
+| `reason` | Detail string, e.g. an SMTP error (may be `null`) |
+
+### Sources
+
+| `source` | Meaning |
+|---|---|
+| `manual` | Added by you, via dashboard, import, or API |
+| `bounce` | Delivery permanently failed (hard bounce) |
+| `spam` | Recipient reported the message as spam |
+| `unsubscribe` | Recipient unsubscribed |
+| `validation_failed` | Address failed [email validation](../validation/README.md) |
 
 ---
 
