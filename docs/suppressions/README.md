@@ -294,6 +294,17 @@ Each suppression has these fields:
 
 ---
 
+## Recipe: Protect Your Reputation
+
+Every bounce, spam complaint, or invalid send damages your sender reputation. ISPs track this closely; a poor score lands your mail in spam or gets you blacklisted. Suppressions prevent sending to addresses you know will fail.
+
+1. **After sending a campaign:** Query [Analytics](../analytics/README.md) for bounces and complaints from the past 30 days.
+2. **Import bounced/complained addresses:** Use the [Add Suppressions](#add-suppressions) endpoint to bulk import addresses with reason `bounced` or `complained`.
+3. **Validate new lists:** Run addresses through [Email Validator](../validation/README.md) and manually suppress any `invalid`, `spamtrap`, or `abuse` before sending.
+4. **Monitor weekly:** [Export your suppressions to CSV](#export-to-csv) and review for patterns (e.g., spike from a specific domain).
+
+---
+
 ## Next Steps
 
 - [Validate addresses before sending to avoid bounces](../validation/README.md)
