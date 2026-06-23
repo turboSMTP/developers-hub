@@ -86,7 +86,7 @@ Returns `201` with the full subaccount object including its `subaccount_id` and 
 |---|---|---|
 | `email` | Yes | Must not already exist on TurboSMTP |
 | `first_name` / `last_name` | Yes | 1–50 characters |
-| `password` / `confirm_password` | Yes | ≥10 chars, at least one uppercase character and one digit |
+| `password` / `confirm_password` | Yes | ≥10 chars, at least one uppercase character, one lowercase character, and one digit |
 | `ip` | Yes | Sending IP — **must be an IPv4 address already associated with your (parent) account**, else `400` `ip_not_associated_to_user_account` |
 | `policy_agree` | Yes | Must be `true` |
 | `address_1`, `address_2`, `city`, `region`, `country`, `zip_code`, `phone_number`, `company_name`, `site_url` | No | Owner/agency details |

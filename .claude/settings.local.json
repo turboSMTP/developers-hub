@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "WebSearch"
+      "WebSearch",
+      "Read(../turbo-smtp-openapi/**)",
+      "Grep(../turbo-smtp-openapi/**)"
     ]
   }
 }

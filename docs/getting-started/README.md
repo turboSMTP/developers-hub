@@ -66,9 +66,27 @@ export TURBO_API_KEY="f8efa7be4e7457c463e8b800e1f11f92072d272c"
 
 > **Rate limit:** `/authorize` is rate-limited. Cache the key and reuse it instead of logging in before every request.
 
-To revoke a key, call **`POST /deauthorize`** with the key in the `Authorization` header. A successful revocation returns `{"message": "token_deauthorized"}`.
+### Revoke an API Key
+
+To revoke a key before it expires, call **`POST /deauthorize`**:
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/deauthorize \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "message": "token_deauthorized"
+}
+```
+
+The key is invalidated immediately. An invalid or already-revoked key returns `401`.
 
 [Try it in the API reference →](../../api-docs/index.html#/authentication/AuthenticationLogin)
+[Revoke in the API reference →](../../api-docs/index.html#/authentication/AuthenticationLogout)
 
 ### Create a Consumer Key
 

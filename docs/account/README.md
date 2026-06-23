@@ -1,8 +1,57 @@
 # Account Management
 
-Manage the credentials and settings of your TurboSMTP account: consumer keys, passwords, usage alerts, validation credit purchases, and reference data.
+Manage the credentials and settings of your TurboSMTP account: account details, API key management, consumer keys, passwords, usage alerts, validation credit purchases, and reference data.
 
 > **Authentication:** unless noted otherwise, endpoints accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. **Consumer key management and password changes are API-key-only** (see each section). See [Getting Started](../getting-started/README.md).
+
+---
+
+## Account Details
+
+**`GET /user`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/user \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "id": 20823223,
+  "email": "developer@yourdomain.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "companyName": "Refreshing Soda Inc.",
+  "active": true,
+  "email_confirmation": true,
+  "account_activation": true,
+  "dns_configuration": true,
+  "timezone": "-07:00",
+  "lang": "en",
+  "gateway": "q1",
+  "ip": 3354675819,
+  "datecreated": "2022-04-20 11:24:12",
+  "parentid": null
+}
+```
+
+Key fields:
+
+| Field | Description |
+|---|---|
+| `id` | Account identifier |
+| `email` | Account email address |
+| `active` | `false` if the account is closed |
+| `email_confirmation` | `true` if the email address has been confirmed |
+| `account_activation` | `true` if the account has been activated |
+| `dns_configuration` | `true` if DNS has been set up |
+| `timezone` | Timezone offset (e.g. `-07:00`) |
+| `gateway` / `ip` | Sending machine name and IP — useful for diagnostics |
+| `parentid` | Non-null if this is a subaccount |
+
+[Try it in the API reference →](../../api-docs/index.html#/user/getUserInfo)
 
 ---
 
@@ -277,6 +326,8 @@ An unknown ISO code returns `404` with `{"message": "invalid_iso_code"}`.
 
 ## Next Steps
 
-- [Create and use consumer keys](../getting-started/README.md)
+- [Send transactional email](../transactional/README.md)
+- [Track deliverability with Analytics](../analytics/README.md)
+- [Manage suppressions](../suppressions/README.md)
 - [Manage subaccounts (agency plans)](../subaccounts/README.md)
 - [Full API reference](../../api-docs/index.html#/)
