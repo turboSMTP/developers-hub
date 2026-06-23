@@ -21,6 +21,8 @@ curl https://pro.api.serversmtp.com/api/v2/user/consumerKeys \
   -H "Authorization: $TURBO_API_KEY"
 ```
 
+Response:
+
 ```json
 {
   "count": 2,
@@ -41,9 +43,33 @@ curl https://pro.api.serversmtp.com/api/v2/user/consumerKeys \
 
 Each entry can also carry `ips` (IP addresses the key is restricted to — empty means no restriction), `permissions` (granted permissions), and `is_legacy`. The `consumerSecret` is **never** included — it is shown only once, at creation.
 
+[Try it in the API reference →](../../api-docs/index.html#/consumerkey/listConsumerKeys)
+
 ### Create
 
-**`POST /user/consumerKeys`** — body `{"label": "..."}`; returns `201` with the `consumerKey` and the one-time-visible `consumerSecret`. Full example in [Getting Started](../getting-started/README.md#create-a-consumer-key).
+**`POST /user/consumerKeys`**
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/user/consumerKeys \
+  -H "Authorization: $TURBO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "label": "production-backend"
+  }'
+```
+
+Response (`201 Created`):
+
+```json
+{
+  "consumerKey": "b914ad238d0e8e8851b81e86ce46ae1d",
+  "consumerSecret": "JOSenWTYopGjhZ1CDvsEbcK9PNUA06Xy"
+}
+```
+
+> **Store the secret now.** The `consumerSecret` is returned only at creation time — listing your consumer keys later returns the key, label, and metadata, but never the secret.
+
+[Try it in the API reference →](../../api-docs/index.html#/consumerkey/createConsumerKey)
 
 ### Delete
 
@@ -54,9 +80,17 @@ curl -X DELETE https://pro.api.serversmtp.com/api/v2/user/consumerKeys/bff5c9436
   -H "Authorization: $TURBO_API_KEY"
 ```
 
-Returns `{"message": "success"}`. An unknown key returns `404` with `{"message": "key_not_found"}`. Deletion is immediate — any integration using the key stops authenticating.
+Response:
 
-[Try it in the API reference →](../../api-docs/index.html#/consumerkey/listConsumerKeys)
+```json
+{
+  "message": "success"
+}
+```
+
+An unknown key returns `404` with `{"message": "key_not_found"}`. Deletion is immediate — any integration using the key stops authenticating.
+
+[Try it in the API reference →](../../api-docs/index.html#/consumerkey/deleteConsumerKey)
 
 ---
 
@@ -75,6 +109,14 @@ curl -X PUT https://pro.api.serversmtp.com/api/v2/change-password \
     "password": "SMkhhf4J686P",
     "confirm_password": "SMkhhf4J686P"
   }'
+```
+
+Response:
+
+```json
+{
+  "message": "success"
+}
 ```
 
 Password rules:
@@ -108,7 +150,22 @@ The email contains a **Reset Password** button and a secret token for the API fl
 
 ### 2. (Optional) Check the token
 
-**`GET /forgot-password?token=<token>`** — returns `{"message": "success"}` if valid, `403` with `token_is_invalid` otherwise. Unlike the other two steps, this check requires authentication (`Authorization` header).
+**`GET /forgot-password?token=<token>`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/forgot-password?token=781d4b44aaf5de86dc0a7e1ca2dc409f \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "message": "success"
+}
+```
+
+An invalid or expired token returns `403` with `token_is_invalid`. Unlike the other two steps, this check requires authentication (`Authorization` header).
 
 ### 3. Set the new password
 
@@ -122,6 +179,14 @@ curl -X PUT https://pro.api.serversmtp.com/api/v2/forgot-password \
     "confirm_password": "SMBBBf4J686P",
     "token": "781d4b44aaf5de86dc0a7e1ca2dc409f"
   }'
+```
+
+Response:
+
+```json
+{
+  "message": "success"
+}
 ```
 
 An invalid or expired token returns `403` with `token_is_invalid`.
@@ -150,6 +215,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/tools/alerts \
   -d '{"email": "alert@example.com", "percentage": 80}'
 ```
 
+Response (`201 Created`):
+
 ```json
 {
   "id": 4117,
@@ -176,7 +243,9 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/billing/buy_emailvalidation_c
   -d '{"amount": 320}'
 ```
 
-`amount` is an **integer amount of money** in your account currency, between **15 and 1800**. The response is not an instant charge — it returns a URL to the billing system where you complete the payment:
+`amount` is an **integer amount of money** in your account currency, between **15 and 1800**. The response is not an instant charge — it returns a URL to the billing system where you complete the payment.
+
+Response:
 
 ```json
 {
@@ -196,7 +265,13 @@ See [Email Validation](../validation/README.md#credits) for how credits are cons
 
 Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](../subaccounts/README.md)). Both endpoints are **public** — no authentication required.
 
-**`GET /meta/countries`** — all countries:
+**`GET /meta/countries`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/meta/countries
+```
+
+Response:
 
 ```json
 [
@@ -209,6 +284,8 @@ Country and state lookups, useful for building address forms (e.g. when creating
 ```bash
 curl https://pro.api.serversmtp.com/api/v2/meta/state/US
 ```
+
+Response:
 
 ```json
 [
@@ -226,4 +303,4 @@ An unknown ISO code returns `404` with `{"message": "invalid_iso_code"}`.
 
 - [Create and use consumer keys](../getting-started/README.md)
 - [Manage subaccounts (agency plans)](../subaccounts/README.md)
-- [Full API reference](../../api-docs/index.html)
+- [Full API reference](../../api-docs/index.html#/)
