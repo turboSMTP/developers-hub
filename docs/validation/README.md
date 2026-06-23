@@ -54,7 +54,10 @@ Response:
 
 Visit the returned `url` to complete payment in the billing system.
 
+`400` errors: `missing_required_parameter_amount`, `amount_should_be_integer`, `amount_should_not_be_less_than_15`, `amount_should_not_be_higher_than_1800`, `can_not_buy_extra_credit_without_active_plan` (an active plan is required).
+
 [Try it in the API reference →](../../api-docs/index.html#/email-validator/getEmailValidationSubscription)
+[Buy credits in the API reference →](../../api-docs/index.html#/billing/buyEmailValidatorCredits)
 
 ---
 

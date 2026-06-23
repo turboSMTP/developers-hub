@@ -91,6 +91,8 @@ Returns `201` with the full subaccount object including its `subaccount_id` and 
 | `policy_agree` | Yes | Must be `true` |
 | `address_1`, `address_2`, `city`, `region`, `country`, `zip_code`, `phone_number`, `company_name`, `site_url` | No | Owner/agency details |
 
+> **Building the address form?** Use the public country/state lookups in [Account → Reference Data](../account/README.md#reference-data) to populate `country` and `region`.
+
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/createSubaccount)
 
 ---

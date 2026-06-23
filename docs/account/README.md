@@ -233,31 +233,7 @@ Response (`201 Created`):
 
 ## Buy Email Validation Credits
 
-**`POST /billing/buy_emailvalidation_credits`**
-
-```bash
-curl -X POST https://pro.api.serversmtp.com/api/v2/billing/buy_emailvalidation_credits \
-  -H "consumerKey: $CONSUMER_KEY" \
-  -H "consumerSecret: $CONSUMER_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{"amount": 320}'
-```
-
-`amount` is an **integer amount of money** in your account currency, between **15 and 1800**. The response is not an instant charge — it returns a URL to the billing system where you complete the payment.
-
-Response:
-
-```json
-{
-  "url": "https://bs.serversmtp.com/index.php/guest/payment_information/form/..."
-}
-```
-
-`400` errors: `missing_required_parameter_amount`, `amount_should_be_integer`, `amount_should_not_be_less_than_15`, `amount_should_not_be_higher_than_1800`, `can_not_buy_extra_credit_without_active_plan` (an active plan is required).
-
-See [Email Validation](../validation/README.md#credits) for how credits are consumed.
-
-[Try it in the API reference →](../../api-docs/index.html#/billing/buyEmailValidatorCredits)
+Top up Email Validation Credits with **`POST /billing/buy_emailvalidation_credits`**. Because credits are consumed by validation, this endpoint is documented in full — including the free-vs-paid credit model and error catalog — under [Email Validation → Credits](../validation/README.md#credits).
 
 ---
 
