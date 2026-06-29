@@ -31,7 +31,7 @@
 | 2.5 | Make repository public | PENDING | 0.5 | Gate: depends on 1.5, 2.1–2.4, 2.6–2.9 (docs in REVIEW; 1.5 DONE) |
 | 2.6 | Write full `analytics` documentation | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
 | 2.7 | Write full `suppressions` documentation | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
-| 2.8 | Write full `account` documentation (consumer keys, alerts, billing, password, meta) | REVIEW | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.8 | Write full `account` documentation (consumer keys, alerts, billing, password, meta) | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
 | 2.9 | Write full `subaccounts` documentation | REVIEW | 1 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
 
 ---
