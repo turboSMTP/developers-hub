@@ -215,13 +215,33 @@ An invalid or expired token returns `403` with `token_is_invalid`.
 
 Get an email notification when your plan usage crosses a threshold. Each alert is an `email` + `percentage` (0–100) pair.
 
-| Endpoint | Action |
-|---|---|
-| `GET /tools/alerts` | List alerts (`{count, results}`) |
-| `POST /tools/alerts` | Create — returns `201` with the new alert including its `id` |
-| `GET /tools/alerts/{Id}` | Fetch one alert |
-| `PATCH /tools/alerts/{Id}` | Update email and/or percentage |
-| `DELETE /tools/alerts/{Id}` | Delete — returns `{"message": "success"}` |
+### List
+
+**`GET /tools/alerts`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/tools/alerts \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response:
+
+```json
+{
+  "count": 2,
+  "results": [
+    { "id": 4117, "email": "alert@example.com", "percentage": 50 },
+    { "id": 4118, "email": "alert@example.com", "percentage": 100 }
+  ]
+}
+```
+
+[Try it in the API reference →](../../api-docs/index.html#/alerts/getAlerts)
+
+### Create
+
+**`POST /tools/alerts`**
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/tools/alerts \
@@ -241,9 +261,71 @@ Response (`201 Created`):
 }
 ```
 
-`400` errors: `missing_required_parameter_email`, `missing_required_parameter_percentage`, `percentage_should_be_integer`, `percentage_should_not_be_less_than_0`, `percentage_should_not_be_higher_than_100`. An unknown `Id` returns `404` with `alert_not_found`.
+`400` errors: `missing_required_parameter_email`, `missing_required_parameter_percentage`, `percentage_should_be_integer`, `percentage_should_not_be_less_than_0`, `percentage_should_not_be_higher_than_100`.
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/getAlerts)
+[Try it in the API reference →](../../api-docs/index.html#/alerts/createAlert)
+
+### Get
+
+**`GET /tools/alerts/{Id}`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/tools/alerts/4117 \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response:
+
+```json
+{ "id": 4117, "email": "alert@example.com", "percentage": 80 }
+```
+
+An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
+
+[Try it in the API reference →](../../api-docs/index.html#/alerts/getAlert)
+
+### Update
+
+**`PATCH /tools/alerts/{Id}`**
+
+```bash
+curl -X PATCH https://pro.api.serversmtp.com/api/v2/tools/alerts/4117 \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
+  -H "Content-Type: application/json" \
+  -d '{"percentage": 90}'
+```
+
+Response:
+
+```json
+{ "id": 4117, "email": "alert@example.com", "percentage": 90 }
+```
+
+Both `email` and `percentage` are optional — send only the fields you want to change. `400` errors: `percentage_should_be_integer`, `percentage_should_not_be_less_than_0`, `percentage_should_not_be_higher_than_100`. An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
+
+[Try it in the API reference →](../../api-docs/index.html#/alerts/updateAlert)
+
+### Delete
+
+**`DELETE /tools/alerts/{Id}`**
+
+```bash
+curl -X DELETE https://pro.api.serversmtp.com/api/v2/tools/alerts/4117 \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET"
+```
+
+Response:
+
+```json
+{ "message": "success" }
+```
+
+An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
+
+[Try it in the API reference →](../../api-docs/index.html#/alerts/deleteAlert)
 
 ---
 
