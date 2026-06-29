@@ -30,18 +30,24 @@ Response:
     {
       "consumerKey": "bff5c9436b6da9fe3c1d3379e7dc0f21",
       "label": "QA",
-      "creation_time": "2023-10-12 11:58:11"
+      "creation_time": "2023-10-12 11:58:11",
+      "ips": [],
+      "is_legacy": false,
+      "permissions": ["SEND_SMTP", "SEND_API", "APIS"]
     },
     {
       "consumerKey": "1027d089da21adfc7f08dc14303571f3",
       "label": "Staging",
-      "creation_time": "2023-08-02 17:18:00"
+      "creation_time": "2023-08-02 17:18:00",
+      "ips": ["192.168.1.1"],
+      "is_legacy": false,
+      "permissions": ["SEND_SMTP", "SEND_API", "APIS"]
     }
   ]
 }
 ```
 
-Each entry can also carry `ips` (IP addresses the key is restricted to — empty means no restriction), `permissions` (granted permissions), and `is_legacy`. The `consumerSecret` is **never** included — it is shown only once, at creation.
+Each entry includes `ips` (IP addresses the key is restricted to — empty array means no restriction), `permissions` (list of granted permissions, e.g. `SEND_SMTP`, `SEND_API`, `APIS`), and `is_legacy` (true for older credential formats). The `consumerSecret` is **never** included — it is shown only once, at creation.
 
 [Try it in the API reference →](../../api-docs/index.html#/consumerkey/listConsumerKeys)
 
