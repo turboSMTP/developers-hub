@@ -60,9 +60,19 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/user/consumerKeys \
   -H "Authorization: $TURBO_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "label": "production-backend"
+    "label": "production-backend",
+    "permissions": ["SEND_SMTP", "SEND_API", "APIS"],
+    "ips": ["192.168.1.1"]
   }'
 ```
+
+Request body fields:
+
+| Field | Required | Description |
+|---|---|---|
+| `label` | No | Human-readable name for the key |
+| `permissions` | **Yes** | Permissions to grant. At least one of: `SEND_SMTP`, `SEND_API`, `APIS` |
+| `ips` | No | IP addresses allowed to use this key — omit for no restriction |
 
 Response (`201 Created`):
 
