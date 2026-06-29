@@ -110,6 +110,20 @@ An unknown key returns `404` with `{"message": "key_not_found"}`. Deletion is im
 
 ---
 
+## Consumer Key Permissions
+
+When creating a consumer key, grant one or more of these permissions:
+
+| Permission | Grants |
+|---|---|
+| `SEND_SMTP` | Send email via SMTP |
+| `SEND_API` | Send email via REST API (`POST /mail/send`) |
+| `APIS` | Access all other REST endpoints (analytics, suppressions, account management, and more) |
+
+Grant only the permissions your integration needs. A key used only for sending does not need `APIS`.
+
+---
+
 ## Change Password
 
 **`PUT /change-password`**
@@ -370,6 +384,34 @@ Response:
 An unknown ISO code returns `404` with `{"message": "invalid_iso_code"}`.
 
 [Try it in the API reference →](../../api-docs/index.html#/meta/getCountries)
+
+---
+
+## Recipe: Set Up a Secure Consumer Key
+
+Follow the principle of least privilege when creating keys for production integrations:
+
+1. **Create a key with only the permissions needed** — if your integration only sends via SMTP, grant `SEND_SMTP` only; if it sends via REST API, grant `SEND_API` only; grant `APIS` only if you need to query analytics, manage suppressions, or access other endpoints.
+
+2. **Restrict by IP** — include your sending server's IPv4 address in the `ips` array. This limits damage if the key is compromised.
+
+3. **Store the secret securely** — the `consumerSecret` is returned only at creation time. Store it in your secrets manager (e.g., environment variables, HashiCorp Vault, AWS Secrets Manager), never in version control.
+
+4. **Monitor usage** — set up alerts (see Recipe: Monitor Account Quota below) to detect unusual activity.
+
+---
+
+## Recipe: Monitor Account Quota and Usage
+
+Set up alerts at key thresholds to track sending quota consumption and catch issues early:
+
+1. **Create an alert at 50% usage** — gives you time to plan for quota increase.
+
+2. **Create an alert at 80% usage** — warning before you hit your limit.
+
+3. **Create an alert at 100% usage** — immediate notification if you're out of quota.
+
+4. **Review your consumer keys periodically** — list all active keys and verify they're still in use. Rotate (delete old, create new) keys that are no longer active or whose `creation_time` is significantly older than your integration lifecycle.
 
 ---
 
