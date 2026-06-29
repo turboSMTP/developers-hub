@@ -6,55 +6,6 @@ Manage the credentials and settings of your TurboSMTP account: account details, 
 
 ---
 
-## Account Details
-
-**`GET /user`**
-
-```bash
-curl https://pro.api.serversmtp.com/api/v2/user \
-  -H "Authorization: $TURBO_API_KEY"
-```
-
-Response:
-
-```json
-{
-  "id": 20823223,
-  "email": "developer@yourdomain.com",
-  "firstName": "John",
-  "lastName": "Doe",
-  "companyName": "Refreshing Soda Inc.",
-  "active": true,
-  "email_confirmation": true,
-  "account_activation": true,
-  "dns_configuration": true,
-  "timezone": "-07:00",
-  "lang": "en",
-  "gateway": "q1",
-  "ip": 3354675819,
-  "datecreated": "2022-04-20 11:24:12",
-  "parentid": null
-}
-```
-
-Key fields:
-
-| Field | Description |
-|---|---|
-| `id` | Account identifier |
-| `email` | Account email address |
-| `active` | `false` if the account is closed |
-| `email_confirmation` | `true` if the email address has been confirmed |
-| `account_activation` | `true` if the account has been activated |
-| `dns_configuration` | `true` if DNS has been set up |
-| `timezone` | Timezone offset (e.g. `-07:00`) |
-| `gateway` / `ip` | Sending machine name and IP — useful for diagnostics |
-| `parentid` | Non-null if this is a subaccount |
-
-[Try it in the API reference →](../../api-docs/index.html#/user/getUserInfo)
-
----
-
 ## Consumer Keys
 
 Consumer keys are permanent API credentials — see [Getting Started](../getting-started/README.md#create-a-consumer-key) for why they're recommended in production.
