@@ -450,6 +450,7 @@ Response:
 
 ```json
 {
+  "logoUrl": "https://turbosmtp.s3.amazonaws.com/logo/default_logo.svg",
   "agency_name": "My Agency Inc.",
   "agency_website": "https://www.mywebsite.com",
   "agency_footer": "My signature goes here."
@@ -475,6 +476,7 @@ Response:
 
 ```json
 {
+  "logoUrl": "https://turbosmtp.s3.amazonaws.com/logo/default_logo.svg",
   "agency_name": "My Agency Inc.",
   "agency_website": "https://www.mywebsite.com",
   "agency_footer": "My signature goes here."
