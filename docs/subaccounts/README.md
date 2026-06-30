@@ -1,4 +1,4 @@
-# Subaccounts
+# Subaccounts Management
 
 Manage client accounts under your own — create subaccounts, set their sending quotas, activate or deactivate them, authorize as them, and brand the experience with your agency identity.
 
@@ -35,24 +35,26 @@ Response:
 
 ```json
 {
-  "count": 2,
+  "count": 1,
   "results": [
     {
       "active": true,
-      "email": "subaccount-1@yourdomain.om",
+      "email": "subaccount-1@yourdomain.com",
       "subaccount_id": 19302132,
+      "parent_id": 22190623,
       "ip": "199.244.75.250",
       "last_used": "2022-11-20 22:44:07",
       "limit": 16,
       "plan_expiration": "2023-01-17 00:00:00",
       "sent": 2,
-      "plan_limit_interval": "Monthly"
+      "plan_limit_interval": "Monthly",
+      "expired": false
     }
   ]
 }
 ```
 
-`limit` is the allowed send volume per `plan_limit_interval` (`Daily`, `Monthly`, or `Yearly` — always following the main account's interval); `sent` is usage in the current period; `-1` means unlimited.
+`limit` is the allowed send volume per `plan_limit_interval` (`Daily`, `Monthly`, or `Yearly` — always following the main account's interval); `sent` is usage in the current period; `-1` means unlimited. `expired` indicates whether the plan expiration date is overdue.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/getSubaccounts)
 
