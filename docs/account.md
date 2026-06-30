@@ -49,7 +49,7 @@ Response:
 
 Each entry includes `ips` (IP addresses the key is restricted to — empty array means no restriction), `permissions` (list of granted permissions, e.g. `SEND_SMTP`, `SEND_API`, `APIS`), and `is_legacy` (true for older credential formats). The `consumerSecret` is **never** included — it is shown only once, at creation.
 
-[Try it in the API reference →](../../api-docs/index.html#/consumerkey/listConsumerKeys)
+[Try it in the API reference →](../api-docs/index.html#/consumerkey/listConsumerKeys)
 
 ### Create
 
@@ -85,7 +85,7 @@ Response (`201 Created`):
 
 > **Store the secret now.** The `consumerSecret` is returned only at creation time — listing your consumer keys later returns the key, label, and metadata, but never the secret.
 
-[Try it in the API reference →](../../api-docs/index.html#/consumerkey/createConsumerKey)
+[Try it in the API reference →](../api-docs/index.html#/consumerkey/createConsumerKey)
 
 ### Delete
 
@@ -106,7 +106,7 @@ Response:
 
 An unknown key returns `404` with `{"message": "key_not_found"}`. Deletion is immediate — any integration using the key stops authenticating.
 
-[Try it in the API reference →](../../api-docs/index.html#/consumerkey/deleteConsumerKey)
+[Try it in the API reference →](../api-docs/index.html#/consumerkey/deleteConsumerKey)
 
 ---
 
@@ -158,7 +158,7 @@ Password rules:
 
 Returns `{"message": "success"}`. A wrong `current_password` returns `403` with `password_is_invalid`. The `400` catalog covers each rule violation (`password_length_should_not_be_less_than_10_characters`, `password_should_contain_at_least_one_uppercase_character`, `password_should_contain_at_least_one_lowercase_character`, `password_should_contain_at_least_one_digit`, `password_should_equal_confirm_password`, `new_password_should_not_equal_current_password`, plus missing-field variants).
 
-[Try it in the API reference →](../../api-docs/index.html#/authentication/ChangePassword)
+[Try it in the API reference →](../api-docs/index.html#/authentication/ChangePassword)
 
 ---
 
@@ -221,7 +221,7 @@ Response:
 
 An invalid or expired token returns `403` with `token_is_invalid`.
 
-[Try it in the API reference →](../../api-docs/index.html#/authentication/SendSecretTokenResetPassword)
+[Try it in the API reference →](../api-docs/index.html#/authentication/SendSecretTokenResetPassword)
 
 ---
 
@@ -251,7 +251,7 @@ Response:
 }
 ```
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/getAlerts)
+[Try it in the API reference →](../api-docs/index.html#/alerts/getAlerts)
 
 ### Create
 
@@ -277,7 +277,7 @@ Response (`201 Created`):
 
 `400` errors: `missing_required_parameter_email`, `missing_required_parameter_percentage`, `percentage_should_be_integer`, `percentage_should_not_be_less_than_0`, `percentage_should_not_be_higher_than_100`.
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/createAlert)
+[Try it in the API reference →](../api-docs/index.html#/alerts/createAlert)
 
 ### Get
 
@@ -297,7 +297,7 @@ Response:
 
 An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/getAlert)
+[Try it in the API reference →](../api-docs/index.html#/alerts/getAlert)
 
 ### Update
 
@@ -319,7 +319,7 @@ Response:
 
 Both `email` and `percentage` are optional — send only the fields you want to change. `400` errors: `percentage_should_be_integer`, `percentage_should_not_be_less_than_0`, `percentage_should_not_be_higher_than_100`. An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/updateAlert)
+[Try it in the API reference →](../api-docs/index.html#/alerts/updateAlert)
 
 ### Delete
 
@@ -339,7 +339,7 @@ Response:
 
 An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
 
-[Try it in the API reference →](../../api-docs/index.html#/alerts/deleteAlert)
+[Try it in the API reference →](../api-docs/index.html#/alerts/deleteAlert)
 
 ---
 
@@ -383,7 +383,7 @@ Response:
 
 An unknown ISO code returns `404` with `{"message": "invalid_iso_code"}`.
 
-[Try it in the API reference →](../../api-docs/index.html#/meta/getCountries)
+[Try it in the API reference →](../api-docs/index.html#/meta/getCountries)
 
 ---
 
@@ -421,4 +421,4 @@ Set up alerts at key thresholds to track sending quota consumption and catch iss
 - [Track deliverability with Analytics](analytics.md)
 - [Manage suppressions](suppressions.md)
 - [Manage subaccounts (agency plans)](subaccounts.md)
-- [Full API reference](../../api-docs/index.html#/)
+- [Full API reference](../api-docs/index.html#/)
