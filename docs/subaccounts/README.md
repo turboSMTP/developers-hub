@@ -385,12 +385,6 @@ Use the returned `auth` value as the `Authorization` header — subsequent calls
 
 ### Logo
 
-| Endpoint | Action |
-|---|---|
-| `GET /subaccounts/logo` | Returns `{"logoUrl": "..."}` |
-| `POST /subaccounts/logo` | Multipart upload (`file`) — **PNG or JPEG only** (`400` `file_type_should_be_png_or_jpeg`) |
-| `DELETE /subaccounts/logo` | Removes the logo (`404` `logo_not_found` if none) |
-
 **`GET /subaccounts/logo`**
 
 ```bash
