@@ -110,14 +110,23 @@ Response (`201 Created`):
 
 ```json
 {
-  "subaccount_id": 19302132,
-  "parent_id": 12345,
+  "active": true,
   "email": "client@clientdomain.com",
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "185.228.36.19",
   "first_name": "Andrea",
   "last_name": "Willems",
-  "active": true,
-  "ip": "185.228.36.19",
-  "company_name": "Refreshing Soda Inc."
+  "address_1": "",
+  "address_2": "",
+  "city": "",
+  "company_name": "Refreshing Soda Inc.",
+  "country": "",
+  "region": "",
+  "zip_code": "",
+  "phone_number": "",
+  "policy_agree": true,
+  "site_url": ""
 }
 ```
 
@@ -159,15 +168,21 @@ Response:
 {
   "active": true,
   "email": "subaccount-1@yourdomain.com",
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "199.244.75.250",
   "first_name": "Andrea",
   "last_name": "Willems",
-  "subaccount_id": 19302132,
-  "ip": "199.244.75.250",
-  "limit": 16,
-  "plan_expiration": "2023-01-17 00:00:00",
-  "sent": 2,
-  "plan_limit_interval": "Monthly",
-  "company_name": "Refreshing Soda Inc."
+  "address_1": "",
+  "address_2": "",
+  "city": "",
+  "company_name": "Refreshing Soda Inc.",
+  "country": "",
+  "region": "",
+  "zip_code": "",
+  "phone_number": "",
+  "policy_agree": true,
+  "site_url": ""
 }
 ```
 
@@ -197,15 +212,21 @@ Response:
 {
   "active": true,
   "email": "subaccount-1@yourdomain.com",
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "199.244.75.250",
   "first_name": "Andreas",
   "last_name": "Willems",
-  "subaccount_id": 19302132,
-  "ip": "199.244.75.250",
-  "limit": 16,
-  "plan_expiration": "2023-01-17 00:00:00",
-  "sent": 2,
-  "plan_limit_interval": "Monthly",
-  "company_name": "Refreshing Soda Inc."
+  "address_1": "",
+  "address_2": "",
+  "city": "",
+  "company_name": "Refreshing Soda Inc.",
+  "country": "",
+  "region": "",
+  "zip_code": "",
+  "phone_number": "",
+  "policy_agree": true,
+  "site_url": ""
 }
 ```
 
