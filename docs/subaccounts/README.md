@@ -147,7 +147,27 @@ Use the public country/state lookups in [Account → Reference Data](../account/
 
 ## Limitations
 
-The API currently provides **no endpoint to delete a subaccount**. Deactivate it instead (`POST /subaccounts/{Id}/updatesubaccountstatus` with `{"active": false}`) and set its limit to `0` if you need to fully retire it. A delete capability is tracked for a future API release.
+The API currently provides **no endpoint to delete a subaccount**. To fully retire one, deactivate it and set its sending limit to `0`:
+
+**1. Deactivate the subaccount:**
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/19302132/updatesubaccountstatus \
+  -H "Authorization: $TURBO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": false}'
+```
+
+**2. Set limit to `0` to prevent any sending:**
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/19302132/updatesubaccountsmtplimit \
+  -H "Authorization: $TURBO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"limit": 0}'
+```
+
+A delete endpoint capability is tracked for a future API release.
 
 ---
 
