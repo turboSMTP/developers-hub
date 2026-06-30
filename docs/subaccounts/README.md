@@ -1,6 +1,6 @@
 # Subaccounts
 
-Manage client accounts under your own — create subaccounts, set their sending quotas, activate or deactivate them, log in on their behalf, and brand the experience with your agency identity.
+Manage client accounts under your own — create subaccounts, set their sending quotas, activate or deactivate them, authorize as them, and brand the experience with your agency identity.
 
 > **Plan requirement:** subaccount endpoints are an **agency-plan feature**. Without an eligible plan they return `403` with `{"message": "feature_not_available_for_active_plan"}`.
 >
@@ -31,7 +31,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/subaccounts/list \
 | `order_by` | `email` (default) or `last_used` |
 | `ordertype` | `asc` or `desc` |
 
-### Response
+Response:
 
 ```json
 {
@@ -58,9 +58,33 @@ curl -G https://pro.api.serversmtp.com/api/v2/subaccounts/list \
 
 ---
 
-## Create a Subaccount
+## Check Email Availability
 
-Before creating, you can check whether an email address is already taken anywhere on TurboSMTP with **`GET /subaccounts/email-exists?Email=<address>`** — returns `{"result": true}` if it exists (note the capitalized `Email` parameter).
+**`GET /subaccounts/email-exists`**
+
+Before creating a subaccount, you can check whether an email address is already taken anywhere on TurboSMTP with this endpoint — it returns `{"result": true}` if it exists.
+
+```bash
+curl -G https://pro.api.serversmtp.com/api/v2/subaccounts/email-exists \
+  -H "Authorization: $TURBO_API_KEY" \
+  --data-urlencode "Email=client@clientdomain.com"
+```
+
+Response:
+
+```json
+{
+  "result": true
+}
+```
+
+Note: The parameter name `Email` is capitalized.
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/checkEmailExists)
+
+---
+
+## Create a Subaccount
 
 **`POST /subaccounts`**
 
@@ -80,7 +104,20 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts \
   }'
 ```
 
-Returns `201` with the full subaccount object including its `subaccount_id` and `parent_id`.
+Response (`201 Created`):
+
+```json
+{
+  "subaccount_id": 19302132,
+  "parent_id": 12345,
+  "email": "client@clientdomain.com",
+  "first_name": "Andrea",
+  "last_name": "Willems",
+  "active": true,
+  "ip": "185.228.36.19",
+  "company_name": "Refreshing Soda Inc."
+}
+```
 
 | Field | Required | Notes |
 |---|---|---|
@@ -91,24 +128,94 @@ Returns `201` with the full subaccount object including its `subaccount_id` and 
 | `policy_agree` | Yes | Must be `true` |
 | `address_1`, `address_2`, `city`, `region`, `country`, `zip_code`, `phone_number`, `company_name`, `site_url` | No | Owner/agency details |
 
-> **Building the address form?** Use the public country/state lookups in [Account → Reference Data](../account/README.md#reference-data) to populate `country` and `region`.
+Use the public country/state lookups in [Account → Reference Data](../account/README.md#reference-data) to populate `country` and `region`.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/createSubaccount)
 
 ---
 
-## Get and Update Details
+## Limitations
 
-- **`GET /subaccounts/{Id}`** — full subaccount object. Unknown IDs return `404` with `subaccount_not_found` (as do all `{Id}` endpoints on this page).
-- **`PATCH /subaccounts/{Id}`** — update the same fields as creation (email excluded); `first_name`, `last_name`, `ip`, and `policy_agree` are required in the body, and the same password/IP validations apply when those fields are sent.
+The API currently provides **no endpoint to delete a subaccount**. Deactivate it instead (`POST /subaccounts/{Id}/updatesubaccountstatus` with `{"active": false}`) and set its limit to `0` if you need to fully retire it. A delete capability is tracked for a future API release.
+
+---
+
+## Subaccount Details
+
+### Get
+
+**`GET /subaccounts/{Id}`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/subaccounts/19302132 \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "active": true,
+  "email": "subaccount-1@yourdomain.com",
+  "first_name": "Andrea",
+  "last_name": "Willems",
+  "subaccount_id": 19302132,
+  "ip": "199.244.75.250",
+  "limit": 16,
+  "plan_expiration": "2023-01-17 00:00:00",
+  "sent": 2,
+  "plan_limit_interval": "Monthly",
+  "company_name": "Refreshing Soda Inc."
+}
+```
+
+Unknown IDs return `404` with `subaccount_not_found`.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/getSubaccountDetails)
+
+### Update
+
+**`PATCH /subaccounts/{Id}`**
+
+```bash
+curl -X PATCH https://pro.api.serversmtp.com/api/v2/subaccounts/19302132 \
+  -H "Authorization: $TURBO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "first_name": "Andreas",
+    "last_name": "Willems",
+    "ip": "199.244.75.250",
+    "policy_agree": true
+  }'
+```
+
+Response:
+
+```json
+{
+  "active": true,
+  "email": "subaccount-1@yourdomain.com",
+  "first_name": "Andreas",
+  "last_name": "Willems",
+  "subaccount_id": 19302132,
+  "ip": "199.244.75.250",
+  "limit": 16,
+  "plan_expiration": "2023-01-17 00:00:00",
+  "sent": 2,
+  "plan_limit_interval": "Monthly",
+  "company_name": "Refreshing Soda Inc."
+}
+```
+
+Update the same fields as creation (email excluded); `first_name`, `last_name`, `ip`, and `policy_agree` are required in the body. The same password and IP validations apply when those fields are sent.
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/updateSubaccount)
 
 ---
 
 ## Quotas and Status
 
-### Sending limit
+### Sending Limit
 
 **`POST /subaccounts/{Id}/updatesubaccountsmtplimit`**
 
@@ -119,23 +226,73 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/19302132/updatesu
   -d '{"limit": 2000}'
 ```
 
+Response:
+
+```json
+{
+  "message": "success"
+}
+```
+
 `limit` is the number of emails per the plan's interval. **`-1` means no limit.** It cannot exceed your parent account's limit (`400` `limit_should_not_be_higher_than_parent_account_limit`) or be lower than `-1`.
-
-### Active status
-
-**`POST /subaccounts/{Id}/updatesubaccountstatus`** with `{"active": true|false}`. Users cannot log in to an inactive subaccount; note that sending also requires the subaccount's subscription to be active.
-
-### Current plan
-
-**`GET /subaccounts/{Id}/active-plan`** — the subaccount's limit, usage (`sent`), `plan_expiration`, `plan_limit_interval`, and `expired` flag.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/UpdateSubaccountSMTPLimit)
 
+### Active Status
+
+**`POST /subaccounts/{Id}/updatesubaccountstatus`**
+
+```bash
+curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/19302132/updatesubaccountstatus \
+  -H "Authorization: $TURBO_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"active": false}'
+```
+
+Response:
+
+```json
+{
+  "message": "success"
+}
+```
+
+Users cannot log in to an inactive subaccount; note that sending also requires the subaccount's subscription to be active.
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/UpdateSubaccountStatus)
+
+### Current Plan
+
+**`GET /subaccounts/{Id}/active-plan`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/subaccounts/19302132/active-plan \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "limit": 16,
+  "sent": 2,
+  "plan_expiration": "2023-01-17 00:00:00",
+  "plan_limit_interval": "Monthly",
+  "expired": false
+}
+```
+
+Returns the subaccount's limit, usage (`sent`), `plan_expiration`, `plan_limit_interval`, and `expired` flag.
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/CheckPlan)
+
 ---
 
-## Log In as a Subaccount
+## Authorize as a Subaccount
 
-**`POST /subaccounts/authorize`** — obtain an API key that acts as the subaccount, for support or management tasks:
+**`POST /subaccounts/authorize`**
+
+Obtain an API key that acts as the subaccount, for support or management tasks:
 
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/authorize \
@@ -143,6 +300,8 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/authorize \
   -H "Content-Type: application/json" \
   -d '{"email": "client@clientdomain.com"}'
 ```
+
+Response:
 
 ```json
 {
@@ -166,21 +325,80 @@ Use the returned `auth` value as the `Authorization` header — subsequent calls
 | `POST /subaccounts/logo` | Multipart upload (`file`) — **PNG or JPEG only** (`400` `file_type_should_be_png_or_jpeg`) |
 | `DELETE /subaccounts/logo` | Removes the logo (`404` `logo_not_found` if none) |
 
+**`GET /subaccounts/logo`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/subaccounts/logo \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "logoUrl": "https://..."
+}
+```
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/getAgencyLogo)
+
+**`POST /subaccounts/logo`**
+
 ```bash
 curl -X POST https://pro.api.serversmtp.com/api/v2/subaccounts/logo \
   -H "Authorization: $TURBO_API_KEY" \
   -F "file=@agency-logo.png"
 ```
 
-### Agency details
+Response (`201 Created`):
 
-**`GET /subaccounts/agency`** / **`PATCH /subaccounts/agency`** — agency identity shown to subaccounts:
+```json
+{
+  "logoUrl": "https://..."
+}
+```
 
-| Field | Max length |
-|---|---|
-| `agency_name` | 128 |
-| `agency_website` | 128 |
-| `agency_footer` | 2048 |
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/uploadAgencyLogo)
+
+**`DELETE /subaccounts/logo`**
+
+```bash
+curl -X DELETE https://pro.api.serversmtp.com/api/v2/subaccounts/logo \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "message": "success"
+}
+```
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/deleteAgencyLogo)
+
+### Agency Details
+
+**`GET /subaccounts/agency`**
+
+```bash
+curl https://pro.api.serversmtp.com/api/v2/subaccounts/agency \
+  -H "Authorization: $TURBO_API_KEY"
+```
+
+Response:
+
+```json
+{
+  "agency_name": "My Agency Inc.",
+  "agency_website": "https://www.mywebsite.com",
+  "agency_footer": "My signature goes here."
+}
+```
+
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/getAgencySettings)
+
+**`PATCH /subaccounts/agency`**
 
 ```bash
 curl -X PATCH https://pro.api.serversmtp.com/api/v2/subaccounts/agency \
@@ -193,13 +411,23 @@ curl -X PATCH https://pro.api.serversmtp.com/api/v2/subaccounts/agency \
   }'
 ```
 
-[Try it in the API reference →](../../api-docs/index.html#/subaccounts/getAgencySettings)
+Response:
 
----
+```json
+{
+  "agency_name": "My Agency Inc.",
+  "agency_website": "https://www.mywebsite.com",
+  "agency_footer": "My signature goes here."
+}
+```
 
-## Known Limitation: No Delete Endpoint
+| Field | Max length |
+|---|---|
+| `agency_name` | 128 |
+| `agency_website` | 128 |
+| `agency_footer` | 2048 |
 
-The API currently provides **no endpoint to delete a subaccount**. Deactivate it instead (`POST /subaccounts/{Id}/updatesubaccountstatus` with `{"active": false}`) and set its limit to `0` if you need to fully retire it. A delete capability is tracked for a future API release.
+[Try it in the API reference →](../../api-docs/index.html#/subaccounts/updateAgencySettings)
 
 ---
 
@@ -207,4 +435,4 @@ The API currently provides **no endpoint to delete a subaccount**. Deactivate it
 
 - [Account management (consumer keys, alerts)](../account/README.md)
 - [Getting started with authentication](../getting-started/README.md)
-- [Full API reference](../../api-docs/index.html#/subaccounts/getSubaccounts)
+- [Full API reference →](../../api-docs/index.html)
