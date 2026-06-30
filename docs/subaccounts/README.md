@@ -490,6 +490,22 @@ Response:
 
 ---
 
+## Recipe: Onboard a Client Subaccount End to End
+
+Walk through the full lifecycle of a client subaccount — from checking availability to monitoring usage — in a single, repeatable flow:
+
+1. **Verify the email is not already registered** — call `GET /subaccounts/email-exists?Email=<address>` before creating; a `{"result": true}` means the address is taken anywhere on TurboSMTP and the creation will fail.
+
+2. **Create the subaccount with required fields only** — call `POST /subaccounts` with `email`, `first_name`, `last_name`, `password`, `ip`, and `policy_agree`; use an IP already associated with your parent account (`ip_not_associated_to_user_account` is the most common creation failure).
+
+3. **Set a sending quota that matches the client's tier** — call `POST /subaccounts/{Id}/updatesubaccountsmtplimit` immediately after creation; avoid leaving the limit at the inherited default — set `-1` only when you explicitly want unlimited sending, and never higher than your parent account's own limit.
+
+4. **Authorize as the subaccount to verify the setup** — call `POST /subaccounts/authorize` with the subaccount email to obtain a scoped API key; use it to confirm the client sees the correct plan, quota, and agency branding before distributing credentials (see [Agency Branding](#agency-branding) to configure your logo and identity first).
+
+5. **Poll active-plan to track usage over time** — call `GET /subaccounts/{Id}/active-plan` regularly to monitor `sent` vs `limit` and watch the `expired` flag; combine with parent-account usage alerts (see [Account → Usage Alerts](../account/README.md#usage-alerts)) to catch quota exhaustion before it affects delivery.
+
+---
+
 ## Next Steps
 
 - [Account management (consumer keys, alerts)](../account/README.md)
