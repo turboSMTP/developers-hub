@@ -273,7 +273,16 @@ Response:
 
 ```json
 {
-  "message": "success"
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "199.244.75.250",
+  "active": true,
+  "limit": 2000,
+  "sent": 0,
+  "last_used": null,
+  "plan_expiration": "2023-01-17 00:00:00",
+  "plan_limit_interval": "Monthly",
+  "expired": false
 }
 ```
 
@@ -296,7 +305,16 @@ Response:
 
 ```json
 {
-  "message": "success"
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "199.244.75.250",
+  "active": false,
+  "limit": 2000,
+  "sent": 0,
+  "last_used": null,
+  "plan_expiration": "2023-01-17 00:00:00",
+  "plan_limit_interval": "Monthly",
+  "expired": false
 }
 ```
 
@@ -317,15 +335,20 @@ Response:
 
 ```json
 {
+  "subaccount_id": 19302132,
+  "parent_id": 22190623,
+  "ip": "199.244.75.250",
+  "active": true,
   "limit": 16,
   "sent": 2,
+  "last_used": null,
   "plan_expiration": "2023-01-17 00:00:00",
   "plan_limit_interval": "Monthly",
   "expired": false
 }
 ```
 
-Returns the subaccount's limit, usage (`sent`), `plan_expiration`, `plan_limit_interval`, and `expired` flag.
+Returns the subaccount's ID, parent ID, IP address, active status, limit, usage (`sent`), last used timestamp, plan expiration, plan interval, and expired flag.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/CheckPlan)
 
