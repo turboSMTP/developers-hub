@@ -100,5 +100,5 @@ The agent translates this into sequential `fetch_delivery_metrics` → `validate
 ## Related
 
 - [Agent Skills](agent-skills.md) — Domain expertise packages for AI agents
-- [Email Validation](../docs/validation/README.md)
-- [Transactional Email](../docs/transactional/README.md)
+- [Email Validation](../docs/validation.md)
+- [Transactional Email](../docs/transactional.md)

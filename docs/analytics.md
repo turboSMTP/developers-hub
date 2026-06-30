@@ -2,7 +2,7 @@
 
 Look up individual messages and their delivery and engagement lifecycle — queued, delivered, opened, clicked, bounced, reported as spam — for everything you send through TurboSMTP. These endpoints return per-message records, not pre-computed totals; any aggregate figures you report are derived from these records.
 
-> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](../getting-started/README.md).
+> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 >
 > Analytics lives on the **main host** `https://pro.api.serversmtp.com/api/v2` — not on the send host.
 
@@ -79,7 +79,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
 
 | Field | Description |
 |---|---|
-| `id` | Message ID (64-bit integer — same precision caveat as `mid` from [`/mail/send`](../transactional/README.md)) |
+| `id` | Message ID (64-bit integer — same precision caveat as `mid` from [`/mail/send`](transactional.md)) |
 | `send_time` | When the message was sent, `YYYY-MM-DD HH:MM:SS` |
 | `status` | Current [message status](#message-statuses) |
 | `domain` / `recipient_domain` | Domain part of the sender / recipient address |
@@ -210,6 +210,6 @@ TurboSMTP aggregates these statuses into the groups you see in the [TurboSMTP We
 
 ## Next Steps
 
-- [Receive these events in real time via webhooks](../webhooks/README.md)
-- [Handle bounces with Suppressions](../suppressions/README.md)
+- [Receive these events in real time via webhooks](webhooks.md)
+- [Handle bounces with Suppressions](suppressions.md)
 - [Full API reference](../../api-docs/index.html#/analytics/getAnalyticsData)

@@ -2,7 +2,7 @@
 
 A suppression is an address TurboSMTP will not deliver to — because it bounced, complained, unsubscribed, failed validation, or was blocked manually. Suppressions protect your sender reputation; this API lets you query, import, export, and delete them.
 
-> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](../getting-started/README.md).
+> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 
 ---
 
@@ -36,7 +36,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
 | `ordertype` | No | `asc` or `desc` (default `desc`) |
 | `tz` | No | Timezone offset, e.g. `-07:00` |
 
-> **Careful:** `filter_by` here selects suppression **sources**. On the [Analytics](../analytics/README.md) endpoint the same parameter name selects which *fields* the text filter applies to — they are not interchangeable.
+> **Careful:** `filter_by` here selects suppression **sources**. On the [Analytics](analytics.md) endpoint the same parameter name selects which *fields* the text filter applies to — they are not interchangeable.
 
 ### Response
 
@@ -290,7 +290,7 @@ Each suppression has these fields:
 | `bounce` | Delivery permanently failed (hard bounce) |
 | `spam` | Recipient reported the message as spam |
 | `unsubscribe` | Recipient unsubscribed |
-| `validation_failed` | Address failed [email validation](../validation/README.md) |
+| `validation_failed` | Address failed [email validation](validation.md) |
 
 ---
 
@@ -298,15 +298,15 @@ Each suppression has these fields:
 
 Every bounce, spam complaint, or invalid send damages your sender reputation. ISPs track this closely; a poor score lands your mail in spam or gets you blacklisted. Suppressions prevent sending to addresses you know will fail.
 
-1. **After sending a campaign:** Query [Analytics](../analytics/README.md) for bounces and complaints from the past 30 days.
+1. **After sending a campaign:** Query [Analytics](analytics.md) for bounces and complaints from the past 30 days.
 2. **Import bounced/complained addresses:** Use the [Add Suppressions](#add-suppressions) endpoint to bulk import addresses with reason `bounced` or `complained`.
-3. **Validate new lists:** Run addresses through [Email Validator](../validation/README.md) and manually suppress any `invalid`, `spamtrap`, or `abuse` before sending.
+3. **Validate new lists:** Run addresses through [Email Validator](validation.md) and manually suppress any `invalid`, `spamtrap`, or `abuse` before sending.
 4. **Monitor weekly:** [Export your suppressions to CSV](#export-to-csv) and review for patterns (e.g., spike from a specific domain).
 
 ---
 
 ## Next Steps
 
-- [Validate addresses before sending to avoid bounces](../validation/README.md)
-- [Monitor bounce events in Analytics](../analytics/README.md)
-- [React to bounces in real time with webhooks](../webhooks/README.md)
+- [Validate addresses before sending to avoid bounces](validation.md)
+- [Monitor bounce events in Analytics](analytics.md)
+- [React to bounces in real time with webhooks](webhooks.md)

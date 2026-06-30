@@ -13,7 +13,7 @@ Send triggered transactional emails — order confirmations, password resets, no
 | `https://api.turbo-smtp.com/api/v2` | Production sending |
 | `https://api.eu.turbo-smtp.com/api/v2` | Production sending, European infrastructure |
 
-> **Authentication:** this endpoint accepts **only** the `consumerKey` / `consumerSecret` headers. Sending an `Authorization` header returns `401`. See [Getting Started](../getting-started/README.md) to create a consumer key pair.
+> **Authentication:** this endpoint accepts **only** the `consumerKey` / `consumerSecret` headers. Sending an `Authorization` header returns `401`. See [Getting Started](getting-started.md) to create a consumer key pair.
 
 ---
 
@@ -60,8 +60,8 @@ Success response:
 | `content` | string | No | Plain-text body |
 | `html_content` | string | No | HTML body |
 | `custom_headers` | object | No | Additional email headers as key/value strings (see below) |
-| `reference_id` | string | No | Custom argument echoed back in [Event Webhook](../webhooks/README.md) payloads |
-| `X-campaign-ID` | string | No | Campaign label, surfaced as `x_campaign_id` in [Analytics](../analytics/README.md) |
+| `reference_id` | string | No | Custom argument echoed back in [Event Webhook](webhooks.md) payloads |
+| `X-campaign-ID` | string | No | Campaign label, surfaced as `x_campaign_id` in [Analytics](analytics.md) |
 | `mime_raw` | string | No | A complete raw MIME message — replaces `content` and `html_content` |
 | `attachments` | array | No | Attachment objects (see below) |
 
@@ -166,8 +166,8 @@ Common uses:
 
 Two request fields help you correlate sends with later events:
 
-- **`reference_id`** — a per-message custom argument included in [Event Webhook](../webhooks/README.md) payloads, ideal for joining webhook events back to records in your system.
-- **`X-campaign-ID`** — a campaign label surfaced as `x_campaign_id` in [Analytics](../analytics/README.md) results; search for it with the free-text `filter` parameter.
+- **`reference_id`** — a per-message custom argument included in [Event Webhook](webhooks.md) payloads, ideal for joining webhook events back to records in your system.
+- **`X-campaign-ID`** — a campaign label surfaced as `x_campaign_id` in [Analytics](analytics.md) results; search for it with the free-text `filter` parameter.
 
 ---
 
@@ -199,7 +199,7 @@ Variants: `"Wrong credentials specified"` (invalid key pair) and `"Account for <
 
 ## Next Steps
 
-- [Track delivery, opens, and clicks in Analytics](../analytics/README.md)
-- [Receive real-time events via webhooks](../webhooks/README.md)
-- [Manage bounces and unsubscribes with Suppressions](../suppressions/README.md)
+- [Track delivery, opens, and clicks in Analytics](analytics.md)
+- [Receive real-time events via webhooks](webhooks.md)
+- [Manage bounces and unsubscribes with Suppressions](suppressions.md)
 - [Try it in the API reference](../../api-docs/index.html#/mail/sendEmail)

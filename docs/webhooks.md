@@ -27,7 +27,7 @@ Receive real-time notifications for delivery and engagement events as TurboSMTP 
 | `UNSUBSCRIBED` | Recipient unsubscribed |
 | `REPORT` | Recipient reported the message as spam |
 
-For querying the same lifecycle historically (rather than receiving it as a push), see the [Analytics](../analytics/README.md) status model.
+For querying the same lifecycle historically (rather than receiving it as a push), see the [Analytics](analytics.md) status model.
 
 ---
 
@@ -38,7 +38,7 @@ For querying the same lifecycle historically (rather than receiving it as a push
 | Field | Description |
 |---|---|
 | `id` | Event identifier |
-| `mid` | Message ID — matches the `mid` returned by [`POST /mail/send`](../transactional/README.md) |
+| `mid` | Message ID — matches the `mid` returned by [`POST /mail/send`](transactional.md) |
 | `status` | The event type (see tables above) |
 | `email` | Recipient address |
 | `subject` | Email subject (may be `null`) |
@@ -87,6 +87,6 @@ The official reference does not currently document the following — treat any t
 
 ## Next Steps
 
-- [Send messages with a `reference_id`](../transactional/README.md)
-- [Query delivery history with Analytics](../analytics/README.md)
+- [Send messages with a `reference_id`](transactional.md)
+- [Query delivery history with Analytics](analytics.md)
 - [Official Event Webhook Reference](https://serversmtp.com/event-webhook-reference/)

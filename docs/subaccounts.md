@@ -4,7 +4,7 @@ Manage client accounts under your own — create subaccounts, set their sending 
 
 > **Plan requirement:** subaccount endpoints are an **agency-plan feature**. Without an eligible plan they return `403` with `{"message": "feature_not_available_for_active_plan"}`.
 >
-> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](../getting-started/README.md).
+> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 
 ---
 
@@ -139,7 +139,7 @@ Response (`201 Created`):
 | `policy_agree` | Yes | Must be `true` |
 | `address_1`, `address_2`, `city`, `region`, `country`, `zip_code`, `phone_number`, `company_name`, `site_url` | No | Owner/agency details |
 
-Use the public country/state lookups in [Account → Reference Data](../account/README.md#reference-data) to populate `country` and `region`.
+Use the public country/state lookups in [Account → Reference Data](account.md#reference-data) to populate `country` and `region`.
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/createSubaccount)
 
@@ -375,7 +375,7 @@ Response:
 }
 ```
 
-Use the returned `auth` value as the `Authorization` header — subsequent calls operate in the subaccount's context, exactly like a key from [`POST /authorize`](../getting-started/README.md#get-an-api-key).
+Use the returned `auth` value as the `Authorization` header — subsequent calls operate in the subaccount's context, exactly like a key from [`POST /authorize`](getting-started.md#get-an-api-key).
 
 [Try it in the API reference →](../../api-docs/index.html#/subaccounts/SubaccountAuthenticationLogin)
 
@@ -502,12 +502,12 @@ Walk through the full lifecycle of a client subaccount — from checking availab
 
 4. **Authorize as the subaccount to verify the setup** — call `POST /subaccounts/authorize` with the subaccount email to obtain a scoped API key; use it to confirm the client sees the correct plan, quota, and agency branding before distributing credentials (see [Agency Branding](#agency-branding) to configure your logo and identity first).
 
-5. **Poll active-plan to track usage over time** — call `GET /subaccounts/{Id}/active-plan` regularly to monitor `sent` vs `limit` and watch the `expired` flag; combine with parent-account usage alerts (see [Account → Usage Alerts](../account/README.md#usage-alerts)) to catch quota exhaustion before it affects delivery.
+5. **Poll active-plan to track usage over time** — call `GET /subaccounts/{Id}/active-plan` regularly to monitor `sent` vs `limit` and watch the `expired` flag; combine with parent-account usage alerts (see [Account → Usage Alerts](account.md#usage-alerts)) to catch quota exhaustion before it affects delivery.
 
 ---
 
 ## Next Steps
 
-- [Account management (consumer keys, alerts)](../account/README.md)
-- [Getting started with authentication](../getting-started/README.md)
+- [Account management (consumer keys, alerts)](account.md)
+- [Getting started with authentication](getting-started.md)
 - [Full API reference →](../../api-docs/index.html)

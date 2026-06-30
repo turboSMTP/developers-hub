@@ -2,7 +2,7 @@
 
 Verify email addresses before sending to protect your sender reputation and reduce bounce rates. Validate a single address in real time, or upload a list and validate it in bulk.
 
-> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](../getting-started/README.md).
+> **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 
 ---
 
@@ -308,12 +308,12 @@ Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for exam
 1. Upload and validate the list (steps 1–3 above).
 2. Export the CSV or page through the results.
 3. Keep `valid`; drop `invalid`, `spamtrap`, `abuse`, and `toxic`/`disposable`; segment `catch_all` and decide on `role_based` case by case.
-4. Optionally add the rejects to your [suppression list](../suppressions/README.md) (`source` will be `manual`; addresses that failed validation during sending are suppressed automatically with source `validation_failed`).
+4. Optionally add the rejects to your [suppression list](suppressions.md) (`source` will be `manual`; addresses that failed validation during sending are suppressed automatically with source `validation_failed`).
 
 ---
 
 ## Next Steps
 
-- [Add failed addresses to Suppressions](../suppressions/README.md)
-- [Send to your cleaned list](../transactional/README.md)
+- [Add failed addresses to Suppressions](suppressions.md)
+- [Send to your cleaned list](transactional.md)
 - [Full API reference](../../api-docs/index.html#/email-validator/validateEmail)

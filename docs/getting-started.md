@@ -117,7 +117,7 @@ export CONSUMER_KEY="b914ad238d0e8e8851b81e86ce46ae1d"
 export CONSUMER_SECRET="JOSenWTYopGjhZ1CDvsEbcK9PNUA06Xy"
 ```
 
-Consumer keys are the recommended method for production: they don't expose your account password, can be restricted to specific IP addresses, and can be revoked individually with `DELETE /user/consumerKeys/{consumerKey}`. See the [account management guide](../account/README.md#consumer-keys) for listing and deleting keys.
+Consumer keys are the recommended method for production: they don't expose your account password, can be restricted to specific IP addresses, and can be revoked individually with `DELETE /user/consumerKeys/{consumerKey}`. See the [account management guide](account.md#consumer-keys) for listing and deleting keys.
 
 [Try it in the API reference →](../../api-docs/index.html#/consumerkey/createConsumerKey)
 
@@ -150,7 +150,7 @@ Response:
 }
 ```
 
-`mid` is the message ID — keep it if you want to look the message up in [Analytics](../analytics/README.md) later.
+`mid` is the message ID — keep it if you want to look the message up in [Analytics](analytics.md) later.
 
 > `to` is a **comma-separated string** of recipient addresses (e.g. `"a@example.com,b@example.com"`), not a JSON array.
 
@@ -182,9 +182,9 @@ Endpoints on the main host return errors as a JSON object with a `message` field
 
 ## Next Steps
 
-- [Send transactional email](../transactional/README.md) — attachments, embedded images, custom headers, tracking
-- [Track delivery with Analytics](../analytics/README.md)
-- [Manage suppressions](../suppressions/README.md)
-- [Validate email addresses](../validation/README.md)
-- [Set up webhooks](../webhooks/README.md)
+- [Send transactional email](transactional.md) — attachments, embedded images, custom headers, tracking
+- [Track delivery with Analytics](analytics.md)
+- [Manage suppressions](suppressions.md)
+- [Validate email addresses](validation.md)
+- [Set up webhooks](webhooks.md)
 - [Explore the full API reference](../../api-docs/index.html)

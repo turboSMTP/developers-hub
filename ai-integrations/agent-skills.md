@@ -96,4 +96,4 @@ Have domain expertise to share? The Agent Skills library is open-source. See [CO
 ## Related
 
 - [MCP Server](mcp-server.md) — The execution layer that skills operate on top of
-- [Email Validation](../docs/validation/README.md)
+- [Email Validation](../docs/validation.md)

@@ -2,13 +2,13 @@
 
 Manage the credentials and settings of your TurboSMTP account: account details, API key management, consumer keys, passwords, usage alerts, validation credit purchases, and reference data.
 
-> **Authentication:** unless noted otherwise, endpoints accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. **Consumer key management and password changes are API-key-only** (see each section). See [Getting Started](../getting-started/README.md).
+> **Authentication:** unless noted otherwise, endpoints accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. **Consumer key management and password changes are API-key-only** (see each section). See [Getting Started](getting-started.md).
 
 ---
 
 ## Consumer Keys
 
-Consumer keys are permanent API credentials — see [Getting Started](../getting-started/README.md#create-a-consumer-key) for why they're recommended in production.
+Consumer keys are permanent API credentials — see [Getting Started](getting-started.md#create-a-consumer-key) for why they're recommended in production.
 
 > **API key required:** all three endpoints below accept only the `Authorization` header. Consumer key listing, creation, and deletion are not allowed when authenticated via consumer key.
 
@@ -345,13 +345,13 @@ An unknown `Id` returns `404` with `{"message": "alert_not_found"}`.
 
 ## Buy Email Validation Credits
 
-Top up Email Validation Credits with **`POST /billing/buy_emailvalidation_credits`**. Because credits are consumed by validation, this endpoint is documented in full — including the free-vs-paid credit model and error catalog — under [Email Validation → Credits](../validation/README.md#credits).
+Top up Email Validation Credits with **`POST /billing/buy_emailvalidation_credits`**. Because credits are consumed by validation, this endpoint is documented in full — including the free-vs-paid credit model and error catalog — under [Email Validation → Credits](validation.md#credits).
 
 ---
 
 ## Reference Data
 
-Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](../subaccounts/README.md)). Both endpoints are **public** — no authentication required.
+Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](subaccounts.md)). Both endpoints are **public** — no authentication required.
 
 **`GET /meta/countries`**
 
@@ -417,8 +417,8 @@ Set up alerts at key thresholds to track sending quota consumption and catch iss
 
 ## Next Steps
 
-- [Send transactional email](../transactional/README.md)
-- [Track deliverability with Analytics](../analytics/README.md)
-- [Manage suppressions](../suppressions/README.md)
-- [Manage subaccounts (agency plans)](../subaccounts/README.md)
+- [Send transactional email](transactional.md)
+- [Track deliverability with Analytics](analytics.md)
+- [Manage suppressions](suppressions.md)
+- [Manage subaccounts (agency plans)](subaccounts.md)
 - [Full API reference](../../api-docs/index.html#/)

@@ -8,14 +8,14 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 
 | Section | Description |
 |---|---|
-| [Getting Started](docs/getting-started/README.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
-| [Transactional Email](docs/transactional/README.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
-| [Analytics](docs/analytics/README.md) | Per-message delivery events, status lifecycle, and CSV export |
-| [Suppressions](docs/suppressions/README.md) | Query, import, export, and delete suppressed addresses |
-| [Email Validation](docs/validation/README.md) | Real-time single-address validation and bulk list workflows |
-| [Webhooks](docs/webhooks/README.md) | Real-time delivery and engagement event payloads |
-| [Account Management](docs/account/README.md) | Consumer keys, passwords, usage alerts, credits, reference data |
-| [Subaccounts](docs/subaccounts/README.md) | Multi-tenant client management for agency plans |
+| [Getting Started](docs/getting-started.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
+| [Transactional Email](docs/transactional.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
+| [Analytics](docs/analytics.md) | Per-message delivery events, status lifecycle, and CSV export |
+| [Suppressions](docs/suppressions.md) | Query, import, export, and delete suppressed addresses |
+| [Email Validation](docs/validation.md) | Real-time single-address validation and bulk list workflows |
+| [Webhooks](docs/webhooks.md) | Real-time delivery and engagement event payloads |
+| [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
+| [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
 | [SDKs](sdks/index.md) | Official client libraries for all supported languages |
 | [API Reference](api-reference/README.md) | OpenAPI 3.1 specification and interactive reference |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
@@ -39,7 +39,7 @@ curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
   }'
 ```
 
-See [Getting Started](docs/getting-started/README.md) for full authentication details.
+See [Getting Started](docs/getting-started.md) for full authentication details.
 
 ---
 
