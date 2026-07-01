@@ -3,10 +3,10 @@ name: Validate OpenAPI Specification
 on:
   push:
     paths:
-      - 'api-reference/**'
+      - 'api-docs/**'
   pull_request:
     paths:
-      - 'api-reference/**'
+      - 'api-docs/**'
 
 jobs:
   validate:
@@ -20,10 +20,7 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install OpenAPI validator
-        run: npm install -g @openapitools/openapi-generator-cli
-
-      # TODO: Update the spec file path once the OpenAPI 3.1 spec is committed
+      # Lint the multi-file spec entrypoint; Redocly resolves the
+      # ./Domains/*.yaml $refs. Matches the sync step in CLAUDE.md.
       - name: Validate OpenAPI spec
-        run: |
-          openapi-generator-cli validate -i api-reference/openapi.yaml
+        run: npx @redocly/cli@latest lint api-docs/turbo-smtp.yaml

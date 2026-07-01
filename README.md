@@ -17,7 +17,7 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 | [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
 | [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
 | [SDKs](sdks/index.md) | Official client libraries for all supported languages |
-| [API Reference](api-reference/README.md) | OpenAPI 3.1 specification and interactive reference |
+| [API Reference](api-reference/README.md) | OpenAPI 3.1 spec overview + [live interactive Swagger UI](https://turbosmtp.github.io/developers-hub/) |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
 
 ---
@@ -72,5 +72,6 @@ We welcome contributions to documentation, SDKs, and AI integrations. See [CONTR
 
 ## Resources
 
-- [API Reference](api-reference/README.md)
+- [API Reference](api-reference/README.md) — narrative overview of the API surface
+- [Interactive API Reference (Swagger UI)](https://turbosmtp.github.io/developers-hub/) — live "Try It" playground for every endpoint
 - [TurboSMTP Website](https://turbo-smtp.com)

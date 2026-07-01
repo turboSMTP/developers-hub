@@ -14,8 +14,8 @@
 | 1.2 | Complete Schemathesis test suite against all TurboSMTP endpoints | DONE | 2 | Covers schema conformance and edge case generation |
 | 1.3 | Rectify all discovered backend vs. spec discrepancies (patch backend or update schema) | DONE | 2 | Depends on 1.1–1.2; requires coordination with TS backend developers; blocked pending Keycloak fixes |
 | 1.4 | Final clean regeneration of core API projects with `openapi-generator-cli v7.18.0` | DONE | 1 | Depends on 1.3 |
-| 1.5 | Commit finalized OpenAPI 3.1 spec to `api-reference/openapi.yaml` | DONE | 0.5 | Depends on 1.4 |
-| 1.6 | Manually deploy Swagger UI to GitHub Pages | PENDING | 1 | Executes out of sequence — depends on 1.5 and 2.5 (repo must be public); push static files to `gh-pages` branch and enable Pages in repo settings |
+| 1.5 | Commit finalized OpenAPI 3.1 spec (multi-file `api-docs/turbo-smtp.yaml` + `api-docs/Domains/*.yaml`, synced from `turbo-api-2`) | DONE | 0.5 | Depends on 1.4. Spec lives in `api-docs/` (self-contained Swagger UI bundle), not a single `api-reference/openapi.yaml`; `api-reference/` is the narrative overview page |
+| 1.6 | Deploy Swagger UI to GitHub Pages | PENDING | 1 | Now **automated** by `deploy-swagger-ui.yml` (publishes `api-docs/` on every change). Remaining manual step: enable Pages (Settings → Pages → Source: GitHub Actions) once repo is public — gated on 2.5 |
 
 ---
 
