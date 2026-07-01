@@ -85,8 +85,7 @@ components:
           type: string
           enum: [ 'missing_authorization_key', 'invalid_authorization_key' ]
         
-    AuthenticationLoginSucessResponsetBody:
-              additionalProperties: false
+    AuthenticationLoginSuccessResponsetBody:
               properties:
                   auth:
                     type: string
@@ -339,7 +338,7 @@ components:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/AuthenticationLoginSucessResponsetBody'    
+                  $ref: '#/components/schemas/AuthenticationLoginSuccessResponsetBody'    
 
   #########################
   # Common headers

@@ -303,7 +303,7 @@ components:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/AuthenticationLoginSucessResponsetBody' 
+                  $ref: '#/components/schemas/AuthenticationLoginSuccessResponsetBody' 
           '400':
             description: |
               Bad Request
@@ -644,8 +644,7 @@ components:
   # Common data models
   ####################
   schemas:
-    AuthenticationLoginSucessResponsetBody:
-              additionalProperties: false
+    AuthenticationLoginSuccessResponsetBody:
               properties:
                   auth:
                     type: string
@@ -837,7 +836,25 @@ components:
       allOf:
         - $ref: './Shared.yaml#/components/schemas/Email'
         - $ref: '#/components/schemas/SubaccountIDStatusBase'
-        - $ref: '#/components/schemas/SubaccountBase' 
+        - $ref: '#/components/schemas/SubaccountBase'
+      example:
+        active: true
+        email: client@clientdomain.com
+        subaccount_id: 19302132
+        parent_id: 22190623
+        ip: 185.228.36.19
+        first_name: Andrea
+        last_name: Willems
+        address_1: ''
+        address_2: ''
+        city: ''
+        company_name: Refreshing Soda Inc.
+        country: ''
+        region: ''
+        zip_code: ''
+        phone_number: ''
+        policy_agree: true
+        site_url: ''
 
     SubaccountCreateRequest:
       unevaluatedProperties: false
@@ -889,29 +906,44 @@ components:
                       - active: true
                         email: subaccount-1@yourdomain.om
                         subaccount_id: 19302132
+                        parent_id: 22190623
                         ip: 199.244.75.250
                         last_used: 2022-11-20 22:44:07
                         limit: 16
                         plan_expiration: 2023-01-17 00:00:00
                         sent: 2
                         plan_limit_interval: Monthly
+                        expired: false
                       - active: true
                         email: subaccount-2@yourdomain.om
                         subaccount_id: 19302133
+                        parent_id: 22190623
                         ip: 199.244.75.250
                         last_used: 2022-11-19 21:04:07
                         limit: 50
                         plan_expiration: 2023-01-17 00:00:00
                         sent: 34
-                        plan_limit_interval: Monthly       
+                        plan_limit_interval: Monthly
+                        expired: false       
 
     SubaccountActivePlan:
       unevaluatedProperties: false
-      allOf: 
+      allOf:
         - $ref: '#/components/schemas/SubaccountIDStatusBase'
         - $ref: '#/components/schemas/SubaccountIP'
         - $ref: '#/components/schemas/SubaccountPlanBase'
-    
+      example:
+        subaccount_id: 19302132
+        parent_id: 22190623
+        ip: 199.244.75.250
+        active: true
+        limit: 2000
+        sent: 0
+        last_used: null
+        plan_expiration: 2023-01-17 00:00:00
+        plan_limit_interval: Monthly
+        expired: false
+
     Logo:
       type: object
       properties:
@@ -942,7 +974,12 @@ components:
       allOf:
         - $ref: '#/components/schemas/Logo'
         - $ref: '#/components/schemas/BaseAgencySettings'
-              
+      example:
+        logoUrl: https://turbosmtp.s3.amazonaws.com/logo/default_logo.svg
+        agency_name: My Agency Inc.
+        agency_website: https://www.mywebsite.com
+        agency_footer: My signature goes here.
+
   ####################
   # Common parameters
   ####################

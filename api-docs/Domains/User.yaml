@@ -394,11 +394,30 @@ components:
     ConsumerKeyCreateRequestBody:
       type: object
       additionalProperties: false
+      required:
+        - permissions
       properties:
         label:
+          type: string
+          description: Consumer Key label.
+          example: QAkey.
+        permissions:
+          type: array
+          description: Permissions granted to this consumer key. At least one value is required.
+          minItems: 1
+          items:
             type: string
-            description: Consumer Key label.
-            example: QAkey.
+            enum:
+              - SEND_SMTP
+              - SEND_API
+              - APIS
+          example: ["SEND_SMTP", "SEND_API", "APIS"]
+        ips:
+          type: array
+          description: IP addresses allowed to use this consumer key. Empty array or omitted means no restriction.
+          items:
+            type: string
+          example: ["192.168.1.1"]
             
     
     ConsumerKeyCreateResponseBody:
@@ -440,6 +459,13 @@ components:
     ConsumerKey:
       type: object
       additionalProperties: false
+      required:
+        - consumerKey
+        - label
+        - creation_time
+        - ips
+        - is_legacy
+        - permissions
       properties:
         consumerKey:
           type: string
@@ -470,6 +496,9 @@ components:
     ConsumerKeyListSucessResponsetBody:
       type: object
       additionalProperties: false
+      required:
+        - count
+        - results
       properties:
         count:
           type: integer
@@ -483,9 +512,15 @@ components:
                       - consumerKey: bff5c9436b6da9fe3c1d3379e7dc0f21
                         label: QA
                         creation_time: "2023-10-12 11:58:11"
+                        ips: []
+                        is_legacy: false
+                        permissions: ["SEND_SMTP", "SEND_API", "APIS"]
                       - consumerKey: 1027d089da21adfc7f08dc14303571f3
                         label: Staging
                         creation_time: "2023-08-02 17:18:00"
+                        ips: ["192.168.1.1"]
+                        is_legacy: false
+                        permissions: ["SEND_SMTP", "SEND_API", "APIS"]
         
   parameters:
     ConsumerKeyPathParam:
