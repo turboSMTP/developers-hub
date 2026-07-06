@@ -202,4 +202,4 @@ Variants: `"Wrong credentials specified"` (invalid key pair) and `"Account for <
 - [Track delivery, opens, and clicks in Analytics](analytics.md)
 - [Receive real-time events via webhooks](webhooks.md)
 - [Manage bounces and unsubscribes with Suppressions](suppressions.md)
-- [Try it in the API reference](../api-docs/index.html#/mail/sendEmail)
+- [Try it in the API reference](../api-reference/index.html#/mail/sendEmail)

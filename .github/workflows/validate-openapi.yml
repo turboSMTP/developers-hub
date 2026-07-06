@@ -3,10 +3,10 @@ name: Validate OpenAPI Specification
 on:
   push:
     paths:
-      - 'api-docs/**'
+      - 'api-reference/**'
   pull_request:
     paths:
-      - 'api-docs/**'
+      - 'api-reference/**'
 
 jobs:
   validate:
@@ -23,4 +23,4 @@ jobs:
       # Lint the multi-file spec entrypoint; Redocly resolves the
       # ./Domains/*.yaml $refs. Matches the sync step in CLAUDE.md.
       - name: Validate OpenAPI spec
-        run: npx @redocly/cli@latest lint api-docs/turbo-smtp.yaml
+        run: npx @redocly/cli@latest lint api-reference/turbo-smtp.yaml

@@ -86,7 +86,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics \
 | `x_campaign_id` | Value of the `X-campaign-ID` field passed at send time |
 | `error` | SMTP error string for failed deliveries (empty otherwise) |
 
-[Try it in the API reference →](../api-docs/index.html#/analytics/getAnalyticsData)
+[Try it in the API reference →](../api-reference/index.html#/analytics/getAnalyticsData)
 
 `400` errors: `missing_required_parameter_from`, `missing_required_parameter_to`, `from_format_should_be_yyyy-mm-dd`, `to_format_should_be_yyyy-mm-dd`, `page_should_be_integer`, `page_should_be_greater_than_0`, `limit_should_be_integer`, `limit_should_be_greater_than_0`, `invalid_status_value`, `missing_required_parameter_filter_by`, `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`, `ordertype_should_be_asc_or_desc`.
 
@@ -122,7 +122,7 @@ Response:
 
 Returns a single message object (same shape as the list `results` items). An unknown ID returns `404` with `{"message": "email_not_found"}`.
 
-[Try it in the API reference →](../api-docs/index.html#/analytics/getAnalyticsDataByID)
+[Try it in the API reference →](../api-reference/index.html#/analytics/getAnalyticsDataByID)
 
 `400` errors: `invalid_id` (non-integer). `404` errors: `email_not_found`.
 
@@ -146,7 +146,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/analytics/csv \
 1871533807186821120,DEFER,"Test send",test@emailchef.com,test@live.com,"Wednesday, February 21 2024 7:47 AM"," Connected to 104.47.55.161 but connection died. (#4.4.2)
 ```
 
-[Try it in the API reference →](../api-docs/index.html#/analytics/exportAnalyticsDataCSV)
+[Try it in the API reference →](../api-reference/index.html#/analytics/exportAnalyticsDataCSV)
 
 `400` errors: `missing_required_parameter_from`, `missing_required_parameter_to`, `from_format_should_be_yyyy-mm-dd`, `to_format_should_be_yyyy-mm-dd`, `invalid_status_value`, `missing_required_parameter_filter_by`, `filter_by_can_only_be_subject_or_sender_or_recipient_or_domain`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_subject_or_sender_or_recipient_or_domain`, `ordertype_should_be_asc_or_desc`.
 
@@ -212,4 +212,4 @@ TurboSMTP aggregates these statuses into the groups you see in the [TurboSMTP We
 
 - [Receive these events in real time via webhooks](webhooks.md)
 - [Handle bounces with Suppressions](suppressions.md)
-- [Full API reference](../api-docs/index.html#/analytics/getAnalyticsData)
+- [Full API reference](../api-reference/index.html#/analytics/getAnalyticsData)

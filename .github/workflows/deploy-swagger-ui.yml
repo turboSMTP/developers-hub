@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'api-docs/**'
+      - 'api-reference/**'
   workflow_dispatch:
 
 permissions:
@@ -23,14 +23,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # api-docs/ is a complete, self-contained Swagger UI bundle
+      # api-reference/ is a complete, self-contained Swagger UI bundle
       # (branded UI + multi-file spec: turbo-smtp.yaml + Domains/*.yaml),
       # synced from ../turbo-smtp-openapi/turbo-api-2/. Publish it verbatim —
       # relative asset and $ref paths resolve at the Pages site root.
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: api-docs
+          path: api-reference
 
       - name: Deploy to GitHub Pages
         id: deployment

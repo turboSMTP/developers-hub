@@ -11,7 +11,7 @@ Content is authored in Markdown and published via GitHub Pages. This is a docs-a
 ## Repository Structure
 
 - **`docs/`** — Topic guides (getting-started, transactional, validation, webhooks)
-- **`api-reference/`** — OpenAPI 3.1 spec and generated reference docs
+- **`api-reference/`** — OpenAPI 3.1 spec + self-contained Swagger UI bundle (deployed to GitHub Pages) + narrative `README.md` overview
 - **`sdks/`** — SDK integration guides per language (Node.js, Python, Go, PHP, C#)
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — GitHub Actions workflows and PR/issue templates
@@ -22,20 +22,20 @@ Content is authored in Markdown and published via GitHub Pages. This is a docs-a
 
 The canonical **OpenAPI v2 specification** lives in the sibling repository `../turbo-smtp-openapi/`.
 
-When the spec stabilizes, it will be promoted to `api-reference/turbo-smtp.yaml` here. Until then:
-- Do not copy or manually duplicate spec content from `turbo-smtp-openapi/`
-- Reference the sibling repo as the source of truth
-- If spec examples are needed in the docs, link to the spec in the sibling repo or fetch it programmatically
+The spec is published here at `api-reference/turbo-smtp.yaml`, synced from the sibling repo via the "API Documentation Sync" step below. Rules:
+- Do not hand-edit the spec in `api-reference/` — it is a synced copy; make spec changes upstream in `turbo-smtp-openapi/` and re-sync
+- Treat the sibling repo as the source of truth
+- If spec examples are needed elsewhere in the docs, link to the synced spec or the sibling repo
 
 ## API Documentation Sync
 
-The `api-docs/` folder contains a Swagger UI deployment that mirrors `../turbo-smtp-openapi/turbo-api-2/`.
+The `api-reference/` folder contains a Swagger UI deployment that mirrors `../turbo-smtp-openapi/turbo-api-2/`.
 
-Whenever the OpenAPI spec or Swagger UI assets are updated in `turbo-api-2/`, sync the changes to `api-docs/`:
+Whenever the OpenAPI spec or Swagger UI assets are updated in `turbo-api-2/`, sync the changes to `api-reference/`:
 
 1. Verify the spec is valid: `npx @redocly/cli lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`
-2. Copy updated files: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Destination "./api-docs/" -Recurse -Force`
-3. Commit and push: `git add api-docs/; git commit -m "sync: update API docs from turbo-api-2"`
+2. Copy updated files: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Destination "./api-reference/" -Recurse -Force`
+3. Commit and push: `git add api-reference/; git commit -m "sync: update API docs from turbo-api-2"`
 
 ## Documentation Standards
 

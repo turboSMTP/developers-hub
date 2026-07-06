@@ -10,7 +10,7 @@ This page is the narrative overview of the API surface. For the **interactive** 
 
 **Live Swagger UI:** [https://turbosmtp.github.io/developers-hub/](https://turbosmtp.github.io/developers-hub/)
 
-A live "Try It" playground for every endpoint, with no local setup required. It is published from the self-contained Swagger UI bundle in [`api-docs/`](../api-docs/) and redeployed automatically on every change via the [deploy-swagger-ui workflow](../.github/workflows/deploy-swagger-ui.yml).
+A live "Try It" playground for every endpoint, with no local setup required. It is published from the self-contained Swagger UI bundle in this folder (`index.html` + `turbo-smtp.yaml` + `Domains/`) and redeployed automatically on every change via the [deploy-swagger-ui workflow](../.github/workflows/deploy-swagger-ui.yml).
 
 ---
 
@@ -19,8 +19,8 @@ A live "Try It" playground for every endpoint, with no local setup required. It 
 The spec is authored as a **multi-file** OpenAPI 3.1 document:
 
 ```
-api-docs/turbo-smtp.yaml   # entrypoint
-api-docs/Domains/*.yaml    # per-domain path items and schemas
+api-reference/turbo-smtp.yaml   # entrypoint
+api-reference/Domains/*.yaml    # per-domain path items and schemas
 ```
 
 It is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` (see the "API Documentation Sync" section of the repo `CLAUDE.md`). Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
