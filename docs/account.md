@@ -4,6 +4,19 @@ Manage the credentials and settings of your TurboSMTP account: account details, 
 
 > **Authentication:** unless noted otherwise, endpoints accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. **Consumer key management and password changes are API-key-only** (see each section). See [Getting Started](getting-started.md).
 
+**On this page:**
+
+- [Consumer Keys](#consumer-keys)
+- [Consumer Key Permissions](#consumer-key-permissions)
+- [Change Password](#change-password)
+- [Forgot Password](#forgot-password)
+- [Usage Alerts](#usage-alerts)
+- [Buy Email Validation Credits](#buy-email-validation-credits)
+- [Reference Data](#reference-data)
+- [Recipe: Set Up a Secure Consumer Key](#recipe-set-up-a-secure-consumer-key)
+- [Recipe: Monitor Account Quota and Usage](#recipe-monitor-account-quota-and-usage)
+- [Next Steps](#next-steps)
+
 ---
 
 ## Consumer Keys

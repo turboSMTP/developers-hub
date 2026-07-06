@@ -6,6 +6,19 @@ Manage client accounts under your own — create subaccounts, set their sending 
 >
 > **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 
+**On this page:**
+
+- [List Subaccounts](#list-subaccounts)
+- [Check Email Availability](#check-email-availability)
+- [Create a Subaccount](#create-a-subaccount)
+- [Limitations](#limitations)
+- [Subaccount Details](#subaccount-details)
+- [Quotas and Status](#quotas-and-status)
+- [Authorize as a Subaccount](#authorize-as-a-subaccount)
+- [Agency Branding](#agency-branding)
+- [Recipe: Onboard a Client Subaccount End to End](#recipe-onboard-a-client-subaccount-end-to-end)
+- [Next Steps](#next-steps)
+
 ---
 
 ## List Subaccounts

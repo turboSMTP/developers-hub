@@ -4,6 +4,15 @@ Verify email addresses before sending to protect your sender reputation and redu
 
 > **Authentication:** all endpoints on this page accept either auth method — `Authorization: $TURBO_API_KEY` or the `consumerKey`/`consumerSecret` header pair. See [Getting Started](getting-started.md).
 
+**On this page:**
+
+- [Credits](#credits)
+- [Validate a Single Address](#validate-a-single-address)
+- [Validate a List (Bulk Workflow)](#validate-a-list-bulk-workflow)
+- [Validation Statuses](#validation-statuses)
+- [Recipe: Clean a List Before a Campaign](#recipe-clean-a-list-before-a-campaign)
+- [Next Steps](#next-steps)
+
 ---
 
 ## Credits

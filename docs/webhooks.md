@@ -4,6 +4,23 @@ Receive real-time notifications for delivery and engagement events as TurboSMTP 
 
 > The Event Webhook is configured from the TurboSMTP dashboard — it is not managed through the API described elsewhere in this hub. This page documents the events TurboSMTP pushes to your endpoint and shows how they relate to the send and analytics APIs.
 
+**On this page:**
+
+- [Event Types](#event-types)
+- [Payload Fields](#payload-fields)
+- [Example Payloads](#example-payloads)
+  - [Processed](#processed)
+  - [Dropped](#dropped)
+  - [Delivered](#delivered)
+  - [Deferred](#deferred)
+  - [Bounced](#bounced)
+  - [Opened](#opened)
+  - [Clicked](#clicked)
+  - [Unsubscribed](#unsubscribed)
+  - [Spam Report](#spam-report)
+- [Correlating Events with Your System](#correlating-events-with-your-system)
+- [Next Steps](#next-steps)
+
 ---
 
 ## Event Types

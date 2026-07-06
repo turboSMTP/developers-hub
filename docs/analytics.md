@@ -6,6 +6,15 @@ Look up individual messages and their delivery and engagement lifecycle — queu
 >
 > Analytics lives on the **main host** `https://pro.api.serversmtp.com/api/v2` — not on the send host.
 
+**On this page:**
+
+- [List Analytics Data](#list-analytics-data)
+- [Get a Single Message](#get-a-single-message)
+- [Export to CSV](#export-to-csv)
+- [Message Statuses](#message-statuses)
+- [Recipe: Track a Campaign](#recipe-track-a-campaign)
+- [Next Steps](#next-steps)
+
 ---
 
 ## List Analytics Data

@@ -2,6 +2,18 @@
 
 Send triggered transactional emails — order confirmations, password resets, notifications — to one or more recipients via the TurboSMTP send API.
 
+**On this page:**
+
+- [Endpoint](#endpoint)
+- [Send an Email](#send-an-email)
+- [Request Fields](#request-fields)
+- [Attachments](#attachments)
+- [Embedded Images (CID)](#embedded-images-cid)
+- [Custom Headers](#custom-headers)
+- [Tracking Sends](#tracking-sends)
+- [Error Responses](#error-responses)
+- [Next Steps](#next-steps)
+
 ---
 
 ## Endpoint
