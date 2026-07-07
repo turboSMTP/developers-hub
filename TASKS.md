@@ -1,7 +1,7 @@
 # TurboSMTP Developers Hub — Project Roadmap & Tasks
 
 ## Statuses
-`DONE` `WIP` `PENDING` `PAUSED` `BLOCKED`
+`DONE` `REVIEW` `WIP` `PENDING` `PAUSED` `BLOCKED`
 
 ---
 
@@ -12,10 +12,10 @@
 |---|---|---|---|---|
 | 1.1 | Complete Hurl test suite against all TurboSMTP endpoints | DONE | 1 | Covers drift mapping for all sub-systems |
 | 1.2 | Complete Schemathesis test suite against all TurboSMTP endpoints | DONE | 2 | Covers schema conformance and edge case generation |
-| 1.3 | Rectify all discovered backend vs. spec discrepancies (patch backend or update schema) | STAGING | 2 | Depends on 1.1–1.2; requires coordination with TS backend developers; blocked pending Keycloak fixes |
-| 1.4 | Final clean regeneration of core API projects with `openapi-generator-cli v7.18.0` | PENDING | 1 | Depends on 1.3 |
-| 1.5 | Commit finalized OpenAPI 3.1 spec to `api-reference/openapi.yaml` | PENDING | 0.5 | Depends on 1.4 |
-| 1.6 | Manually deploy Swagger UI to GitHub Pages | PENDING | 1 | Executes out of sequence — depends on 1.5 and 2.5 (repo must be public); push static files to `gh-pages` branch and enable Pages in repo settings |
+| 1.3 | Rectify all discovered backend vs. spec discrepancies (patch backend or update schema) | DONE | 2 | Depends on 1.1–1.2; requires coordination with TS backend developers; blocked pending Keycloak fixes |
+| 1.4 | Final clean regeneration of core API projects with `openapi-generator-cli v7.18.0` | DONE | 1 | Depends on 1.3 |
+| 1.5 | Commit finalized OpenAPI 3.1 spec (multi-file `api-reference/turbo-smtp.yaml` + `api-reference/Domains/*.yaml`, synced from `turbo-api-2`) | DONE | 0.5 | Depends on 1.4. Spec lives in `api-reference/` — a single folder holding the self-contained Swagger UI bundle plus the narrative `README.md` overview |
+| 1.6 | Deploy Swagger UI to GitHub Pages | PENDING | 1 | Now **automated** by `deploy-swagger-ui.yml` (publishes `api-reference/` on every change). Remaining manual step: enable Pages (Settings → Pages → Source: GitHub Actions) once repo is public — gated on 2.5 |
 
 ---
 
@@ -24,11 +24,15 @@
 
 | # | Task | Status | Weeks Effort | Notes |
 |---|---|---|---|---|
-| 2.1 | Write full `getting-started` documentation | PENDING | 0.5 | Scaffold exists |
-| 2.2 | Write full `transactional` documentation | PENDING | 0.5 | Scaffold exists |
-| 2.3 | Write full `validation` documentation | PENDING | 0.5 | Scaffold exists |
-| 2.4 | Write full `webhooks` documentation | PENDING | 0.5 | Scaffold exists |
-| 2.5 | Make repository public | PENDING | 0.5 | Gate: depends on 1.5, 2.1–2.4 |
+| 2.1 | Write full `getting-started` documentation | DONE | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.2 | Write full `transactional` documentation | DONE | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.3 | Write full `validation` documentation | DONE | 0.5 | Authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.4 | Write full `webhooks` documentation | DONE | 0.5 | Rewritten from official Event Webhook Reference (`feat/docs-core-journey`) |
+| 2.5 | Make repository public | PENDING | 0.5 | Gate: depends on 1.5, 2.1–2.4, 2.6–2.9 (docs in REVIEW; 1.5 DONE) |
+| 2.6 | Write full `analytics` documentation | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.7 | Write full `suppressions` documentation | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.8 | Write full `account` documentation (consumer keys, alerts, billing, password, meta) | DONE | 0.5 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
+| 2.9 | Write full `subaccounts` documentation | DONE | 1 | New page, authored from OpenAPI spec (`feat/docs-core-journey`) |
 
 ---
 

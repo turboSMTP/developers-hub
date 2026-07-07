@@ -26,13 +26,10 @@ components:
         tags:
           - meta
         summary: Get countries
-        security:
-          - ApiKeyAuth: [ ]
-          - consumerKey: [ ]
-            consumerSecret: [ ]          
+        security: []
         operationId: getCountries
         description: |
-          Get countries
+          Get countries (public endpoint, no authentication required)
         responses:
           '200':
             description: Countries list
@@ -40,21 +37,16 @@ components:
               application/json:
                 schema:
                   $ref: '#/components/schemas/CountryList'
-          '401':
-              $ref: './Shared.yaml#/components/responses/Unauthorized'
     
     States:
       get:
         tags:
           - meta
         summary: Get states by country
-        security:
-          - ApiKeyAuth: [ ]
-          - consumerKey: [ ]
-            consumerSecret: [ ]          
+        security: []
         operationId: getStatesByCountry
         description: |
-          Get states by country
+          Get states by country (public endpoint, no authentication required)
         parameters:
           - $ref: '#/components/parameters/IsoCodePathParam'
         responses:
@@ -64,9 +56,6 @@ components:
               application/json:
                 schema:
                   $ref: '#/components/schemas/StateList'
-          #'400':
-          '401':
-              $ref: './Shared.yaml#/components/responses/Unauthorized'
           '404':
               description: |
                 Not Found
@@ -692,19 +681,20 @@ components:
             type: string
             description: Email Subject.
             example: Business Card.
-          sender: 
+          sender:
             type: string
             description: Email Sender.
-            format: email.
+            format: email
             example: user@example.com
           recipient:
             type: string
             description: Email Recipient.
-            format: email.
+            format: email
             example: user@gmail.com
           send_time:
             type: string
             description: Date Time email was sent.
+            pattern: "(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2})"
             example: 2022-11-20 00:00:00
           status: 
             $ref: '#/components/schemas/AnalyticMailStatus'
@@ -731,7 +721,7 @@ components:
 
     AnalyticFilterByOption:
       type: string
-      enum: [ 'subject', 'sender', 'recipient', 'domain', 'x_campaign_id' ]
+      enum: [ 'subject', 'sender', 'recipient', 'domain' ]
       example: 'domain'
 
     AnalyticFilterBy:
@@ -742,9 +732,9 @@ components:
       example: ["subject"]
       
     AnalyticOrderBy:
-      description: Field to sort by
+      description: Field to sort by. Valid values are subject, sender, recipient, or send_time.
       type: string
-      enum: [ 'send_time', 'sender', 'recipient', 'subject' ]
+      enum: [ 'subject', 'sender', 'recipient', 'send_time' ]
       default: 'send_time'
       example: 'send_time'    
           
@@ -756,20 +746,23 @@ components:
     IsoCodePathParam:
           in: path
           name: isoCode
-          required: true  
-          description: Country ISO code
+          required: true
+          description: Country ISO code (ISO 3166-1 alpha-2 format). Valid values are 2-letter uppercase country codes (e.g., US, GB, DE). Use GET /meta/countries to retrieve all valid codes.
           schema:
               type: string
-              example: ES
+              pattern: '^[A-Z]{2}$'
+              example: US
               
   #Analytics
     AnalyticStatusQueryParam:
       in: query
       required: false
       name: status[]
+      style: form
+      explode: true
       description: |
           Filter by Status
-          
+
               NEW: email has been queued for delivery
               DEFER: email is in the queue for delivery
               SUCCESS: email has been delivered.
@@ -783,7 +776,7 @@ components:
           <br />
           Notice that emails that fall into the above statuses can be grouped, ie Turbo-Smtp uses the following groups:
           <br />
-          
+
               'Clicks' = 'CLICK',
               'Unsubscribes' = 'UNSUB',
               'Spam' = 'REPORT',
@@ -791,7 +784,7 @@ components:
               'Queued' = 'NEW' or 'DEFER',
               'Opens'= 'OPEN' or 'CLICK' or 'UNSUB' or 'REPORT',
               'Delivered'= 'SUCCESS'  or 'OPEN' or 'CLICK' or 'UNSUB' or 'REPORT',
-              'Bounce': 'FAIL'.  
+              'Bounce': 'FAIL'.
       schema:
         description: Filter by Status
         type: array
@@ -826,6 +819,8 @@ components:
       in: query
       name: filter_by
       required: false
+      style: form
+      explode: true
       description: Filter by
       schema:
         $ref: '#/components/schemas/AnalyticFilterBy'

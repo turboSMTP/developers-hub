@@ -49,7 +49,7 @@ components:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/AuthenticationLoginSucessResponsetBody'
+                  $ref: '#/components/schemas/AuthenticationLoginSuccessResponsetBody'
           '400':
             description: |
               Bad Request
@@ -111,11 +111,11 @@ components:
         summary: Change turboSMTP password
         security:
           - ApiKeyAuth: [ ]
-          - consumerKey: [ ]
-            consumerSecret: [ ]          
         operationId: ChangePassword
         description: |
           **This endpoint allows you to change your current password**
+
+          Note: Only ApiKeyAuth is supported. ConsumerKey/ConsumerSecret authentication will return 403.
           
           ## PASSWORD RULES
           
@@ -374,8 +374,7 @@ components:
                 password: "yourTurboSmtpPassword"
                 no_expire: true
     
-    AuthenticationLoginSucessResponsetBody:
-              additionalProperties: false
+    AuthenticationLoginSuccessResponsetBody:
               properties:
                   auth:
                     type: string

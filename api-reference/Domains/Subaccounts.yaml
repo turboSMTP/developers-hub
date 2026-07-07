@@ -303,7 +303,7 @@ components:
             content:
               application/json:
                 schema:
-                  $ref: '#/components/schemas/AuthenticationLoginSucessResponsetBody' 
+                  $ref: '#/components/schemas/AuthenticationLoginSuccessResponsetBody' 
           '400':
             description: |
               Bad Request
@@ -644,8 +644,7 @@ components:
   # Common data models
   ####################
   schemas:
-    AuthenticationLoginSucessResponsetBody:
-              additionalProperties: false
+    AuthenticationLoginSuccessResponsetBody:
               properties:
                   auth:
                     type: string
@@ -803,6 +802,20 @@ components:
               description: subaccount confirm password
               minLength: 10
               example: "LetmeIn123!"
+
+    SubaccountPasswordConfirmPasswordOptional:
+        type: object
+        properties:
+            password:
+              type: string
+              description: subaccount password
+              minLength: 10
+              example: "LetmeIn123!"
+            confirm_password:
+              type: string
+              description: subaccount confirm password
+              minLength: 10
+              example: "LetmeIn123!"
   
     SmtpLimitInterval:
       type: string
@@ -823,7 +836,25 @@ components:
       allOf:
         - $ref: './Shared.yaml#/components/schemas/Email'
         - $ref: '#/components/schemas/SubaccountIDStatusBase'
-        - $ref: '#/components/schemas/SubaccountBase' 
+        - $ref: '#/components/schemas/SubaccountBase'
+      example:
+        active: true
+        email: client@clientdomain.com
+        subaccount_id: 19302132
+        parent_id: 22190623
+        ip: 185.228.36.19
+        first_name: Andrea
+        last_name: Willems
+        address_1: ''
+        address_2: ''
+        city: ''
+        company_name: Refreshing Soda Inc.
+        country: ''
+        region: ''
+        zip_code: ''
+        phone_number: ''
+        policy_agree: true
+        site_url: ''
 
     SubaccountCreateRequest:
       unevaluatedProperties: false
@@ -844,7 +875,7 @@ components:
       unevaluatedProperties: false
       allOf:
         - $ref: '#/components/schemas/SubaccountBase'
-        - $ref: '#/components/schemas/SubaccountPasswordConfirmPassword'
+        - $ref: '#/components/schemas/SubaccountPasswordConfirmPasswordOptional'
       required:
         - first_name
         - last_name
@@ -875,29 +906,44 @@ components:
                       - active: true
                         email: subaccount-1@yourdomain.om
                         subaccount_id: 19302132
+                        parent_id: 22190623
                         ip: 199.244.75.250
                         last_used: 2022-11-20 22:44:07
                         limit: 16
                         plan_expiration: 2023-01-17 00:00:00
                         sent: 2
                         plan_limit_interval: Monthly
+                        expired: false
                       - active: true
                         email: subaccount-2@yourdomain.om
                         subaccount_id: 19302133
+                        parent_id: 22190623
                         ip: 199.244.75.250
                         last_used: 2022-11-19 21:04:07
                         limit: 50
                         plan_expiration: 2023-01-17 00:00:00
                         sent: 34
-                        plan_limit_interval: Monthly       
+                        plan_limit_interval: Monthly
+                        expired: false       
 
     SubaccountActivePlan:
       unevaluatedProperties: false
-      allOf: 
+      allOf:
         - $ref: '#/components/schemas/SubaccountIDStatusBase'
         - $ref: '#/components/schemas/SubaccountIP'
         - $ref: '#/components/schemas/SubaccountPlanBase'
-    
+      example:
+        subaccount_id: 19302132
+        parent_id: 22190623
+        ip: 199.244.75.250
+        active: true
+        limit: 2000
+        sent: 0
+        last_used: null
+        plan_expiration: 2023-01-17 00:00:00
+        plan_limit_interval: Monthly
+        expired: false
+
     Logo:
       type: object
       properties:
@@ -928,14 +974,19 @@ components:
       allOf:
         - $ref: '#/components/schemas/Logo'
         - $ref: '#/components/schemas/BaseAgencySettings'
-              
+      example:
+        logoUrl: https://turbosmtp.s3.amazonaws.com/logo/default_logo.svg
+        agency_name: My Agency Inc.
+        agency_website: https://www.mywebsite.com
+        agency_footer: My signature goes here.
+
   ####################
   # Common parameters
   ####################
   parameters:
     SubaccountFilterByEmailQueryParam:
       in: query
-      name: filterByEmail
+      name: filter_by_email
       required: false
       schema:
         description: Filter by email addresses that fully/partially match the search value.
@@ -945,28 +996,31 @@ components:
 
     SubaccountFilterByActiveQueryParam:
       in: query
-      name: filterByActive
+      name: filter_by_active
       required: false
       schema:
-        description: Filter by subaccount status. 
+        description: Filter by subaccount active/inactive status (true=active, false=inactive).
         type: boolean
-        example: true      
-      description: Filter by subaccount status.
+        example: true
+      description: Filter by subaccount active/inactive status. Accepts boolean values (true or false).
 
     SubaccountFilterByIPQueryParam:
       in: query
-      name: filterByIP[]
+      name: filter_by_ip[]
       required: false
+      style: form
+      explode: true
       schema:
-        description: Filter by IP Addresses. 
+        description: Filter by IPv4 addresses. Multiple IPs can be provided. Valid IPv4 format (e.g., 192.168.1.1).
         type: array
         items:
           type: string
-      description: Filter by IP Addresses.
+          pattern: '^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$'
+      description: Filter by IPv4 addresses (e.g., 192.168.1.1). Multiple IPs can be provided.
       
-    SubaccountOrderByQueryParam:    
+    SubaccountOrderByQueryParam:
       in: query
-      name: orderby
+      name: order_by
       required: false
       schema:
         description: Field to sort by

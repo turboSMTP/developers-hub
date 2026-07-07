@@ -8,12 +8,16 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 
 | Section | Description |
 |---|---|
-| [Getting Started](docs/getting-started/README.md) | Authentication, API Keys, and Consumer Keys |
-| [Transactional Email](docs/transactional/README.md) | Send email and retrieve analytics via the `/mail` API |
-| [Email Validation](docs/validation/README.md) | Real-time email verification endpoints |
-| [Webhooks](docs/webhooks/README.md) | Delivery and engagement event schemas |
+| [Getting Started](docs/getting-started.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
+| [Transactional Email](docs/transactional.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
+| [Analytics](docs/analytics.md) | Per-message delivery events, status lifecycle, and CSV export |
+| [Suppressions](docs/suppressions.md) | Query, import, export, and delete suppressed addresses |
+| [Email Validation](docs/validation.md) | Real-time single-address validation and bulk list workflows |
+| [Webhooks](docs/webhooks.md) | Real-time delivery and engagement event payloads |
+| [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
+| [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
 | [SDKs](sdks/index.md) | Official client libraries for all supported languages |
-| [API Reference](api-reference/README.md) | OpenAPI 3.1 specification and interactive reference |
+| [API Reference](api-reference/README.md) | OpenAPI 3.1 spec overview + [live interactive Swagger UI](https://turbosmtp.github.io/developers-hub/) |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
 
 ---
@@ -23,17 +27,19 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 ```bash
 # Send your first email using curl
 curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
-  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "consumerKey: $CONSUMER_KEY" \
+  -H "consumerSecret: $CONSUMER_SECRET" \
   -H "Content-Type: application/json" \
   -d '{
     "from": "you@yourdomain.com",
-    "to": ["recipient@example.com"],
+    "to": "recipient@example.com",
     "subject": "Hello from TurboSMTP",
-    "html": "<h1>It works!</h1>"
+    "content": "It works!",
+    "html_content": "<h1>It works!</h1>"
   }'
 ```
 
-See [Getting Started](docs/getting-started/README.md) for full authentication details.
+See [Getting Started](docs/getting-started.md) for full authentication details.
 
 ---
 
@@ -41,8 +47,8 @@ See [Getting Started](docs/getting-started/README.md) for full authentication de
 
 | Language | Status | Install |
 |---|---|---|
-| [C#](sdks/csharp.md) | Stable | `dotnet add package TurboSMTP` |
-| [PHP](sdks/php.md) | Stable | `composer require turbosmtp/turbosmtp-client` |
+| [C#](sdks/csharp.md) | Planned | `dotnet add package TurboSMTP` |
+| [PHP](sdks/php.md) | Planned | `composer require turbosmtp/turbosmtp-client` |
 | [Node.js / TypeScript](sdks/nodejs.md) | Planned | `npm install @turbosmtp/sdk` |
 | [Python](sdks/python.md) | Planned | `pip install turbosmtp` |
 | [Go](sdks/go.md) | Planned | `go get github.com/turboSMTP/turbosmtp-go` |
@@ -66,6 +72,6 @@ We welcome contributions to documentation, SDKs, and AI integrations. See [CONTR
 
 ## Resources
 
-- [API Reference](api-reference/README.md)
-- [Issue Tracker](.github/ISSUE_TEMPLATE/bug_report.md)
+- [API Reference](api-reference/README.md) — narrative overview of the API surface
+- [Interactive API Reference (Swagger UI)](https://turbosmtp.github.io/developers-hub/) — live "Try It" playground for every endpoint
 - [TurboSMTP Website](https://turbo-smtp.com)

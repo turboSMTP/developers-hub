@@ -20,27 +20,52 @@ info:
 
 
     # Security
-    For the most part (and where not otherwise explicit) turboSMTP’s API requires Authorization. 
-    
-    Authorization to access a user’s resource is granted to clients provided they set  authentication headers into their request, valued with the proper values issued by turboSMTP servers.
-    
-    ## *  Authorization via ConsumerKey/ConsumerSecret
-    
-    This type of authorization consists of a pair of headers, named consumerKey and consumerSecret that are created and granted to the end user to be used in a permanent way (unless they´re deleted of course). This kind of authentication is intended to provide access to endpoints features without the need of providing the user the account details (email address + password).
-    
-    *consumerKey:* Consumer Key Granted.
-    
-    *consumerSecret:* Consumer Secret Granted.
-    
-    (Use [/consumerKeys/create](#/consumerkey/createConsumerKey) create a consumer key/secret pair).    
-    
-    ## *  Authorization via Authentication Key
-    
-    The authentication key is user-based and it is issued by turboSMTP servers upon successful user’s email address + password challenge, performed by means of appropriate request.    
 
-    *Authorization:* Authorization_Key
-    
-    (Use [/authentication/authorize](#/authentication/AuthenticationLogin) to obtain an API Key)
+    For the most part (and where not otherwise explicit) turboSMTP's API requires authorization.
+    Both methods are passed as HTTP request headers.
+
+    ## Base URLs
+
+    Different endpoints live on different hosts:
+
+    | Host | Used for |
+    |---|---|
+    | `https://pro.api.serversmtp.com/api/v2` | All endpoints **except** `/mail/send` |
+    | `https://api.turbo-smtp.com/api/v2` | `POST /mail/send` only |
+    | `https://api.eu.turbo-smtp.com/api/v2` | `POST /mail/send` only — EU sending infrastructure |
+
+    ## Authentication Methods
+
+    | Method | Headers | Lifetime | Best for |
+    |---|---|---|---|
+    | **API Key** | `Authorization: <key>` | 2 hours (or non-expiring with `no_expire: true`) | Interactive sessions, account administration |
+    | **Consumer Key / Secret** | `consumerKey: <key>` + `consumerSecret: <secret>` | Permanent until deleted | Production integrations, sending email |
+
+    **Endpoint-specific rules:**
+
+    - **`POST /mail/send` accepts only `consumerKey`/`consumerSecret`** — requests with an `Authorization` header will be rejected with `401`.
+    - **Consumer key management (`/user/consumerKeys`) requires the `Authorization` header** — you cannot create or delete consumer keys while authenticated with a consumer key.
+    - **The `Authorization` value is the raw key** — do not prefix it with `Bearer` or any other scheme.
+
+    ## * API Key
+
+    Issued by `POST /authorize` upon a successful email + password challenge. Returned as the `auth` field.
+    With `no_expire: false` (default) the key expires after **2 hours**; set `no_expire: true` for a non-expiring key.
+    To revoke a key call `POST /deauthorize`.
+
+    > `/authorize` is rate-limited — cache and reuse the key rather than calling it before every request.
+
+    (Use [/authorize](#/authentication/AuthenticationLogin) to obtain an API Key)
+
+    ## * Consumer Key / Secret
+
+    A permanent key/secret pair tied to your account (not to your password). Consumer keys support IP-based
+    restrictions and can be revoked individually — they are the recommended method for production and are
+    **required** for `/mail/send`.
+
+    > The `consumerSecret` is returned **only at creation time** and cannot be retrieved later — store it securely.
+
+    (Use [/user/consumerKeys](#/consumerkey/createConsumerKey) to create a Consumer Key / Secret pair)
 
     # Data Interchange Format
 
@@ -234,8 +259,8 @@ components:
     # Authentication schemas
     AuthenticationLoginRequestBody:
       $ref: './Domains/Authentication.yaml#/components/schemas/AuthenticationLoginRequestBody'
-    AuthenticationLoginSucessResponsetBody:
-      $ref: './Domains/Authentication.yaml#/components/schemas/AuthenticationLoginSucessResponsetBody'
+    AuthenticationLoginSuccessResponsetBody:
+      $ref: './Domains/Authentication.yaml#/components/schemas/AuthenticationLoginSuccessResponsetBody'
     ChangePasswordRequestBody:
       $ref: './Domains/Authentication.yaml#/components/schemas/ChangePasswordRequestBody'
     SendSecretTokenResetPasswordRequestBody:
