@@ -1,8 +1,9 @@
 # TurboSMTP SDK — Language-Agnostic Client Contract
 
-> **Status: RATIFIED (Phase 0 gate passed — 2026-07-22).** This is the keystone contract every
-> TurboSMTP SDK must satisfy; it is now authoritative and SDK code is unblocked. Any change from here
-> is a versioned amendment (see [§8](#8-conformance--change-control)). Strategy and rationale live
+> **Status: RATIFIED (Phase 0 gate passed — 2026-07-22). Version 1.1.1.** This is the keystone
+> contract every TurboSMTP SDK must satisfy; it is now authoritative and SDK code is unblocked. Any
+> change from here is a versioned amendment ([§8.1](#81-amendment-mechanism)), logged in
+> [§9](#9-amendments). Strategy and rationale live
 > in [`plan.md`](./plan.md); the executable checklist is [`TASKS.md`](./TASKS.md). This document
 > fulfills tasks **0.2** (author the contract) and **0.3** (P0/P1 coverage & namespace names).
 
@@ -122,27 +123,36 @@ API server. Hosts (from the spec):
 | Send — Global (default) | `https://api.turbo-smtp.com/api/v2` | `/mail/send` when `region = "global"` |
 | Send — EU | `https://api.eu.turbo-smtp.com/api/v2` | `/mail/send` when `region = "eu"` (EU data residency) |
 
+An unrecognised `region` **MUST be rejected at construction** with the SDK's base error, rather
+than left to fall through: an unset base URL resolves to the global API host, which does not serve
+`/mail/send`, so the request succeeds against the wrong server ([§7](#7-discrepancies-register)
+discrepancy 12; [§3.3](#33-p0-mail-conformance-scenarios) scenario 11).
+
 A raw `baseUrl` override escape-hatch is **out of scope** for P0 (may be revisited if self-hosted
 deployments need it).
 
 ### 3.3 P0 Mail conformance scenarios
 
-> **This section is a stable anchor** — `TASKS.md` 2.3 and 4.1 reference **§3.3** by number. Keep the
-> numbering and the count of eight.
+> **This section is a stable anchor** — `TASKS.md` 2.3 and 4.1 reference **§3.3** by number. Scenario
+> numbers are permanent: never renumbered, never reused, never retired. New rules append, and the
+> count is not a constraint ([§8.1](#81-amendment-mechanism)).
 
-Every SDK's Layer 3 tests must cover these **8 scenarios**. They run against the Prism mock server
+Every SDK's Layer 3 tests must cover these **11 scenarios**. They run against the Prism mock server
 (credential-free) except where a live send is noted; scenarios 1–2 also back a gated live smoke test.
 
 | # | Scenario | Asserts |
 |---|---|---|
 | 1 | **Minimal send** — `from`, `to`, `subject`, `text` | 200; returns `messageId` (non-empty string); body maps to `MailMessage` with `content` set |
 | 2 | **HTML send** — `from`, `to`, `subject`, `html` | 200; `html` maps to `html_content`; `content` omitted |
-| 3 | **Multi-recipient arrays** — `to`/`cc`/`bcc` as arrays of ≥2 | serialized request has comma-joined CSV strings for `to`/`cc`/`bcc` |
+| 3 | **Multi-recipient arrays** — `to`/`cc`/`bcc` as arrays of ≥2, mixing plain and structured addresses | serialized request has comma-joined CSV strings for `to`/`cc`/`bcc`; a display name containing specials is quoted and its `"`/`\` escaped (§4.1) |
 | 4 | **Reply-To mapping** — `replyTo` set | serialized `custom_headers["reply-to"]` equals the value; no top-level `replyTo` reaches the wire |
-| 5 | **Byte attachment** — one attachment with raw bytes, `filename`, `contentType` | `content` is base64 of the bytes, `name`=filename, `type`=contentType (and `content_id` when `contentId` given) |
+| 5 | **Byte attachment** — one attachment with raw bytes, `filename`, `contentType`, plus one inline attachment with `contentId` referenced from HTML | `content` is base64 of the bytes, `name`=filename, `type`=contentType, and `content_id` stays bare; every exact HTML `cid:<id>` reference is rewritten to `cid:<id>@<sender-domain>` without matching the id as a prefix of a longer one; rewriting is suppressed when the id already contains `@`, there is no HTML body, or the sender has no parseable domain (§4.5) |
 | 6 | **EU region routing** — client with `region:"eu"` | `/mail/send` request targets `https://api.eu.turbo-smtp.com/api/v2`; a `global` client targets `https://api.turbo-smtp.com/api/v2` |
 | 7 | **Auth failure** — bad credentials → 401 | throws typed `AuthenticationError`; carries `errorCode`/`message`/`details` from the send 401 body |
 | 8 | **Validation error** — missing `from`/`to`, or `nocredit` → 400 | throws typed `BadRequestError`; exposes the `errors[]` array from the send 400 body |
+| 9 | **Reply-To precedence** — `replyTo` set alongside a `Reply-To` key in `headers`, in any casing | exactly one `reply-to` key reaches the wire and it carries the `replyTo` value; the header-supplied one does not survive beside it (§4.2) |
+| 10 | **Line-break rejection** — CR or LF in `from`, `to`, `cc`, `bcc` or `replyTo`, both as a display name and inside a pre-formatted string, or in a `headers` name or value | throws a typed error before the request is built; nothing reaches the transport (§4.1) |
+| 11 | **Region rejection** — client constructed with an unrecognised `region` | throws a typed error at construction, distinct from scenario 6, which asserts routing for the two valid values (§3.2b, discrepancy 12) |
 
 ### 3.4 Error taxonomy
 
@@ -208,19 +218,54 @@ request schema `MailMessage`, success `SendSucessResponsetBody`.
 
 | Facade param | Type | Required | Meaning |
 |---|---|---|---|
-| `from` | string | **yes** | `user@example.com` or `Name <user@example.com>` |
-| `to` | string[] | **yes** | recipients (array, min 1) |
-| `cc` | string[] | no | copy recipients |
-| `bcc` | string[] | no | blind copy recipients |
+| `from` | Address | **yes** | sender (see **Address** below) |
+| `to` | AddressInput | **yes** | recipients (min 1) |
+| `cc` | AddressInput | no | copy recipients |
+| `bcc` | AddressInput | no | blind copy recipients |
 | `subject` | string | no | ≤ 700 chars |
 | `text` | string | no | plain-text body |
 | `html` | string | no | HTML body |
-| `replyTo` | string | no | first-class Reply-To address |
+| `replyTo` | AddressInput | no | first-class Reply-To address |
 | `headers` | map<string,string> | no | additional custom headers (escape hatch) |
 | `attachments` | Attachment[] | no | see below |
 | `referenceId` | string | no | echoed in the Event Webhook |
 | `campaignId` | string | no | campaign identifier |
 | `mimeRaw` | string | no | raw MIME that **replaces** `text`+`html` |
+
+**Address** (facade): either a **pre-formatted string** (`user@example.com` or
+`Name <user@example.com>`) or a **structured address** `{ address: string, name?: string }`.
+**AddressInput** is one Address or a collection of them, in whatever form is idiomatic for the
+language (array, varargs, list).
+
+Formatting rules, normative:
+
+- A pre-formatted string is passed to the wire **verbatim**. The caller owns its formatting.
+- A structured address without a `name` serializes to the bare address.
+- A structured address whose `name` contains an RFC 5322 §3.2.3 **special**
+  (`( ) , . : ; < > @ [ ] " \`) MUST be emitted as a **quoted string**, with embedded `"` and `\`
+  backslash-escaped. Quoting is what keeps a name like `Dr. Smith` intact in `from` and `reply-to`;
+  see the comma rule below for why it is not sufficient in the recipient fields.
+- A `name` free of specials is emitted unquoted.
+- A **structured address** whose `name` contains a **comma MUST be rejected** for `to`, `cc` and
+  `bcc` with the SDK's base error, naming the field. **Live-verified 2026-08-18:** the API splits
+  those fields on commas *before* parsing RFC 5322 quoted strings, so `"Doe, Jane" <a@x.com>` is
+  torn in half and the send fails with `'"Doe' 'to' email not valid`. Quoting cannot prevent this.
+  `from` and `replyTo` are **not** comma-split and MUST keep the quoted form — both were verified
+  to accept it.
+- The comma rule is scoped to the `name` field, not to the serialized output. A **pre-formatted
+  string MUST NOT be comma-checked**: a comma-separated list is the wire format of these fields, so
+  rejecting one would refuse the exact string the SDK itself emits for an array of recipients, and
+  would contradict the verbatim rule above. A caller who hand-writes `'"Doe, Jane" <a@x.com>'` as a
+  string therefore receives the API's `400` rather than a local error — accepted, because the
+  alternative is either breaking comma-separated lists or parsing quoted strings the facade never
+  produced.
+- An address or display name containing **CR or LF MUST be rejected** with the SDK's base error.
+  The API carries these values into MIME headers, so a line break in caller-supplied text is
+  header injection; quoting does not neutralise it. This applies to `from`, `to`, `cc`, `bcc` and
+  `replyTo`, to pre-formatted strings as well as structured addresses, and to every `headers`
+  name and value, which the facade turns into a MIME header pair directly. The trigger is whether
+  the SDK constructs the header pair, not merely whether caller-supplied text eventually lands in
+  one ([ADR-0012](docs/adr/0012-client-side-validation-boundary.md) clause 5).
 
 **Attachment** (facade): `{ content: bytes, filename: string, contentType: string, contentId?: string }`.
 The SDK base64-encodes `content` — the developer never handles base64.
@@ -229,17 +274,17 @@ The SDK base64-encodes `content` — the developer never handles base64.
 
 | Facade | → | `MailMessage` / `attachment` field | Transform |
 |---|---|---|---|
-| `from` | → | `from` | passthrough |
-| `to` / `cc` / `bcc` | → | `to` / `cc` / `bcc` | **array → comma-joined CSV string** |
+| `from` | → | `from` | **Address → formatted string** (§4.1) |
+| `to` / `cc` / `bcc` | → | `to` / `cc` / `bcc` | **AddressInput → comma-joined CSV of formatted addresses** |
 | `subject` | → | `subject` | passthrough |
 | `text` | → | `content` | rename |
-| `html` | → | `html_content` | rename |
-| `replyTo` | → | `custom_headers["reply-to"]` | inject into header map |
-| `headers` | → | `custom_headers` | merge (explicit `replyTo` wins over a `reply-to` key) |
+| `html` | → | `html_content` | rename, then qualify inline `cid:` references (§4.5) |
+| `replyTo` | → | `custom_headers["reply-to"]` | format, then inject into header map |
+| `headers` | → | `custom_headers` | merge; an explicit `replyTo` replaces any `reply-to` key **regardless of casing** (header names are case-insensitive, so leaving another spelling in place emits two Reply-To headers) |
 | `attachments[].content` | → | `attachments[].content` | **bytes → base64** |
 | `attachments[].filename` | → | `attachments[].name` | rename |
 | `attachments[].contentType` | → | `attachments[].type` | rename |
-| `attachments[].contentId` | → | `attachments[].content_id` | rename |
+| `attachments[].contentId` | → | `attachments[].content_id` | rename; the wire value stays **bare** (§4.5) |
 | `referenceId` | → | `reference_id` | rename |
 | `campaignId` | → | `X-campaign-ID` | rename |
 | `mimeRaw` | → | `mime_raw` | passthrough |
@@ -267,6 +312,29 @@ SendResult { messageId: string }
   Real messages include invalid/missing sender or recipients, `Invalid Mime`, and `nocredit`.
 - **401** `SendUnauthorizedResponseBody` `{ errorCode, message, details }` → `AuthenticationError`
   (preserves `errorCode`/`details`).
+
+### 4.5 Inline images (provider quirk — normative)
+
+An attachment carrying a `contentId` is an inline part. The wire field `content_id` is sent **bare**,
+but TurboSMTP composes the actual MIME Content-ID as **`<content_id@SENDER_DOMAIN>`**. A bare
+`<img src="cid:logo">` reference therefore never matches, and the image is delivered as an ordinary
+attachment instead of rendering inline. This is the single most common inline-image defect against
+this API, and it is not described in the published documentation.
+
+Every facade **MUST** therefore rewrite the HTML body before sending: for each attachment declaring a
+`contentId`, replace `cid:<id>` with `cid:<id>@<sender-domain>`, where `<sender-domain>` is the domain
+of `from` (parsed from the address, whether given bare or as `Name <user@example.com>`).
+
+Rules:
+
+- Matching **MUST NOT** rewrite an id that is a prefix of a longer one — `cid:logo` must be left alone
+  inside `cid:logo2`.
+- Every occurrence of a given id is rewritten, not only the first.
+- The rewrite is **suppressed**, leaving the body untouched, when the id already contains `@`, when
+  there is no HTML body, or when `from` has no parseable domain.
+- The wire `content_id` is **never** modified; only the HTML reference gains the domain.
+
+Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's job.
 
 ## 5. P1 — Email Validation (framework + `validateList` sketch)
 
@@ -337,7 +405,7 @@ Spec-vs-reality gaps the facade papers over (each one drives a mapping/decision 
 | # | Discrepancy | Facade handling |
 |---|---|---|
 | 1 | `/mail/send` `security` advertises `ApiKeyAuth: []`, but the endpoint **rejects** `Authorization` (401) — consumerKey+secret only | Facade never sends `Authorization` for send; P0 credential is the consumer pair only ([§3.2](#32-auth-model)) |
-| 2 | `to`/`cc`/`bcc` are single **comma-separated strings**, not arrays | Facade takes arrays, joins to CSV ([§4.2](#42-mapping--email-2-layer-2--wire)) |
+| 2 | `to`/`cc`/`bcc` are single **comma-separated strings**, not arrays | Facade takes one or many addresses, formats and joins to CSV ([§4.2](#42-mapping--email-2-layer-2--wire)) |
 | 3 | **Reply-To is not a field** — it lives in `custom_headers["reply-to"]` | First-class `replyTo` param injected into `custom_headers` |
 | 4 | Body fields are `content` / `html_content` | Facade uses `text` / `html` |
 | 5 | Return `mid` is an **int64** | Returned as **string** `messageId` (JS-safe) |
@@ -345,6 +413,10 @@ Spec-vs-reality gaps the facade papers over (each one drives a mapping/decision 
 | 7 | **No 429/5xx and no rate-limit headers** modeled, despite documented rate limiting | `RateLimitError`/`ApiError` handled defensively ([§3.4](#34-error-taxonomy)) |
 | 8 | Pagination has **no total/cursor** | Iterator infers end-of-data from `count` vs `limit` ([§3.5](#35-pagination-framework)) |
 | 9 | **No unified error envelope** (≥3 shapes) | Normalized typed hierarchy ([§3.4](#34-error-taxonomy)) |
+| 10 | Inline parts are keyed by **`<content_id@sender-domain>`**, while `content_id` is sent bare — undocumented, so a natural `cid:<id>` reference silently degrades to a plain attachment | Facade qualifies `cid:` references in the HTML body with the sender domain ([§4.5](#45-inline-images-provider-quirk--normative)) |
+| 11 | A display name is not a modeled field; the whole address is one string, so an unquoted comma in a name splits recipients | Facade accepts structured addresses and quotes names containing RFC 5322 specials; CR/LF is rejected outright as header injection ([§4.1](#41-parameter-shape-idiomatic-facade)) |
+| 12 | `region` selects the send host, but an unrecognised value leaves the base URL unset and the generated core silently falls back to `pro.api.serversmtp.com`, which does not serve `/mail/send` | Facade validates `region` in the constructor, so an untyped caller fails loudly rather than sending to the wrong host ([§3.2b](#32b-region-model)) |
+| 13 | `to`/`cc`/`bcc` are split on commas **before** RFC 5322 quoted strings are parsed, so a quoted display name containing a comma is torn apart and rejected — while `from` and `reply-to`, which are not split, accept it | Facade rejects a comma in a recipient display name with a field-named error; `from` and `replyTo` keep the quoted form ([§4.1](#41-parameter-shape-idiomatic-facade)) |
 
 ## 8. Conformance & change control
 
@@ -356,3 +428,35 @@ Spec-vs-reality gaps the facade papers over (each one drives a mapping/decision 
   the safeguard against cross-language drift.
 - **Review gate:** this document must be reviewed and approved before any Phase 1 generation or
   Phase 2 facade code begins.
+
+### 8.1 Amendment mechanism
+
+- **Version.** The banner carries a semantic version over the *facade surface*, not over the
+  document: **MAJOR** breaks a conforming SDK, **MINOR** adds a normative rule an SDK must
+  implement, **PATCH** clarifies without implementation consequence. An SDK states conformance
+  against that number — "turbosmtp-node implements contract 1.1.1" — rather than against a
+  ratification date that stops describing the file after the first amendment.
+- **Log.** Every amendment adds one row to [§9](#9-amendments): version, date, PR, sections touched,
+  scenarios added.
+- **How [§3.3](#33-p0-mail-conformance-scenarios) grows.** Scenario numbers are permanent: never
+  renumbered, never reused, never retired. A rule that sharpens a scenario already present
+  strengthens that row in place; a rule that is new *in kind* appends a new number. Holding the
+  count fixed would push new rules out of the anchor, which is the one thing the anchor exists to
+  prevent.
+- **Anchoring invariant, in both directions.** Every normative MUST in
+  [§4](#4-p0--mail-domain-full-detail) or [§3.2b](#32b-region-model) carries at least one §3.3
+  scenario, and every §3.3 scenario traces to the rule it tests: a MUST in those sections, a
+  mapping row in [§4.2](#42-mapping--mailmessage-layer-2--wire) or
+  [§4.3](#43-return-shape), or the [§3.4](#34-error-taxonomy) taxonomy. A rule with no scenario is a rule the
+  cross-language matrix (`TASKS.md` 4.1) never extracts, so it holds in the language it was written
+  for and silently does not in the other four. A scenario with no rule is a test of nothing the
+  contract requires, which is how scenario 11 shipped with a discrepancy entry and two
+  cross-references but no MUST. An amendment that adds either without the other is incomplete.
+
+## 9. Amendments
+
+| Version | Date | PR | Sections touched | Scenarios added |
+|---|---|---|---|---|
+| 1.0.0 | 2026-07-22 | — | Ratified at the Phase 0 gate | 1–8 |
+| 1.1.0 | 2026-08-22 | [#5](https://github.com/turboSMTP/developers-hub/pull/5) | §3.2b, §3.3, §4.1, §4.2, §4.5 (new), §7 (10–13), §8.1 (new) | 9, 10, 11 |
+| 1.1.1 | 2026-08-30 | [#5](https://github.com/turboSMTP/developers-hub/pull/5) | §4.1 header-construction trigger clarified | — |

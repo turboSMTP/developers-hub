@@ -5,7 +5,7 @@
  * (transport failure). Layer 2 catches those and normalizes them into this
  * single hierarchy so every SDK surfaces the same, idiomatic error taxonomy.
  */
-import { ResponseError, FetchError } from './generated/src';
+import { FetchError, ResponseError } from './generated/src';
 
 export interface TurboSMTPErrorInit {
   /** HTTP status code, or null when there was no HTTP response (network failure). */
@@ -59,7 +59,13 @@ export class BadRequestError extends TurboSMTPError {
   }
 }
 
-/** 400 — input-validation subset of BadRequestError, when distinguishable. */
+/**
+ * 400 — input-validation subset of BadRequestError, when distinguishable (§3.4).
+ *
+ * Unreachable in P0 and deliberately so: `/mail/send` answers 400 with the
+ * send-specific `{ message, errors[] }` body, which §3.4 maps to `BadRequestError`.
+ * The domain 400 enums that map here arrive with the validation domain (P1).
+ */
 export class ValidationError extends BadRequestError {
   constructor(message: string, init: TurboSMTPErrorInit & { errors?: string[] } = {}) {
     super(message, init);
@@ -119,7 +125,7 @@ function isRecord(v: unknown): v is Record<string, unknown> {
 
 function extractMessage(raw: unknown): string | undefined {
   if (typeof raw === 'string' && raw.length > 0) return raw;
-  if (isRecord(raw) && typeof raw['message'] === 'string') return raw['message'];
+  if (isRecord(raw) && typeof raw.message === 'string') return raw.message;
   return undefined;
 }
 
@@ -160,13 +166,13 @@ export async function toTurboSMTPError(err: unknown): Promise<TurboSMTPError> {
       case 401:
         return new AuthenticationError(message, {
           ...base,
-          errorCode: isRecord(raw) && typeof raw['errorCode'] === 'number' ? raw['errorCode'] : undefined,
-          details: isRecord(raw) && typeof raw['details'] === 'string' ? raw['details'] : undefined,
+          errorCode: isRecord(raw) && typeof raw.errorCode === 'number' ? raw.errorCode : undefined,
+          details: isRecord(raw) && typeof raw.details === 'string' ? raw.details : undefined,
         });
       case 400:
         return new BadRequestError(message, {
           ...base,
-          errors: isRecord(raw) && Array.isArray(raw['errors']) ? (raw['errors'] as string[]) : undefined,
+          errors: isRecord(raw) && Array.isArray(raw.errors) ? (raw.errors as string[]) : undefined,
         });
       case 403:
         return new ForbiddenError(message, base);

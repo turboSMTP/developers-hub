@@ -6,13 +6,17 @@ name: Split packages to publish mirrors
 # package's subtree to its read-only mirror, which is what npm / pkg.go.dev / Packagist
 # link to and (for Go and PHP) actually consume.
 #
-# Tag convention:  <lang>/vX.Y.Z  here  ->  vX.Y.Z  on the mirror.
+# Tag convention:  <package>/vX.Y.Z  here  ->  vX.Y.Z  on the mirror.
+# The prefix is a package slug, not a language: it equals the language for the five
+# unified SDKs only because each one is that language's single publishable unit.
 # The mirror tag MUST be unprefixed: Go resolves versions from root-module tags, and
 # Packagist reads composer.json from the repository root. That translation is the whole
 # reason this workflow exists.
 #
 # Requires a secret `MIRROR_TOKEN` — a PAT or GitHub App installation token with
-# `contents: write` on the five turbosmtp-* mirror repos.
+# `contents: write` on every turbosmtp-* mirror the `case` below resolves to
+# (six today: the five unified SDKs plus turbosmtp-node-webhook). A token scoped
+# to fewer repos passes every check here and 403s on the final push.
 
 on:
   push:
@@ -22,10 +26,11 @@ on:
       - 'csharp/v*'
       - 'go/v*'
       - 'php/v*'
+      - 'node-webhook/v*'
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Existing <lang>/vX.Y.Z tag to (re-)split'
+        description: 'Existing <package>/vX.Y.Z tag to (re-)split'
         required: true
 
 jobs:
@@ -57,48 +62,73 @@ jobs:
           # observed on run 31105171893.
           persist-credentials: false
 
-      - name: Resolve language, version and mirror from the tag
+      # Every value below reaches the shell through `env:`, never through `${{ }}`
+      # inside `run:`. An expression is expanded while the script is rendered, so an
+      # attacker-supplied dispatch input would arrive as shell *source* and run before
+      # the case statement could reject it (issue #6). Quoted variables are data.
+      - name: Resolve package, version and mirror from the tag
         id: target
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          tag="${{ github.event.inputs.tag || github.ref_name }}"
-          lang="${tag%%/*}"
+          tag="${INPUT_TAG:-$REF_NAME}"
+          pkg="${tag%%/*}"
           version="${tag#*/}"
-          case "$lang" in
-            node)   mirror=turbosmtp-node ;;
-            python) mirror=turbosmtp-python ;;
-            csharp) mirror=turbosmtp-dotnet ;;
-            go)     mirror=turbosmtp-go ;;
-            php)    mirror=turbosmtp-php ;;
-            *) echo "::error::Unrecognised language prefix '$lang' in tag '$tag'"; exit 1 ;;
+          case "$pkg" in
+            node)         mirror=turbosmtp-node ;;
+            python)       mirror=turbosmtp-python ;;
+            csharp)       mirror=turbosmtp-dotnet ;;
+            go)           mirror=turbosmtp-go ;;
+            php)          mirror=turbosmtp-php ;;
+            node-webhook) mirror=turbosmtp-node-webhook ;;
+            *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
           esac
           if [ "$version" = "$tag" ]; then
-            echo "::error::Tag '$tag' is not in <lang>/vX.Y.Z form"; exit 1
+            echo "::error::Tag '$tag' is not in <package>/vX.Y.Z form"; exit 1
+          fi
+          # The case statement constrains pkg, but version is whatever followed the
+          # slash and is pushed as a ref name, so it needs its own gate.
+          if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Version '$version' in tag '$tag' is not vX.Y.Z"; exit 1
           fi
           {
-            echo "lang=$lang"
+            echo "pkg=$pkg"
             echo "version=$version"
             echo "mirror=$mirror"
-            echo "prefix=sdks/packages/$lang"
+            echo "prefix=sdks/packages/$pkg"
           } >> "$GITHUB_OUTPUT"
 
       - name: Verify the package directory exists
-        run: test -d "${{ steps.target.outputs.prefix }}"
+        env:
+          PREFIX: ${{ steps.target.outputs.prefix }}
+        run: |
+          if [ ! -d "$PREFIX" ]; then
+            echo "::error::No package directory at '$PREFIX'. A package slug must equal its directory name under sdks/packages/."; exit 1
+          fi
 
       - name: Split the package subtree
         id: split
+        env:
+          PREFIX: ${{ steps.target.outputs.prefix }}
         run: |
           set -euo pipefail
-          sha="$(git subtree split --prefix=${{ steps.target.outputs.prefix }})"
-          echo "Split ${{ steps.target.outputs.prefix }} -> $sha"
+          sha="$(git subtree split --prefix="$PREFIX")"
+          echo "Split $PREFIX -> $sha"
           echo "sha=$sha" >> "$GITHUB_OUTPUT"
 
       - name: Push subtree and translated tag to the mirror
         env:
           MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          MIRROR: ${{ steps.target.outputs.mirror }}
+          PKG: ${{ steps.target.outputs.pkg }}
+          VERSION: ${{ steps.target.outputs.version }}
+          SHA: ${{ steps.split.outputs.sha }}
         run: |
           set -euo pipefail
-          remote="https://x-access-token:${MIRROR_TOKEN}@github.com/${{ github.repository_owner }}/${{ steps.target.outputs.mirror }}.git"
-          git push --force "$remote" "${{ steps.split.outputs.sha }}:refs/heads/main"
-          git push --force "$remote" "${{ steps.split.outputs.sha }}:refs/tags/${{ steps.target.outputs.version }}"
-          echo "Mirrored ${{ steps.target.outputs.lang }} as ${{ steps.target.outputs.mirror }}@${{ steps.target.outputs.version }}"
+          remote="https://x-access-token:${MIRROR_TOKEN}@github.com/${OWNER}/${MIRROR}.git"
+          git push --force "$remote" "${SHA}:refs/heads/main"
+          git push --force "$remote" "${SHA}:refs/tags/${VERSION}"
+          echo "Mirrored $PKG as ${MIRROR}@${VERSION}"
