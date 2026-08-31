@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    // node16 rather than the deprecated node10 ("node"), which hard-errors in TS 7.
+    // package.json declares "type": "commonjs", so .ts files still emit CJS and the
+    // generated Layer 1's extensionless relative imports resolve under CJS rules.
+    "module": "node16",
+    "moduleResolution": "node16",
+    "lib": ["ES2020", "DOM"],
+    "declaration": true,
+    // Maps are not generated: the tarball ships no sources for them to point at,
+    // so a dangling sourceMappingURL would only mislead editors and bundlers.
+    "declarationMap": false,
+    "sourceMap": false,
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "outDir": "dist/cjs",
+    "rootDir": "src"
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "src/**/*.test.ts"]
+}
