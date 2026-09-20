@@ -4,81 +4,86 @@ This file provides guidance to Claude Code when working in this repository.
 
 ## Project Overview
 
-**TurboSMTP Developers Hub** — the public-facing documentation portal for the TurboSMTP API.
+**TurboSMTP Developers Hub** — the public-facing documentation portal for the TurboSMTP API, and the
+home of the SDK packages built on it. Content is authored in Markdown and published via GitHub
+Pages; CI validates and deploys it automatically on push to `main`. The SDK packages under `sdks/`
+are the exception — they build, lint and test like any code.
 
-Content is authored in Markdown and published via GitHub Pages. This is a docs-as-code repository: the documentation needs no local build step, and CI validates and deploys it automatically on push to `main`. The SDK packages under `sdks/` are the exception; they build, lint and test like any code (see **SDK Development**).
+## Authoritative rules: the internal context pack
+
+The **context pack** in the sibling repository `developers-hub-internal` is the authoritative source
+for this project's standards, architecture, tooling and process:
+
+    ../developers-hub-internal/context-pack/context-pack-index.md
+
+- **Where this file and the pack disagree, the pack wins.** This file carries only what the pack does
+  not cover, plus the orientation needed to work without it.
+- **Read `context-pack-index.md` first**, then open only the one or two files its routing table or a
+  matching scenario names. Do not load the whole pack.
+- `context-pack/system/` is harness-owned — do not route into it.
+- The internal repository is **private**. A contributor without access should work from this file and
+  [`CONTRIBUTING.md`](CONTRIBUTING.md) alone.
+
+Common routings — the index is the complete list:
+
+| Looking for | Pack file |
+|---|---|
+| The exact lint / typecheck / build / test / generate / spec-lint command, and the order they run in | `validation-tools.md` |
+| Approved stack, pinned tool versions, runtime floors, adding a dependency | `tech-policy.md` |
+| Where a component lives, the spec→package derivation chain, branch and tag conventions | `codebase-map.md` |
+| SDK layering, public surface, error taxonomy, the semantic layer's authority | `arch-standards.md` |
+| GitHub Actions workflow rules, CI gates, and what is deliberately *not* automated | `automation-standards.md` |
 
 ## Repository Structure
 
-- **`docs/`** — Topic guides (getting-started, transactional, validation, webhooks)
-- **`api-reference/`** — single pre-bundled OpenAPI 3.1 spec (`turbo-smtp.yaml`, no `Domains/` split) + self-contained Swagger UI bundle (deployed to GitHub Pages) + narrative `README.md` overview
-- **`sdks/`** — SDK effort: strategy/contract/tasks docs, generator config, and (incrementally) generated + facade source per language. See **SDK Development** below
+Orientation only — the full map is `codebase-map.md` in the pack.
+
+- **`docs/`** — topic guides (getting-started, transactional, validation, webhooks)
+- **`api-reference/`** — the pre-bundled OpenAPI 3.1 spec (`turbo-smtp.yaml`) plus a self-contained Swagger UI bundle, deployed to GitHub Pages
+- **`sdks/`** — SDK strategy docs, generator config, and the generated + facade source per language
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — GitHub Actions workflows and PR/issue templates
-  - `workflows/validate-openapi.yml` — Lints OpenAPI spec on push
-  - `workflows/deploy-swagger-ui.yml` — Deploys to GitHub Pages
-  - `workflows/sdks-ci.yml` — Lint, typecheck, build and test `sdks/` on pull requests and `main` (ADR-0011)
-  - `workflows/split-mirrors.yml` — On a `<package>/vX.Y.Z` tag, pushes that package's subtree to its read-only mirror (ADR-0003, ADR-0009)
 
 ## Relationship to `turbo-smtp-openapi/`
 
-The canonical **OpenAPI v2 specification** lives in the sibling repository `../turbo-smtp-openapi/`.
-
-The spec is published here at `api-reference/turbo-smtp.yaml`, synced from the sibling repo via the "API Documentation Sync" step below. Rules:
-- Do not hand-edit the spec in `api-reference/` — it is a synced copy; make spec changes upstream in `turbo-smtp-openapi/` and re-sync
-- Treat the sibling repo as the source of truth
-- If spec examples are needed elsewhere in the docs, link to the synced spec or the sibling repo
+The canonical **OpenAPI v2 specification** lives in the sibling repository `../turbo-smtp-openapi/`
+and is the source of truth. `api-reference/turbo-smtp.yaml` here is a synced copy: make spec changes
+upstream and re-sync. The rules governing the synced copy, the bundled build input and generated
+Layer 1 are in the pack (`constraints.md`, `codebase-map.md`).
 
 ## API Documentation Sync
 
-The `api-reference/` folder contains a Swagger UI deployment that mirrors `../turbo-smtp-openapi/turbo-api-2/`.
+The `api-reference/` folder mirrors `../turbo-smtp-openapi/turbo-api-2/`, which serves a **single
+pre-bundled** `turbo-smtp.yaml` — there is no `Domains/` folder in the served copies. Serving one
+file with only internal `$ref`s lets Swagger UI load in a single request instead of ~10, which is the
+main render-speed win.
 
-`turbo-api-2/` now serves a **single pre-bundled** `turbo-smtp.yaml` (produced upstream by `redocly bundle` from the multi-file source in `openapi-definitions/`) — there is no `Domains/` folder in the served copies. Serving one file with only internal `$ref`s makes Swagger UI load with a single request instead of fetching ~10 files, which is the main render-speed win.
+Whenever the served spec or the Swagger UI assets are updated upstream, sync the changes here:
 
-Whenever the served spec or Swagger UI assets are updated in `turbo-api-2/`, sync the changes to `api-reference/`:
-
-1. Verify the bundled spec is valid: `npx @redocly/cli lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`
+1. Verify the bundled spec is valid: `npx @redocly/cli@<pinned> lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml` — the pinned version is in `tech-policy.md`; do not float it.
 2. Copy updated files: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Destination "./api-reference/" -Recurse -Force` (ensure `api-reference/` has no stale `Domains/` folder)
-3. Commit and push: `git add api-reference/; git commit -m "sync: update API docs from turbo-api-2"`
-
-> `api-reference/turbo-smtp.yaml` is a generated bundle — never hand-edit it. Edit the multi-file source in `../turbo-smtp-openapi/openapi-definitions/` and re-bundle.
+3. Stage and commit the result: `git add api-reference/` then a `sync: update API docs from turbo-api-2` commit — per **Workflow Rules** below, the user runs this step.
 
 ## SDK Development (`sdks/`)
 
-The SDK effort lives entirely under `sdks/`. Authoritative docs (read first):
-- `sdks/plan.md` — strategy, 3-layer architecture, tooling, rollout tiers
-- `sdks/client-contract.md` — RATIFIED language-agnostic contract; the facade
-  surface every SDK must satisfy (review-gated; amend before changing any SDK)
-- `sdks/TASKS.md` — executable checklist and per-task outcomes
-- `sdks/pipeline.md` — operational flow (mermaid): canonical spec → sync → generate →
-  facade → tests → tag → registries + mirrors; includes what is automated vs manual
-- `sdks/docs/adr/` — Architecture Decision Records; ADR-0003 fixes the repo/publish
-  topology, ADR-0004 the build-toolchain version policy
+Every SDK standard — layering, public surface, coding conventions, tooling versions, commands and CI
+— is governed by the context pack. Start at `context-pack-index.md`; for design work the entry point
+is `arch-standards.md`, which also carries the rule that **the semantic layer is amended before an
+SDK changes, never after**.
 
-Tooling & generation:
-- Generator: OpenAPI Generator, pinned in `sdks/openapitools.json` (currently
-  7.24.0) via the npm wrapper `@openapitools/openapi-generator-cli`. Requires a
-  JVM (Java 17 verified).
-- Input is the **bundled** 3.1 spec `sdks/build/turbo-smtp.bundled.yaml`, produced
-  by `redocly bundle` at the exact version pinned in `sdks/scripts/generate.mjs`
-  (currently `@redocly/cli@2.47.0`). Fed to the generator **as 3.1 — no down-convert
-  needed** (all 5 languages handle it natively).
-- `sdks/build/` is git-ignored (regenerated artifacts). Never hand-edit generated
-  Layer 1 code — change the spec upstream and regenerate.
-- Gotcha: the generator's default `skipFormModel=true` drops multipart upload
-  request models — verify multipart when configuring the validation/suppressions/
-  subaccount domains.
+In-repo material the pack does not replace:
 
-Lint and format (ADR-0010):
-- Biome is the formatter and linter for `sdks/**`, configured in the root `biome.json`
-  and **pinned to the exact version its `$schema` names** (currently 2.5.4). Generated
-  Layer 1 and `dist/` are excluded. `sdks-ci.yml` runs `biome ci sdks` as a merge gate,
-  so run `npx --yes @biomejs/biome@2.5.4 check --write sdks` before opening a pull request
-  or it goes red on formatting.
-- Per package: `npm run typecheck`, `npm test` (builds first), and `npm run
-  typecheck:examples` in `sdks/packages/node` — the same steps CI runs.
-- Both packages declare `engines: { "node": ">=22" }`; CI tests the floor and the active
-  LTS (ADR-0011).
+- [`sdks/plan.md`](sdks/plan.md) — strategy narrative: the 3-layer architecture and rollout tiers
+- [`sdks/pipeline.md`](sdks/pipeline.md) — operational flow from canonical spec to registries and mirrors
+- [`sdks/docs/adr/`](sdks/docs/adr/) — Architecture Decision Records
+- [`sdks/index.md`](sdks/index.md) — per-language SDK status and planned package names
+
+> `sdks/client-contract.md` and `sdks/TASKS.md` are **historical record**: superseded by the context
+> pack and being retired. Do not cite them as authority.
+
+**Gotcha worth keeping in view:** the generator's default `skipFormModel=true` drops multipart upload
+request models — verify multipart explicitly when configuring the validation, suppressions and
+subaccount domains.
 
 ## Documentation Standards
 
