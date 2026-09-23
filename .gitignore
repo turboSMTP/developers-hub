@@ -7,3 +7,8 @@ sdks/build/
 
 # Local-only design specs and implementation plans
 docs/superpowers/
+
+# Layout-refactor working records. Local-only: they quote the private context pack
+# verbatim, with file and line references, and this repository is public.
+/refactor-progress.md
+/Alternative SDK Repository Structures.md

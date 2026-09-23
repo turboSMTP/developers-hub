@@ -2,7 +2,7 @@
 
 ## Context
 
-We have a finalized OpenAPI 3.1 spec (canonical in `turbo-smtp-openapi/`, synced into `developers-hub/api-reference/turbo-smtp.yaml`). We want client libraries in **five languages** — Node.js/TypeScript, Python, C#, Go, PHP — for external developers.
+We have a finalized OpenAPI 3.1 spec (canonical in `turbo-smtp-openapi/`, synced into `developers-hub/api-reference/upstream/turbo-smtp.yaml`). We want client libraries in **five languages** — Node.js/TypeScript, Python, C#, Go, PHP — for external developers.
 
 Goals and constraints:
 - **Ease of use is the priority** — curated, idiomatic surface, not raw generated plumbing.
@@ -80,20 +80,24 @@ sdks/
   build/                      # bundled/preprocessed spec (git-ignored)
   packages/
     node/  python/  csharp/  go/  php/   # Layer 1 (generated, domain-partitioned) + Layer 2 (facade) + Layer 3 (tests)
-  scripts/                    # bundle + generate + downconvert-if-needed
+  webhooks/
+    node-webhook/  ...                   # webhook receivers — segregated from the unified SDKs (ADR-0009)
+  scripts/                    # overlay + bundle + generate; plus the spec-drift guard
 ```
 
-Publishing fans out from here to five read-only mirrors (decision #2). Nothing is ever
+Publishing fans out from here to six read-only mirrors — the five unified SDKs plus the webhook
+receiver, which ADR-0009 settled is mirrored on the same terms (decision #2). Nothing is ever
 committed to a mirror; each is a `git subtree split` of one package directory:
 
 ```
-sdks/packages/{node,python,csharp,go,php}
-      │  .github/workflows/split-mirrors.yml — one workflow, five targets
+sdks/packages/{node,python,csharp,go,php}  +  sdks/webhooks/node-webhook
+      │  .github/workflows/split-mirrors.yml — one workflow, six targets
       ├──→ turbosmtp-node    (read-only) → npm       @turbosmtp/sdk
       ├──→ turbosmtp-python  (read-only) → PyPI      turbosmtp
       ├──→ turbosmtp-dotnet  (read-only) → NuGet     TurboSMTP
       ├──→ turbosmtp-go      (read-only) → pkg.go.dev
-      └──→ turbosmtp-php     (read-only) → Packagist turbosmtp/turbosmtp-client
+      ├──→ turbosmtp-php     (read-only) → Packagist turbosmtp/turbosmtp-client
+      └──→ turbosmtp-node-webhook (read-only) → npm  @turbosmtp/webhook  (ADR-0009; not yet created)
 ```
 
 Note that the mirror **repository** name and the **package** name are independent: the PHP
@@ -114,7 +118,7 @@ letters also get `!`-escaped in proxy and module-cache paths (`turbo!s!m!t!p`). 
 published guide showing a mixed-case `go get` must be corrected before Go ships — see
 `TASKS.md` 3.7.
 
-- **Spec source for generation:** the in-repo `api-reference/turbo-smtp.yaml` (keeps `developers-hub` self-contained in CI). It continues to sync from `turbo-smtp-openapi/` per the existing CLAUDE.md step.
+- **Spec source for generation:** the in-repo `api-reference/upstream/turbo-smtp.yaml` (keeps `developers-hub` self-contained in CI). It continues to sync from `turbo-smtp-openapi/` per the existing CLAUDE.md step. Generation-only overlays in `api-reference/overlays/` are applied before bundling and never reach the served spec — see ADR-0013.
 - **Regeneration:** a new `.github/workflows/generate-sdks.yml` runs bundle → generate on spec change and opens a PR with the regenerated Layer 1. Layer 2 facade is untouched by regen; only genuinely new domains/endpoints need facade additions.
 - **Publishing:** per-language, triggered by a `<lang>/vX.Y.Z` tag. npm / PyPI / NuGet publish directly from this repo; `.github/workflows/split-mirrors.yml` pushes each package subtree to its read-only mirror and translates the tag to unprefixed `vX.Y.Z` — which is how pkg.go.dev and Packagist consume Go and PHP, and what gives every language a clean, discoverable public repo. Mirrors have Issues disabled and a read-only README banner, so all issues land here. (GitHub cannot disable pull requests — unsolicited ones are closed with a pointer back.)
 

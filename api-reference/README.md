@@ -10,20 +10,24 @@ This page is the narrative overview of the API surface. For the **interactive** 
 
 **Live Swagger UI:** [https://turbosmtp.github.io/developers-hub/](https://turbosmtp.github.io/developers-hub/)
 
-A live "Try It" playground for every endpoint, with no local setup required. It is published from the self-contained Swagger UI bundle in this folder (`index.html` + `turbo-smtp.yaml` + `Domains/`) and redeployed automatically on every change via the [deploy-swagger-ui workflow](../.github/workflows/deploy-swagger-ui.yml).
+A live "Try It" playground for every endpoint, with no local setup required. It is published from the self-contained Swagger UI bundle in this folder (`index.html` + `upstream/turbo-smtp.yaml`) and redeployed automatically on every change via the [deploy-swagger-ui workflow](../.github/workflows/deploy-swagger-ui.yml).
 
 ---
 
 ## Specification Source
 
-The spec is authored as a **multi-file** OpenAPI 3.1 document:
+The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what is **served** here is a single pre-bundled file carrying internal `$ref`s only:
 
 ```
-api-reference/turbo-smtp.yaml   # entrypoint
-api-reference/Domains/*.yaml    # per-domain path items and schemas
+api-reference/upstream/turbo-smtp.yaml   # the complete pre-bundled document, served verbatim
+api-reference/overlays/                  # generation-only patches — never served
 ```
 
-It is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` (see the "API Documentation Sync" section of the repo `CLAUDE.md`). Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
+Serving one file lets Swagger UI load it in a single request instead of roughly ten, which is the main render-speed win. There is no `Domains/` folder in this repository.
+
+`upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` (see the "API Documentation Sync" section of the repo `CLAUDE.md`) and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
+
+`overlays/` holds OpenAPI Overlay documents applied **only** while generating SDK code. They never touch the published spec and may never change wire semantics — see [`overlays/README.md`](overlays/README.md) for the rules.
 
 ---
 
@@ -32,7 +36,7 @@ It is synced from the canonical source in the sibling repository `../turbo-smtp-
 | Property | Value |
 |---|---|
 | Specification Version | OpenAPI 3.1 |
-| Generator Toolchain | `openapi-generator-cli v7.18.0` |
+| Generator Toolchain | `openapi-generator-cli v7.24.0` (pinned in `sdks/openapitools.json`) |
 | Security Schemes | API Key (raw `Authorization` header) and Consumer Key/Secret header pair |
 
 ---

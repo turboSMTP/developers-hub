@@ -3,7 +3,7 @@
   "files": {
     "includes": [
       "sdks/**",
-      "!sdks/packages/*/src/generated/**",
+      "!sdks/*/*/src/generated/**",
       "!sdks/build/**",
       "!**/dist/**",
       "!**/node_modules/**",

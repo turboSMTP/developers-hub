@@ -14,7 +14,7 @@ Official and community-maintained client libraries for the TurboSMTP API.
 | Language | Status | Install | Guide |
 |---|---|---|---|
 | Node.js / TypeScript | Built, publish pending | *not yet published* — planned as `@turbosmtp/sdk` | [nodejs.md](nodejs.md) |
-| Node.js webhook receiver | Built, publish pending | *not yet published* — planned as `@turbosmtp/webhook` | [packages/node-webhook](packages/node-webhook/README.md) |
+| Node.js webhook receiver | Built, publish pending | *not yet published* — planned as `@turbosmtp/webhook` | [webhooks/node-webhook](webhooks/node-webhook/README.md) |
 | Python | Planned | *not yet published* | [python.md](python.md) |
 | C# | Planned | *not yet published* — planned as `TurboSMTP` (NuGet) | [csharp.md](csharp.md) |
 | Go | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go` | [go.md](go.md) |

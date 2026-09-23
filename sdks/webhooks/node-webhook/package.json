@@ -8,7 +8,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/turboSMTP/developers-hub.git",
-    "directory": "sdks/packages/node-webhook"
+    "directory": "sdks/webhooks/node-webhook"
   },
   "bugs": {
     "url": "https://github.com/turboSMTP/developers-hub/issues"

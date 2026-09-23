@@ -20,7 +20,8 @@ flowchart TD
     B -.->|"MANUAL SYNC · copy + redocly lint"| C
 
     subgraph hub["developers-hub - the only repo anyone commits to"]
-        C["api-reference/turbo-smtp.yaml<br/>synced copy — never hand-edit"]
+        C["api-reference/upstream/turbo-smtp.yaml<br/>synced copy — never hand-edit"]
+        OV["api-reference/overlays/*.yaml<br/>generation-only · never served"]
         PAGES["GitHub Pages<br/>Swagger UI"]
         D["sdks/build/turbo-smtp.bundled.yaml<br/>git-ignored artifact"]
         E["LAYER 1 · src/generated/<br/>never hand-edit"]
@@ -29,7 +30,8 @@ flowchart TD
         H["build artifacts<br/>dist/cjs + dist/esm"]
         T["release tag<br/>&lt;package&gt;/vX.Y.Z"]
 
-        C -->|"deploy-swagger-ui.yml"| PAGES
+        C -->|"deploy-swagger-ui.yml · verbatim"| PAGES
+        OV -.->|"openapi-format --no-sort<br/>skipped when empty"| D
         C -->|"redocly bundle"| D
         D -->|"generate.mjs<br/>filter by domain tag<br/>OpenAPI Generator 7.24.0"| E
         E --> F
@@ -54,8 +56,10 @@ flowchart TD
 
 ## What happens on a release tag
 
-Tags are `<package>/vX.Y.Z`, where the prefix is a package slug equal to its directory under
-`sdks/packages/` (`node`, `python`, `csharp`, `go`, `php`, `node-webhook`), and versions are
+Tags are `<package>/vX.Y.Z`, where the prefix is a package slug equal to the package
+directory's own **name** — `node`, `python`, `csharp`, `go`, `php` under `sdks/packages/`, and
+`node-webhook` under `sdks/webhooks/`. The slug does not determine the parent directory; the `case`
+block in `split-mirrors.yml` is the authoritative slug → (mirror, directory) map. Versions are
 **independent per publishable unit** — no lockstep family version, so no package's release waits on
 another. The slug equals the language only for the five unified SDKs, because each is that
 language's single unit; Node has two ([ADR-0009](docs/adr/0009-webhook-receiver-package.md)). The
@@ -68,7 +72,7 @@ flowchart LR
     WF --> S1["verify MIRROR_TOKEN"]
     S1 --> S2["checkout at tag<br/>fetch-depth 0<br/>persist-credentials false"]
     S2 --> S3["resolve package → mirror"]
-    S3 --> S4["git subtree split<br/>sdks/packages/node"]
+    S3 --> S4["git subtree split<br/>prefix from the case block"]
     S4 --> S5["force-push to mirror main"]
     S5 --> S6["push tag as v1.2.0<br/>UNPREFIXED"]
     S6 --> GO["pkg.go.dev / Packagist<br/>pick this up automatically"]

@@ -1,10 +1,15 @@
 // Loader: shown on page load, dismissed when Swagger UI finishes rendering.
 //
-// The served spec is a single PRE-BUNDLED file (turbo-smtp.yaml) with only
-// internal $refs — there are no per-domain network fetches anymore, so the
+// The served spec is a single PRE-BUNDLED file (upstream/turbo-smtp.yaml) with
+// only internal $refs — there are no per-domain network fetches anymore, so the
 // previous fetch-tracking loader is unnecessary. We dismiss the loader on
 // Swagger UI's own `onComplete` callback (deterministic), with a short safety
 // fallback in case it never fires.
+//
+// The URL below is the ONLY spec-path reference in the served bundle, and it is
+// resolved by the browser at runtime: if it is wrong the live site 404s while CI
+// stays green. Nothing validates the uploaded directory. Verify any change to it
+// by serving api-reference/ locally and loading the page.
 
 // Show loader initially
 document.addEventListener('DOMContentLoaded', function () {
@@ -29,7 +34,7 @@ window.onload = function () {
   //<editor-fold desc="Changeable Configuration Block">
 
   window.ui = SwaggerUIBundle({
-    url: "./turbo-smtp.yaml", // single pre-bundled spec (redocly bundle)
+    url: "./upstream/turbo-smtp.yaml", // single pre-bundled spec, served verbatim (no overlays)
     dom_id: '#swagger-ui',
     deepLinking: true,
     presets: [

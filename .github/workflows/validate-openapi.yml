@@ -4,9 +4,18 @@ on:
   push:
     paths:
       - 'api-reference/**'
+      - 'sdks/scripts/check-spec.mjs'
+      - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
       - 'api-reference/**'
+      - 'sdks/scripts/check-spec.mjs'
+      - '.github/workflows/validate-openapi.yml'
+
+# Read-only: this workflow checks out the repository, lints the spec and runs the
+# drift guard. It writes nothing and needs no other scope.
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -20,7 +29,21 @@ jobs:
         with:
           node-version: '20'
 
-      # Lint the multi-file spec entrypoint; Redocly resolves the
-      # ./Domains/*.yaml $refs. Matches the sync step in CLAUDE.md.
+      # Lint the single pre-bundled spec. It carries internal $refs only —
+      # there is no Domains/ folder in the served copy. The version is pinned to
+      # match sdks/scripts/generate.mjs; do not float it.
+      #
+      # This lints the SYNCED UPSTREAM copy — the document GitHub Pages serves.
+      # Overlays in api-reference/overlays/ are deliberately not applied here:
+      # they are a code-generation concern and never reach the published spec.
       - name: Validate OpenAPI spec
-        run: npx @redocly/cli@latest lint api-reference/turbo-smtp.yaml
+        run: npx @redocly/cli@2.47.0 lint api-reference/upstream/turbo-smtp.yaml
+
+      # Spec-drift guard. Two checks, both offline:
+      #   1. the synced copy still matches the checksum recorded when it was synced,
+      #      catching an in-place edit of a file that is never hand-edited;
+      #   2. every overlay changes only what ADR-0013 permits — operationIds, naming,
+      #      documentation and `x-` extensions — and never wire semantics.
+      # Runs after the lint so an invalid spec fails on the clearer error first.
+      - name: Spec-drift guard
+        run: node sdks/scripts/check-spec.mjs

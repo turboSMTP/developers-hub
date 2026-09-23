@@ -54,4 +54,10 @@ the facade's packaging.
 ## Regenerating
 
 Do not hand-edit generated Layer 1 code. Change the spec upstream in `turbo-smtp-openapi/`, re-sync
-`api-reference/turbo-smtp.yaml`, re-bundle to `sdks/build/`, and re-run the generation script.
+`api-reference/upstream/turbo-smtp.yaml`, and re-run the generation script — it overlays, bundles,
+filters and generates in one pass.
+
+If the problem is the *generated code* rather than the API itself — an unusable `operationId`, say —
+the fix is a generation-only overlay in `api-reference/overlays/`, not an edit to the synced copy.
+Overlays may never change wire semantics; see [`api-reference/overlays/README.md`](../../api-reference/overlays/README.md)
+and ADR-0013.

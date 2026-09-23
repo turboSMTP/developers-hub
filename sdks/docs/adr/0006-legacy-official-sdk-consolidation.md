@@ -31,7 +31,7 @@ GitHub repositories and shows **no install command for either**.
 **They were built with this project's own toolchain, from a different spec.** Both
 `Generate.bat` files invoke `@openapitools/openapi-generator-cli` (pinned 7.3.0; this effort
 pins 7.24.0) against `api.swaggerhub.com/apis/turbo-smtp/public/2.0.0-oas3` — a SwaggerHub-hosted
-spec, not the canonical `turbo-smtp-openapi` source that feeds `api-reference/turbo-smtp.yaml`.
+spec, not the canonical `turbo-smtp-openapi` source that feeds `api-reference/upstream/turbo-smtp.yaml`.
 Two independent spec sources for one API is a drift generator.
 
 **PHP had already reached this project's Packagist conclusion, and stopped.** Its
@@ -54,7 +54,7 @@ C# and PHP are the only SDKs the marketing site advertises, and retiring them ea
 advertise a gap.
 
 **The SwaggerHub spec source is retired.** The canonical spec is `turbo-smtp-openapi` →
-`api-reference/turbo-smtp.yaml` → `sdks/build/turbo-smtp.bundled.yaml`, per `CLAUDE.md`.
+`api-reference/upstream/turbo-smtp.yaml` → `sdks/build/turbo-smtp.bundled.yaml`, per `CLAUDE.md`.
 
 ### The repository-name constraint
 
@@ -175,6 +175,23 @@ the minimum needed to free a name; deletion is never required.
 - [ADR-0003](0003-sdk-repository-topology.md) — mirror repositories and published names; the name collision applies to its Python and PHP rows
 - `sdks/client-contract.md` §6 — canonical package names per registry
 - `sdks/TASKS.md` — 3.1/3.10 rename prerequisite, 9.1 the rename itself, 3.3b PyPI name, 4.7 mirror prerequisites, deprecation execution tasks
-- `CLAUDE.md` — canonical spec flow (`turbo-smtp-openapi` → `api-reference/` → `sdks/build/`)
+- `CLAUDE.md` — canonical spec flow (`turbo-smtp-openapi` → `api-reference/upstream/` → `sdks/build/`)
 - `turboSMTP/turboSMTP-csharp`, `turboSMTP/turboSMTP-php`, `turboSMTP/turboSMTP-python` — the superseded repositories
 - [PEP 541 — Package Index Name Retention](https://peps.python.org/pep-0541/) (the mechanism for claiming an abandoned PyPI name)
+
+---
+
+## Amendments
+
+An accepted ADR is not rewritten. This section records edits made after acceptance so the record
+stays navigable without pretending it was never touched.
+
+- **2026-09-20 — spec paths corrected.** The synced copy moved from `api-reference/turbo-smtp.yaml`
+  to `api-reference/upstream/turbo-smtp.yaml` (layout refactor, Phase 1). Three references were
+  re-pathed: the SwaggerHub comparison in Context, the retired-source statement in Decision, and the
+  spec-flow entry in References. **No decision, finding or date was altered** — the 2026-08-11
+  registry verification and the deprecation policy stand exactly as accepted.
+  One thing the move sharpens rather than changes: the derivation chain now begins with an
+  overlay step (`api-reference/overlays/`, [ADR-0013](0013-openapi-overlays.md)), which is a
+  generation-only transform and does not reintroduce the second spec source this record retired —
+  the served document is still the untouched upstream copy.

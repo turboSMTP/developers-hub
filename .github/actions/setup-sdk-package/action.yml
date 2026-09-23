@@ -1,0 +1,37 @@
+name: Set up an SDK package
+description: >-
+  Install Node, restore the npm cache keyed to one package's lockfile, and install that
+  package's dependencies. The shared prologue of every job that builds, typechecks or
+  tests a package.
+
+inputs:
+  path:
+    description: >-
+      Repository-relative path to the package directory, e.g. sdks/packages/node or
+      sdks/webhooks/node-webhook. Passed explicitly because a package's directory is not
+      derivable from its name — unified SDKs live under sdks/packages/ and webhook
+      receivers under sdks/webhooks/.
+    required: true
+  node-version:
+    description: Node major version to install. Defaults to the packages' declared engine floor.
+    required: false
+    default: '22'
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        cache: npm
+        cache-dependency-path: ${{ inputs.path }}/package-lock.json
+
+    # `prepare` would build on install and `pretest` builds again; skipping install
+    # scripts keeps it to one build.
+    #
+    # working-directory is set here rather than inherited: a job's `defaults.run` does
+    # NOT propagate into a composite action's steps, so without this the install would
+    # run at the repository root and quietly install nothing.
+    - run: npm ci --ignore-scripts
+      shell: bash
+      working-directory: ${{ inputs.path }}

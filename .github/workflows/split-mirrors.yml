@@ -13,6 +13,11 @@ name: Split packages to publish mirrors
 # Packagist reads composer.json from the repository root. That translation is the whole
 # reason this workflow exists.
 #
+# A slug equals its directory's own name, but not its parent: unified SDKs live under
+# sdks/packages/ and webhook receivers under sdks/webhooks/. The `case` below is the one
+# place that mapping is written down — adding a package means adding a line there and a
+# tag glob above, not relying on a path convention.
+#
 # Requires a secret `MIRROR_TOKEN` — a PAT or GitHub App installation token with
 # `contents: write` on every turbosmtp-* mirror the `case` below resolves to
 # (six today: the five unified SDKs plus turbosmtp-node-webhook). A token scoped
@@ -32,6 +37,18 @@ on:
       tag:
         description: 'Existing <package>/vX.Y.Z tag to (re-)split'
         required: true
+
+# READ, not write — deliberately, even though this workflow pushes.
+#
+# The push goes to a *mirror* repository and authenticates with MIRROR_TOKEN, never with
+# GITHUB_TOKEN. GITHUB_TOKEN is used for exactly one thing here: cloning this repository
+# at the tag. Granting `contents: write` would buy nothing and would undo the protection
+# that `persist-credentials: false` exists to provide — with credentials left in
+# .git/config, a bad or empty MIRROR_TOKEN silently falls back to GITHUB_TOKEN, which is
+# how a failed run once surfaced as an opaque 403 (see the checkout step). Read-only means
+# that fallback cannot write anywhere even if the guard is removed.
+permissions:
+  contents: read
 
 jobs:
   split:
@@ -76,13 +93,18 @@ jobs:
           tag="${INPUT_TAG:-$REF_NAME}"
           pkg="${tag%%/*}"
           version="${tag#*/}"
+          # This case is the authoritative slug -> (mirror, directory) map. The prefix is
+          # listed per slug rather than derived as sdks/packages/$pkg, because the webhook
+          # receivers live under sdks/webhooks/. A derived path would silently resolve to a
+          # directory that does not exist, and the check below would report it as a bad slug
+          # rather than a stale mapping.
           case "$pkg" in
-            node)         mirror=turbosmtp-node ;;
-            python)       mirror=turbosmtp-python ;;
-            csharp)       mirror=turbosmtp-dotnet ;;
-            go)           mirror=turbosmtp-go ;;
-            php)          mirror=turbosmtp-php ;;
-            node-webhook) mirror=turbosmtp-node-webhook ;;
+            node)         mirror=turbosmtp-node;         prefix=sdks/packages/node ;;
+            python)       mirror=turbosmtp-python;       prefix=sdks/packages/python ;;
+            csharp)       mirror=turbosmtp-dotnet;       prefix=sdks/packages/csharp ;;
+            go)           mirror=turbosmtp-go;           prefix=sdks/packages/go ;;
+            php)          mirror=turbosmtp-php;          prefix=sdks/packages/php ;;
+            node-webhook) mirror=turbosmtp-node-webhook; prefix=sdks/webhooks/node-webhook ;;
             *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
           esac
           if [ "$version" = "$tag" ]; then
@@ -97,15 +119,16 @@ jobs:
             echo "pkg=$pkg"
             echo "version=$version"
             echo "mirror=$mirror"
-            echo "prefix=sdks/packages/$pkg"
+            echo "prefix=$prefix"
           } >> "$GITHUB_OUTPUT"
 
       - name: Verify the package directory exists
         env:
           PREFIX: ${{ steps.target.outputs.prefix }}
+          PKG: ${{ steps.target.outputs.pkg }}
         run: |
           if [ ! -d "$PREFIX" ]; then
-            echo "::error::No package directory at '$PREFIX'. A package slug must equal its directory name under sdks/packages/."; exit 1
+            echo "::error::No package directory at '$PREFIX' for slug '$PKG'. The slug must equal the directory's own name, and the case block in this workflow must map it to the right parent (sdks/packages/ or sdks/webhooks/)."; exit 1
           fi
 
       - name: Split the package subtree

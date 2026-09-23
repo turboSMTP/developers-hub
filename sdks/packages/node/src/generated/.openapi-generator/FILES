@@ -1,13 +1,9 @@
-.gitignore
-.npmignore
-README.md
 docs/Attachment.md
 docs/MailApi.md
 docs/MailMessage.md
 docs/SendBadRequestResponseBody.md
 docs/SendSucessResponsetBody.md
 docs/SendUnauthorizedResponseBody.md
-package.json
 src/apis/MailApi.ts
 src/apis/index.ts
 src/index.ts
@@ -18,5 +14,3 @@ src/models/SendSucessResponsetBody.ts
 src/models/SendUnauthorizedResponseBody.ts
 src/models/index.ts
 src/runtime.ts
-tsconfig.esm.json
-tsconfig.json

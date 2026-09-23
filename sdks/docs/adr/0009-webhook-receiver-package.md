@@ -11,7 +11,7 @@
 ## Context
 
 [ADR-0007](0007-sdk-packaging-granularity.md) carve-out 2 granted standing permission for a separate
-webhook package per language. `sdks/packages/node-webhook/` is the first time that permission has
+webhook package per language. `sdks/webhooks/node-webhook/` is the first time that permission has
 been exercised, and exercising it showed that three of the carve-out's four factual premises do not
 hold for TurboSMTP:
 
@@ -27,7 +27,7 @@ hold for TurboSMTP:
   Basic credentials embedded in the callback URL configured in the dashboard
   (`https://user:pass@host/hook`), which the receiver reads from the `Authorization` header. There is
   no signature, so there is nothing to verify. The behaviour is live-verified and documented in
-  `sdks/packages/node-webhook/README.md`; it appears in no published TurboSMTP specification.
+  `sdks/webhooks/node-webhook/README.md`; it appears in no published TurboSMTP specification.
 - **"creates no work"** — it created three items, all of which had to be resolved before the package
   could be installed by anyone: it has no mirror repository, `split-mirrors.yml` has no arm that
   routes its tags, and its npm name is already taken.
@@ -170,6 +170,38 @@ one-unified-package rule for API domains is untouched.
 - [ADR-0007](0007-sdk-packaging-granularity.md) — carve-out 2 and the mirror-count consequence.
 - `client-contract.md` §7 — the discrepancy register. Webhooks are outside the contract's scope: it
   covers the API client surface, and the receiver has no operation in the served spec.
-- `sdks/packages/node-webhook/README.md` — the receiver surface and Basic-auth flow.
+- `sdks/webhooks/node-webhook/README.md` — the receiver surface and Basic-auth flow.
 - [npm: unpublishing packages from the registry](https://docs.npmjs.com/unpublishing-packages-from-the-registry)
   — the 72-hour window and the permanent reservation of published version numbers.
+
+---
+
+## Amendments
+
+An accepted ADR is not rewritten. This section records edits made after acceptance so the record
+stays navigable without pretending it was never touched.
+
+- **2026-09-20 — package path corrected, and decision 3 carried to its conclusion.** The package
+  moved from `sdks/packages/node-webhook/` to `sdks/webhooks/node-webhook/` (layout refactor,
+  Phase 2). Three references were re-pathed: the opening sentence of Context, the Basic-auth
+  citation, and the README entry in References. **No decision, premise correction or version
+  choice was altered** — the carve-out still stands on consumption asymmetry, the package is still
+  mirrored, and `0.2.0` is still the first publishable version.
+
+  Decision 3 is worth re-reading against the move, because the move is what completed it. That
+  decision observed that `node-webhook/v*` resolved *"only because the directory name happens to
+  equal the tag prefix"*, and warned that adding an arm without the rename would *"encode the
+  coincidence as if it were the design"*. The rename to `pkg` removed the misleading name but left
+  the coincidence itself intact: the prefix was still derived as `sdks/packages/$pkg`. Segregating
+  the receivers broke that derivation for real, and `split-mirrors.yml` now maps each slug to its
+  mirror **and** its directory in one `case` block. The invariant that survives — and that the
+  workflow still enforces at release time — is narrower than before: a slug equals its directory's
+  own name, but says nothing about the parent. The `case` block in `split-mirrors.yml` is the one
+  place that mapping is written down.
+
+  Measured at the time of the move: the mirror's synthetic history is unaffected in practice.
+  `git subtree split` does not follow renames, so the history restarts — but it was already one
+  commit deep, because the package was introduced in a single commit. Nothing was lost, and
+  `turbosmtp-node-webhook` had not yet been created, so no published mirror saw the discontinuity.
+  The constraint in Consequences — that the mirror must exist before the first release tag — is
+  unchanged and still outstanding.

@@ -7,6 +7,13 @@
  * Layer 1 `MailMessage` wire model (§4.2) and hides the dual-auth entirely.
  */
 
+import { TurboSMTPError, toTurboSMTPError } from '../errors';
+import type {
+  MailApi,
+  MailMessage,
+  SendSucessResponsetBody,
+  Attachment as WireAttachment,
+} from '../generated/src';
 import {
   type Address,
   type AddressInput,
@@ -16,13 +23,6 @@ import {
   rejectLineBreaks,
   senderDomain,
 } from './address';
-import { TurboSMTPError, toTurboSMTPError } from './errors';
-import type {
-  MailApi,
-  MailMessage,
-  SendSucessResponsetBody,
-  Attachment as WireAttachment,
-} from './generated/src';
 import { qualifyInlineCids } from './inline-cid';
 
 /** A file attached to an email. `content` is raw bytes — the SDK base64-encodes it. */

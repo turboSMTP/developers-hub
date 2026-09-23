@@ -1,7 +1,7 @@
 /**
  * Address types and formatting (client-contract.md §4.1).
  */
-import { TurboSMTPError } from './errors';
+import { TurboSMTPError } from '../errors';
 
 /** An email address with an optional display name. */
 export interface AddressObject {
