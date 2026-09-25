@@ -43,8 +43,8 @@ jobs:
   # Both ends of what the packages promise: `engines` says >=22, so 22 is the claim
   # under test and 24 is the active LTS consumers install today. The build toolchain
   # runs on both (typescript >=16.20, esbuild >=18), so no artifact hand-off is needed.
-  # This verifies the source tree, not the tarball; ADR-0004 rule 4's artifact-based
-  # check is still owed (ADR-0011 decision 3).
+  # This verifies the source tree, not the tarball; the artifact-based consumer-floor
+  # check is still owed.
   test:
     name: Test ${{ matrix.package.name }} on Node ${{ matrix.node }}
     runs-on: ubuntu-latest

@@ -42,7 +42,7 @@ jobs:
       # Spec-drift guard. Two checks, both offline:
       #   1. the synced copy still matches the checksum recorded when it was synced,
       #      catching an in-place edit of a file that is never hand-edited;
-      #   2. every overlay changes only what ADR-0013 permits — operationIds, naming,
+      #   2. every overlay changes only what the boundary permits — operationIds, naming,
       #      documentation and `x-` extensions — and never wire semantics.
       # Runs after the lint so an invalid spec fails on the clearer error first.
       - name: Spec-drift guard

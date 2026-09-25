@@ -1,6 +1,6 @@
 name: Split packages to publish mirrors
 
-# Publishing topology "C+" — see sdks/plan.md decision #2 and sdks/TASKS.md 4.7.
+# Publishing topology "C+" — see sdks/plan.md decision #2.
 #
 # developers-hub is the only repo anyone commits to. A release tag pushes that one
 # package's subtree to its read-only mirror, which is what npm / pkg.go.dev / Packagist

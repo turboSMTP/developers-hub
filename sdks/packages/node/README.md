@@ -329,8 +329,9 @@ const client = new TurboSMTPClient({
 });
 ```
 
-This is the same seam the SDK's own conformance tests use. See
-[ADR-0001](../../docs/adr/0001-nodejs-dependency-injection-strategy.md) for the design rationale.
+This is the same seam the SDK's own conformance tests use. `fetchApi` is a plain constructor
+option rather than a dependency resolved from a container, so the seam is visible in the
+signature and a test double needs no framework — the SDK ships none and imposes none.
 
 ---
 

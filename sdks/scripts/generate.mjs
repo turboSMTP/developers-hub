@@ -15,13 +15,12 @@
  *
  * Overlays are a GENERATION-ONLY concern: GitHub Pages serves api-reference/upstream/ verbatim, so
  * an overlay never reaches the published contract. It may change operationIds, naming and `x-`
- * extensions; it may never change wire semantics. See api-reference/overlays/README.md and
- * sdks/docs/adr/0013-openapi-overlays.md — those rules are what make this reconcilable with the
- * single-source-of-truth constraint.
+ * extensions; it may never change wire semantics. See api-reference/overlays/README.md — those
+ * rules are what make this reconcilable with the single-source-of-truth constraint.
  *
  * All three tools are pinned to an exact version. Neither the overlay step nor the bundler is a
  * passive step: their output is the generator's input, so a minor in either changes the committed
- * Layer 1 without any spec change. ADR-0004 rules 1-2 apply — never a range permitting minors, and
+ * Layer 1 without any spec change. Hence the policy: never a range permitting minors, and
  * the floor is the version actually validated.
  *
  * Cross-platform by design: pure Node + `npx`, so it runs identically on Windows (local) and Linux

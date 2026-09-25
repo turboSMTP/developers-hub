@@ -12,7 +12,7 @@
  * explicit expected surface first, and only then against the other.
  *
  * This is the Node instance of a language-agnostic requirement: "the packaged
- * artifact loads and exposes the contracted surface" (TASKS.md 4.1).
+ * artifact loads and exposes the contracted surface".
  */
 
 import assert from 'node:assert/strict';

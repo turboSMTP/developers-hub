@@ -59,5 +59,4 @@ filters and generates in one pass.
 
 If the problem is the *generated code* rather than the API itself — an unusable `operationId`, say —
 the fix is a generation-only overlay in `api-reference/overlays/`, not an edit to the synced copy.
-Overlays may never change wire semantics; see [`api-reference/overlays/README.md`](../../api-reference/overlays/README.md)
-and ADR-0013.
+Overlays may never change wire semantics; see [`api-reference/overlays/README.md`](../../api-reference/overlays/README.md).

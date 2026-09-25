@@ -4,7 +4,7 @@
  * Tests drive the facade through an injected `fetchApi` (the same seam the SDK
  * exposes for custom transports). This keeps the suite credential-free and
  * offline — it asserts what the SDK serializes onto the wire and how it maps
- * responses, with no live calls. The Prism mock harness (TASKS.md 4.2) layers
+ * responses, with no live calls. A future Prism mock harness would layer
  * on top of the same scenarios later.
  */
 

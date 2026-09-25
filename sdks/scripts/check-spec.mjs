@@ -9,7 +9,7 @@
  *      copy that is never hand-edited — which nothing else detects.
  *
  *   2. OVERLAY BOUNDARY — every overlay in api-reference/overlays/ changes only what
- *      ADR-0013 permits: operationIds, naming, documentation and `x-` extensions. Never
+ *      the boundary permits: operationIds, naming, documentation and `x-` extensions. Never
  *      wire semantics. Enforced by bundling the spec twice — once bare, once overlaid —
  *      and rejecting any difference outside the allowlist below.
  *
@@ -114,7 +114,7 @@ function checkChecksum() {
         `    - you have just re-synced legitimately — re-record the checksum:\n` +
         `          node sdks/scripts/check-spec.mjs --write-checksum\n\n` +
         `  If the goal was to change generated SDK code rather than the API contract, an\n` +
-        `  overlay in api-reference/overlays/ is the sanctioned route (ADR-0013).`,
+        `  overlay in api-reference/overlays/ is the sanctioned route.`,
     );
   }
   console.log(`✔ Sync integrity — spec matches its recorded checksum (${actual.slice(0, 12)}…)`);
@@ -214,7 +214,7 @@ function checkOverlays() {
       `${overlays.length} overlay(s) present, but they change nothing.\n` +
         `  An overlay that has no effect is dead — its target probably no longer matches, which\n` +
         `  means the defect it compensated for is silently back. Fix the target or delete the file\n` +
-        `  (ADR-0013: an overlay is deleted when its upstream issue closes).`,
+        `  An overlay is deleted when the upstream issue it compensates for closes.`,
     );
   }
 
@@ -222,7 +222,7 @@ function checkOverlays() {
   if (violations.length > 0) {
     const shown = violations.slice(0, 20).map((v) => `      ${v.kind.padEnd(7)} ${v.path.join('.')}`);
     fail(
-      `An overlay changes wire semantics, which ADR-0013 prohibits.\n\n` +
+      `An overlay changes wire semantics, which is prohibited.\n\n` +
         `  Overlays may change operationIds, naming, documentation and \`x-\` extensions only.\n` +
         `  These ${violations.length} change(s) are outside that boundary:\n\n` +
         `${shown.join('\n')}` +
@@ -233,7 +233,7 @@ function checkOverlays() {
   }
 
   console.log(
-    `✔ Overlay boundary — ${overlays.length} overlay(s), ${changes.length} change(s), all within ADR-0013`,
+    `✔ Overlay boundary — ${overlays.length} overlay(s), ${changes.length} change(s), all within the boundary`,
   );
 }
 

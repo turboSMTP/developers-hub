@@ -34,7 +34,7 @@ Orientation only — the pack carries the full map.
 
 - **`docs/`** — topic guides (getting-started, transactional, validation, webhooks)
 - **`api-reference/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, plus a self-contained Swagger UI bundle, deployed to GitHub Pages
-- **`sdks/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers (ADR-0009)
+- **`sdks/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — `workflows/` (every automation entry point), `actions/` (first-party composite actions — reusable steps, never entry points), and PR/issue templates
 
@@ -48,7 +48,7 @@ generated Layer 1 are in the pack.
 `api-reference/overlays/` does **not** create a second source of truth. Overlays are applied only
 while generating SDK code; GitHub Pages serves `upstream/` verbatim. An overlay may change
 operationIds, naming and `x-` extensions — never wire semantics — and is deleted when the upstream
-issue it compensates for closes. See `api-reference/overlays/README.md` and ADR-0013.
+issue it compensates for closes. See `api-reference/overlays/README.md`.
 
 ## API Documentation Sync
 
@@ -85,11 +85,10 @@ In-repo material the pack does not replace:
 
 - [`sdks/plan.md`](sdks/plan.md) — strategy narrative: the 3-layer architecture and rollout tiers
 - [`sdks/pipeline.md`](sdks/pipeline.md) — operational flow from canonical spec to registries and mirrors
-- [`sdks/docs/adr/`](sdks/docs/adr/) — Architecture Decision Records
 - [`sdks/index.md`](sdks/index.md) — per-language SDK status and planned package names
 
-> `sdks/client-contract.md` and `sdks/TASKS.md` are **historical record**: superseded by the context
-> pack and being retired. Do not cite them as authority.
+> `sdks/client-contract.md` is **transitional**: it is the semantic layer's current home and is
+> expected to be superseded once the semantic layer proper is built. Treat it as binding until then.
 
 **Two gotchas worth keeping in view:**
 

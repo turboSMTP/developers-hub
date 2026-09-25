@@ -9,7 +9,7 @@
 # tsconfig, README and npm publishing. Layer 1 (this directory) is source-only:
 # transport + models regenerated from the spec. The patterns below stop the
 # generator from re-emitting project scaffolding into the committed Layer 1 tree
-# on every run. See sdks/plan.md (3-layer architecture) and sdks/TASKS.md 2.1/2.2.
+# on every run. See sdks/plan.md for the 3-layer architecture.
 package.json
 tsconfig.json
 tsconfig.esm.json

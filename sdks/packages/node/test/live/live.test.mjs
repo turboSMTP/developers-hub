@@ -1,5 +1,5 @@
 /**
- * Live smoke tests against the real API (TASKS.md 4.3).
+ * Live smoke tests against the real API.
  *
  * Skipped unless credentials are present, so `npm test` stays offline and
  * credential-free. To run:

@@ -7,17 +7,17 @@ We have a finalized OpenAPI 3.1 spec (canonical in `turbo-smtp-openapi/`, synced
 Goals and constraints:
 - **Ease of use is the priority** — curated, idiomatic surface, not raw generated plumbing.
 - **Features need not map 1:1 to endpoints** — composed convenience (auto-pagination, retries, orchestrated helpers, hidden dual-auth).
-- **Consistency across all five languages** — one architecture. The existing C#/PHP/Python SDKs are rebuilt from scratch alongside the rest and then deprecated ([ADR-0006](docs/adr/0006-legacy-official-sdk-consolidation.md)).
+- **Consistency across all five languages** — one architecture. The existing C#/PHP/Python SDKs are rebuilt from scratch alongside the rest and then deprecated.
 - **Incremental, priority-driven rollout** — ship the most valuable features first, add the rest over time, and be free to never implement low-value ones.
 - **Don't over-engineer**; keep the ability to **expand the API and re-derive SDKs** cheaply.
 
 **Fixed decisions:**
 1. **Tooling = OpenAPI Generator (free/OSS).** No paid generators — cost is a hard no.
-2. **Development home = `developers-hub/sdks/`.** This repo is the single source for docs **and** SDK source **and** all developer material — one repo to commit to, one regeneration PR, one CI run that sees all five languages at once. There is no separate SDK *development* repo. **Publishing** goes through five CI-generated **read-only mirror repos** (`turbosmtp-node`, `-python`, `-dotnet`, `-go`, `-php`): mirrors are build output, not homes. The registries force this — public Packagist cannot read a `composer.json` from a subdirectory (subdirectory packages are paid Private Packagist only), and a Go module in a subdirectory bakes the repo path into its import path and requires prefixed version tags. Full record, including the rejected alternatives: **[ADR-0003](docs/adr/0003-sdk-repository-topology.md)**; implementation tracked as `TASKS.md` 4.7.
-3. **Packaging = one unified package per language** (not separate feature packages). Feature domains are **namespaces within it** (`turbo.mail`, `turbo.validation`, …), shipped incrementally by priority. Internal organization is idiomatic per language. Re-derived from each ecosystem's own official guidance — all five answer "how do I offer modular access" with an *intra-package* mechanism, and none recommends splitting a single API client by domain — and ratified 2026-08-14 as **[ADR-0007](docs/adr/0007-sdk-packaging-granularity.md)**, which holds the evidence, one carve-out (webhook signature verification is not an API domain) and four flip triggers that would reopen it. Per-language divergence is permitted in principle and warranted nowhere today.
-4. **Versioning = independent per language.** Each package versions on its own cadence (AWS/Google/Stripe model); there is no lockstep family version, so no language's release ever waits on another's readiness. Release tags in this repo are `<lang>/vX.Y.Z` (e.g. `node/v1.2.0`); the split workflow translates each to an **unprefixed** `vX.Y.Z` on its mirror, which is what pkg.go.dev and Packagist require. See [ADR-0003](docs/adr/0003-sdk-repository-topology.md).
-5. **This repo is the SDK program's decision record** (decided 2026-08-11, **[ADR-0005](docs/adr/0005-sdk-program-authority.md)**). `plan.md` + `client-contract.md` + `docs/adr/` govern SDK strategy, contract and process. The parallel RFC track in the private `turboSMTP/developer-ecosystem` repo — whose SDK-strategy RFC sat open and unreviewed from 2026-07-04 — is **superseded for SDK matters** and will be deprecated; four ideas worth keeping (maintainer-gated ownership, Rust as a sixth language, adopt-vs-build for community clients, and the stale-official-SDK lesson) are recorded there as candidates, not adopted. **Out of scope:** `turboSMTP-js` and the `@turbosmtp` npm scope, which keep `TASKS.md` 2.5 blocked.
-6. **The three legacy official SDKs are superseded, not modernized** (decided 2026-08-11, **[ADR-0006](docs/adr/0006-legacy-official-sdk-consolidation.md)**) — confirming point 3 of the goals above. `turboSMTP-csharp`, `turboSMTP-php` and `turboSMTP-python` satisfy no contract, sit outside this pipeline, were generated from a **SwaggerHub** spec rather than the canonical one, and were **never published to any registry**. Each is deprecated as this effort's replacement for that language publishes. Consequence with teeth: GitHub repo names are case-insensitive-unique, so the legacy `turboSMTP-python`/`turboSMTP-php` **occupy two of the mirror names** in point 2 and must be renamed before those mirrors can exist — archiving does not free a name.
+2. **Development home = `developers-hub/sdks/`.** This repo is the single source for docs **and** SDK source **and** all developer material — one repo to commit to, one regeneration PR, one CI run that sees all five languages at once. There is no separate SDK *development* repo. **Publishing** goes through five CI-generated **read-only mirror repos** (`turbosmtp-node`, `-python`, `-dotnet`, `-go`, `-php`): mirrors are build output, not homes. The registries force this — public Packagist cannot read a `composer.json` from a subdirectory (subdirectory packages are paid Private Packagist only), and a Go module in a subdirectory bakes the repo path into its import path and requires prefixed version tags.
+3. **Packaging = one unified package per language** (not separate feature packages). Feature domains are **namespaces within it** (`turbo.mail`, `turbo.validation`, …), shipped incrementally by priority. Internal organization is idiomatic per language. Re-derived 2026-08-14 from each ecosystem's own official guidance — all five answer "how do I offer modular access" with an *intra-package* mechanism, and none recommends splitting a single API client by domain. One carve-out: webhook signature verification is not an API domain. Per-language divergence is permitted in principle and warranted nowhere today.
+4. **Versioning = independent per language.** Each package versions on its own cadence (AWS/Google/Stripe model); there is no lockstep family version, so no language's release ever waits on another's readiness. Release tags in this repo are `<lang>/vX.Y.Z` (e.g. `node/v1.2.0`); the split workflow translates each to an **unprefixed** `vX.Y.Z` on its mirror, which is what pkg.go.dev and Packagist require.
+5. **This repo is the SDK program's decision record** (decided 2026-08-11). `plan.md` and `client-contract.md` govern SDK strategy and contract. The parallel RFC track in the private `turboSMTP/developer-ecosystem` repo — whose SDK-strategy RFC sat open and unreviewed from 2026-07-04 — is **superseded for SDK matters** and will be deprecated; four ideas worth keeping (maintainer-gated ownership, Rust as a sixth language, adopt-vs-build for community clients, and the stale-official-SDK lesson) are recorded there as candidates, not adopted. `turboSMTP-js` and the `@turbosmtp` npm scope were out of scope there; they were settled on 2026-09-23 — `turboSMTP-js` is superseded and Node stays unified.
+6. **The three legacy official SDKs are superseded, not modernized** (decided 2026-08-11) — confirming point 3 of the goals above. `turboSMTP-csharp`, `turboSMTP-php` and `turboSMTP-python` satisfy no contract, sit outside this pipeline, were generated from a **SwaggerHub** spec rather than the canonical one, and were **never published to any registry**. Each is deprecated as this effort's replacement for that language publishes. Consequence with teeth: GitHub repo names are case-insensitive-unique, so the legacy `turboSMTP-python`/`turboSMTP-php` **occupy two of the mirror names** in point 2 and must be renamed before those mirrors can exist — archiving does not free a name.
 
 ## Approach: Generated Core + Curated Facade (free stack)
 
@@ -53,7 +53,7 @@ Priority tiers (encoded in the contract; refine as we go):
 - **P2 — Analytics, Suppressions, Subaccounts, Account/consumer-key & auth** (account status lives here).
 - **P3 / maybe-never — Billing / credit purchase** (`/billing/*`), Alerts, Meta. Implement only if justified.
 
-**Generation is partitioned by domain** (the upstream spec is multi-file; the generation script filters the bundle by tag — `scripts/generate.mjs --domain`). This makes adding a later tier a clean additive change and keeps a future package split cheap **on the code side** — the distribution side is gated by [ADR-0007](docs/adr/0007-sdk-packaging-granularity.md)'s flip triggers.
+**Generation is partitioned by domain** (the upstream spec is multi-file; the generation script filters the bundle by tag — `scripts/generate.mjs --domain`). This makes adding a later tier a clean additive change and keeps a future package split cheap **on the code side** — the distribution side is gated by the packaging decision and the conditions recorded for reopening it.
 
 ## Tooling: OpenAPI Generator, with a spec-preprocessing pipeline
 
@@ -81,12 +81,12 @@ sdks/
   packages/
     node/  python/  csharp/  go/  php/   # Layer 1 (generated, domain-partitioned) + Layer 2 (facade) + Layer 3 (tests)
   webhooks/
-    node-webhook/  ...                   # webhook receivers — segregated from the unified SDKs (ADR-0009)
+    node-webhook/  ...                   # webhook receivers — segregated from the unified SDKs
   scripts/                    # overlay + bundle + generate; plus the spec-drift guard
 ```
 
 Publishing fans out from here to six read-only mirrors — the five unified SDKs plus the webhook
-receiver, which ADR-0009 settled is mirrored on the same terms (decision #2). Nothing is ever
+receiver, which is mirrored on the same terms (decision #2). Nothing is ever
 committed to a mirror; each is a `git subtree split` of one package directory:
 
 ```
@@ -97,7 +97,7 @@ sdks/packages/{node,python,csharp,go,php}  +  sdks/webhooks/node-webhook
       ├──→ turbosmtp-dotnet  (read-only) → NuGet     TurboSMTP
       ├──→ turbosmtp-go      (read-only) → pkg.go.dev
       ├──→ turbosmtp-php     (read-only) → Packagist turbosmtp/turbosmtp-client
-      └──→ turbosmtp-node-webhook (read-only) → npm  @turbosmtp/webhook  (ADR-0009; not yet created)
+      └──→ turbosmtp-node-webhook (read-only) → npm  @turbosmtp/webhook
 ```
 
 Note that the mirror **repository** name and the **package** name are independent: the PHP
@@ -116,9 +116,9 @@ declares `github.com/turbosmtp/…` and a user runs `go get github.com/turboSMTP
 build fails with *"module declares its path as X but was required as Y"*. Upper-case
 letters also get `!`-escaped in proxy and module-cache paths (`turbo!s!m!t!p`). Any
 published guide showing a mixed-case `go get` must be corrected before Go ships — see
-`TASKS.md` 3.7.
+the Go SDK's module identity.
 
-- **Spec source for generation:** the in-repo `api-reference/upstream/turbo-smtp.yaml` (keeps `developers-hub` self-contained in CI). It continues to sync from `turbo-smtp-openapi/` per the existing CLAUDE.md step. Generation-only overlays in `api-reference/overlays/` are applied before bundling and never reach the served spec — see ADR-0013.
+- **Spec source for generation:** the in-repo `api-reference/upstream/turbo-smtp.yaml` (keeps `developers-hub` self-contained in CI). It continues to sync from `turbo-smtp-openapi/` per the existing CLAUDE.md step. Generation-only overlays in `api-reference/overlays/` are applied before bundling and never reach the served spec.
 - **Regeneration:** a new `.github/workflows/generate-sdks.yml` runs bundle → generate on spec change and opens a PR with the regenerated Layer 1. Layer 2 facade is untouched by regen; only genuinely new domains/endpoints need facade additions.
 - **Publishing:** per-language, triggered by a `<lang>/vX.Y.Z` tag. npm / PyPI / NuGet publish directly from this repo; `.github/workflows/split-mirrors.yml` pushes each package subtree to its read-only mirror and translates the tag to unprefixed `vX.Y.Z` — which is how pkg.go.dev and Packagist consume Go and PHP, and what gives every language a clean, discoverable public repo. Mirrors have Issues disabled and a read-only README banner, so all issues land here. (GitHub cannot disable pull requests — unsolicited ones are closed with a pointer back.)
 

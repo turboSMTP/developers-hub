@@ -27,8 +27,7 @@ path as X but was required as Y"*.
 ### Superseded SDKs
 
 Three repositories previously carried the official label. None was ever published to a package
-registry, and all three are superseded by the SDKs described above — see
-[ADR-0006](docs/adr/0006-legacy-official-sdk-consolidation.md). They are deprecated per language as
+registry, and all three are superseded by the SDKs described above. They are deprecated per language as
 each replacement ships, so they remain readable until then.
 
 | Repository | Language | Note |
@@ -44,9 +43,8 @@ each replacement ships, so they remain readable until then.
 All official TurboSMTP SDKs expose a **unified client surface** — one package per language for the
 API itself, with each API domain as a namespace (`mail`, `validation`, …). There is no need to
 install a separate library per API domain. Webhook receiving ships separately where a language
-warrants it ([ADR-0007](docs/adr/0007-sdk-packaging-granularity.md) carve-out 2,
-[ADR-0009](docs/adr/0009-webhook-receiver-package.md)), because the receiver runs in the process
-that accepts callbacks rather than the one that sends mail. The surface every SDK must satisfy is
+warrants it, because the
+receiver runs in the process that accepts callbacks rather than the one that sends mail. The surface every SDK must satisfy is
 fixed in [`client-contract.md`](client-contract.md).
 
 Minimal instantiation, as shipped in the Node.js SDK:

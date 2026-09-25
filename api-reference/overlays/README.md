@@ -69,7 +69,3 @@ longer matches means the defect it compensated for is silently back.
 
 **Rule 3 is not machine-checkable.** Nothing can verify that the issue named in `info.description`
 is real or still open. That one is on review.
-
-## Background
-
-See [`sdks/docs/adr/0013-openapi-overlays.md`](../../sdks/docs/adr/0013-openapi-overlays.md).

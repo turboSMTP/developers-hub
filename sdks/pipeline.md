@@ -1,9 +1,9 @@
 # SDK Pipeline — from canonical spec to published mirrors
 
 How a change to the OpenAPI specification becomes five published SDKs. Strategy lives in
-[`plan.md`](./plan.md), the executable checklist in [`TASKS.md`](./TASKS.md), the binding surface in
-[`client-contract.md`](./client-contract.md), and the significant decisions in
-[`docs/adr/`](./docs/adr/). This document describes the **operational flow** those files assume.
+[`plan.md`](./plan.md) and the binding surface in
+[`client-contract.md`](./client-contract.md). This document describes the **operational flow**
+those files assume.
 
 ---
 
@@ -62,7 +62,7 @@ directory's own **name** — `node`, `python`, `csharp`, `go`, `php` under `sdks
 block in `split-mirrors.yml` is the authoritative slug → (mirror, directory) map. Versions are
 **independent per publishable unit** — no lockstep family version, so no package's release waits on
 another. The slug equals the language only for the five unified SDKs, because each is that
-language's single unit; Node has two ([ADR-0009](docs/adr/0009-webhook-receiver-package.md)). The
+language's single unit; Node has two — the unified SDK and the webhook receiver. The
 two publication routes differ because two registries consume a repository rather than an uploaded
 artifact.
 
@@ -84,7 +84,7 @@ flowchart LR
 The **tag translation is the point of the whole workflow**: Go resolves versions from root-module
 tags, and Packagist reads `composer.json` from a repository root. A module in a subdirectory would
 need `sdks/packages/go/v1.0.0`-style prefixed tags, and Packagist could not index it at all on the
-free tier. See [ADR-0003](./docs/adr/0003-sdk-repository-topology.md).
+free tier.
 
 ## The three layers
 
@@ -110,7 +110,7 @@ the canonical package name per registry, and the priority tiers (P0 Mail → P1 
 | Layer 1 generation | **manual** — `scripts/generate.mjs` |
 | Build + tests | automated on `npm test` |
 | Mirror split + tag translation | automated (`split-mirrors.yml`, proven 2026-08-06) |
-| Regeneration on spec change | **not built** — `TASKS.md` 4.4 |
+| Regeneration on spec change | **not built** |
 | Spec-drift guard | **not built** — 4.5 |
 | Publish CI | **not built** — 4.6 |
 | Shared conformance matrix · mock server · live smoke | **not built** — 4.1 / 4.2 / 4.3 |
