@@ -21,33 +21,13 @@ one language's idioms. It exists to:
 developer touches. It does **not** dictate Layer 1 (generated) internals, which are per-language and
 regenerated from the spec.
 
-**Authority:** this contract is authoritative. Any facade addition must land here first
-(see [§8](#8-conformance--change-control)). Where the raw spec and this contract disagree, the
-contract wins for the facade surface, and the divergence is recorded in
-[§7 Discrepancies register](#7-discrepancies-register).
-
-**Spec source of truth:** `../api-reference/turbo-smtp.yaml` (OpenAPI 3.1, `info.version 2.0.0-oas3`).
-Every field, enum, host, and status code below is traceable to it. Do not hand-edit that spec here;
-changes are made upstream in `turbo-smtp-openapi/` and re-synced.
+**Spec source of truth:** the synced OpenAPI 3.1 copy under `../api-reference/upstream/`.
 
 ## 2. Layering recap
 
-Each SDK is three thin layers (full rationale in `plan.md`):
-
-- **Layer 1 — Generated core.** Transport, (de)serialization, auth headers, models, multipart —
-  produced by OpenAPI Generator, regenerated on spec change, committed per language. **Not governed
-  by this contract.**
-  > **Hiding Layer 1 is asymmetric, and the asymmetry is accepted.** It is *enforceable* only in **Node**
-  > (`exports` encapsulation makes unlisted subpaths throw `ERR_PACKAGE_PATH_NOT_EXPORTED`) and
-  > **Go** (`internal/`, which the compiler enforces). **Python** (`turbosmtp._generated`) and
-  > **PHP** (`@internal`) are convention-only, and **C# cannot hide it at all** — the generator
-  > emits `public` types in `TurboSMTP.Generated`. So in three of five languages a consumer *can*
-  > reach Layer 1 and may bind to it. This is documented rather than fought with custom templates;
-  > what the contract guarantees is the Layer 2 surface, not the unreachability of Layer 1.
-- **Layer 2 — Curated facade.** The unified `TurboSMTPClient` and its domain namespaces. This is
-  where the surface diverges from endpoints 1:1 (arrays instead of CSV, hidden auth, composed
-  helpers). **This contract governs Layer 2.**
-- **Layer 3 — Tests, examples, docs.** Conformance tests derived from [§3.3](#33-p0-mail-conformance-scenarios).
+The three-layer architecture — Generated Core, Curated Facade, Conformance Tests — and the
+asymmetry in how far each language can hide the generated core are described in
+[`plan.md`](./plan.md) and [`pipeline.md`](./pipeline.md). This document governs the Curated Facade.
 
 ## 3. Cross-cutting conventions
 
@@ -81,10 +61,6 @@ Notes:
 
 ### 3.2 Auth model
 
-The spec defines three `apiKey`-in-header schemes: `Authorization` (the raw key — **no `Bearer`
-prefix**), `consumerKey`, and `consumerSecret` (`components.securitySchemes`). Different operations
-require different schemes, and `/mail/send` explicitly **rejects** `Authorization`.
-
 The facade **hides this entirely**. The developer supplies one credential object; the SDK attaches
 the correct headers per operation.
 
@@ -106,7 +82,6 @@ TurboSMTPClient({
   operations (e.g. consumer-key management, `/authorize`), an optional `apiKey` field is added to the
   credential object and the SDK routes per operation. Not in P0 because no P0 operation can use it.
   This is an **additive** change — it will not break the P0 shape.
-- This deliberately corrects today's guides, whose single-`TURBO_API_KEY` init **cannot send mail**.
 
 ### 3.2b Region model
 
@@ -131,10 +106,6 @@ A raw `baseUrl` override escape-hatch is **out of scope** for P0 (may be revisit
 deployments need it).
 
 ### 3.3 P0 Mail conformance scenarios
-
-> **This section is a stable anchor** — `TASKS.md` 2.3 and 4.1 reference **§3.3** by number. Scenario
-> numbers are permanent: never renumbered, never reused, never retired. New rules append, and the
-> count is not a constraint ([§8.1](#81-amendment-mechanism)).
 
 Every SDK's Layer 3 tests must cover these **11 scenarios**. They run against the Prism mock server
 (credential-free) except where a live send is noted; scenarios 1–2 also back a gated live smoke test.
@@ -299,7 +270,8 @@ Not exposed as first-class params (available via `headers`/`mimeRaw`): `List-Uns
 SendResult { messageId: string }
 ```
 
-- `messageId` = `mid` **stringified** (per `TASKS.md` 2.2 — a 64-bit id is unsafe as a JS `number`).
+- `messageId` = `mid` **stringified**. `mid` is an int64, which is unsafe as a JavaScript `number`;
+  every language returns it as a string so the surface is identical across all five.
 - `message` (e.g. `"OK"`) is not surfaced as a primary field; SDKs may expose it as `SendResult.raw`
   but the contracted, tested field is `messageId`.
 
@@ -337,9 +309,8 @@ Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's
 
 ## 5. P1 — Email Validation (framework + `validateList` sketch)
 
-> **Full P1 method signatures and return schemas are deferred to `TASKS.md` task 5.1.** This section
-> fixes the namespace, the composed-helper shape, and the result vocabulary so P0 review can approve
-> the direction without blocking on P1 detail.
+> **Full P1 method signatures and return schemas are not yet specified.** This section fixes the
+> namespace, the composed-helper shape and the result vocabulary; the rest lands when P1 starts.
 
 **Namespace:** `validation`. Backing operations are the served `/emailvalidation/*` set
 (`getEmailValidationSubscription`, `uploadEmailValidationFile`, `getEmailValidationLists`,
@@ -347,7 +318,7 @@ Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's
 `getValidatedEmailsByList`, `getEmailValidationDataByEmailId`, `exportCSVValidatedEmailsByList`,
 `validateEmail`).
 
-Planned surface (to be detailed in 5.1):
+Planned surface:
 
 - **`validation.verify(email)`** — single-address check (`validateEmail`).
 - **`validation.validateList(file)`** — the **composed helper** (Layer 2 only): `upload` →
@@ -363,17 +334,13 @@ Planned surface (to be detailed in 5.1):
 
 ## 6. Priority tiers, namespaces & domain coverage
 
-Folds in **task 0.3**. Namespaces are confirmed as: **`mail`, `validation`, `analytics`,
-`suppressions`, `subaccounts`, `account`**.
+Namespaces are confirmed as: **`mail`, `validation`, `analytics`, `suppressions`, `subaccounts`,
+`account`**.
 
-> **Namespaces are a *surface* guarantee, independent of distribution granularity.**
-> This table fixes what a developer reaches
-> (`client.mail`, `client.validation`, …) and says nothing about how many packages the surface arrives
-> in. Today the program fixes that at **one unified package per language** — so the §3.1 `Package` row is
-> one registry name each — and if a flip trigger ever splits a language, this table is unaffected: the
-> namespaces are the same, only the install line changes. Consequently a package-name change (e.g. the
-> unresolved PyPI `turbosmtp` conflict, `TASKS.md` 3.3b) amends §3.1's `Package` row alone and touches
-> nothing here, because a *distribution* name is not an *import* name.
+> **Namespaces are a *surface* guarantee, independent of distribution granularity.** This table
+> fixes what a developer reaches (`client.mail`, `client.validation`, …) and says nothing about how
+> many packages the surface arrives in. A change to a *distribution* name is not a change to an
+> *import* name, and does not touch this table.
 
 | Tier | Namespace(s) | Domain | Auth path | Status |
 |---|---|---|---|---|
@@ -386,8 +353,6 @@ Folds in **task 0.3**. Namespaces are confirmed as: **`mail`, `validation`, `ana
 | **P3 / maybe-never** | `billing` | `/billing/*` | — | implement only if justified |
 | **P3 / maybe-never** | `alerts` | alerts | — | low priority |
 | **P3 / maybe-never** | `meta` | countries/states | — | low priority |
-
-**Served surface:** 39 paths / 60 operationIds.
 
 **Coverage caveat — orphaned operations (do NOT promise in any SDK).** These are defined in the
 upstream domain files but never wired into the root `paths:`, so they are pruned from the served
@@ -419,14 +384,8 @@ Spec-vs-reality gaps the facade papers over (each one drives a mapping/decision 
 
 ## 8. Conformance & change control
 
-- This contract is **authoritative** for the Layer 2 surface. Every SDK must expose exactly the
-  contracted namespaces, methods, params, returns, and error types for the tiers shipped so far.
-- The shared conformance test matrix (Phase 4, `TASKS.md` 4.1) is **derived from
-  [§3.3](#33-p0-mail-conformance-scenarios)**; those scenario numbers are a stable API.
-- **Any facade addition or change lands here first**, then in the SDKs — never the reverse. This is
-  the safeguard against cross-language drift.
-- **Review gate:** this document must be reviewed and approved before any Phase 1 generation or
-  Phase 2 facade code begins.
+- Every SDK must expose exactly the contracted namespaces, methods, params, returns and error types
+  for the tiers shipped so far.
 
 ### 8.1 Amendment mechanism
 
