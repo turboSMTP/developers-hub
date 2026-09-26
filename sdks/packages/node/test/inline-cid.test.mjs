@@ -1,5 +1,5 @@
 /**
- * Inline image references (client-contract.md §4.5).
+ * Inline image references.
  *
  * TurboSMTP composes an inline part's Content-ID as `<content_id@sender-domain>`,
  * so the HTML reference has to carry that domain or the image is delivered as a
@@ -23,7 +23,7 @@ const send = async (message) => {
 
 const inline = (contentId) => ({ content: bytes, filename: 'l.png', contentType: 'image/png', contentId });
 
-test('§3.3.5 a bare cid reference gains the sender domain', async () => {
+test('a bare cid reference gains the sender domain', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -35,7 +35,7 @@ test('§3.3.5 a bare cid reference gains the sender domain', async () => {
   assert.equal(body.html_content, '<img src="cid:logo@x.com">');
 });
 
-test('§3.3.5 the wire attachment keeps the bare content_id', async () => {
+test('the wire attachment keeps the bare content_id', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -47,7 +47,7 @@ test('§3.3.5 the wire attachment keeps the bare content_id', async () => {
   assert.equal(body.attachments[0].content_id, 'logo');
 });
 
-test('§3.3.5 a sender with a display name still yields the domain', async () => {
+test('a sender with a display name still yields the domain', async () => {
   const body = await send({
     from: { address: 'a@x.com', name: 'Sales' },
     to: ['b@y.com'],
@@ -59,7 +59,7 @@ test('§3.3.5 a sender with a display name still yields the domain', async () =>
   assert.equal(body.html_content, '<img src="cid:logo@x.com">');
 });
 
-test('§3.3.5 a pre-formatted sender string still yields the domain', async () => {
+test('a pre-formatted sender string still yields the domain', async () => {
   const body = await send({
     from: 'Sales <a@x.com>',
     to: ['b@y.com'],
@@ -71,7 +71,7 @@ test('§3.3.5 a pre-formatted sender string still yields the domain', async () =
   assert.equal(body.html_content, '<img src="cid:logo@x.com">');
 });
 
-test('§3.3.5 an already-qualified reference is left alone', async () => {
+test('an already-qualified reference is left alone', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -83,7 +83,7 @@ test('§3.3.5 an already-qualified reference is left alone', async () => {
   assert.equal(body.html_content, '<img src="cid:logo@other.com">');
 });
 
-test('§3.3.5 a shorter id does not match inside a longer one', async () => {
+test('a shorter id does not match inside a longer one', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -95,7 +95,7 @@ test('§3.3.5 a shorter id does not match inside a longer one', async () => {
   assert.equal(body.html_content, '<img src="cid:logo@x.com"><img src="cid:logo2@x.com">');
 });
 
-test('§3.3.5 every occurrence of the same id is qualified', async () => {
+test('every occurrence of the same id is qualified', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -119,7 +119,7 @@ test('an attachment without a contentId triggers no rewrite', async () => {
   assert.equal(body.html_content, '<img src="cid:logo">');
 });
 
-test('§3.3.5 a text-only message is untouched', async () => {
+test('a text-only message is untouched', async () => {
   const body = await send({
     from: 'a@x.com',
     to: ['b@y.com'],
@@ -132,7 +132,7 @@ test('§3.3.5 a text-only message is untouched', async () => {
   assert.ok(!('html_content' in body), 'html_content omitted when only text is given');
 });
 
-test('§3.3.5 a sender without a parseable domain triggers no rewrite', async () => {
+test('a sender without a parseable domain triggers no rewrite', async () => {
   const body = await send({
     from: 'nodomain',
     to: ['b@y.com'],

@@ -9,7 +9,7 @@ Official and community-maintained client libraries for the TurboSMTP API.
 > **Status, 2026-08-11.** No TurboSMTP SDK is published to a package registry yet. The table below
 > reports actual availability — earlier revisions of this page listed install commands for packages
 > that do not exist. Planned package names are fixed in
-> [`client-contract.md`](client-contract.md) §6 but are not installable until each SDK ships.
+> [`semantic-layer.md`](semantic-layer.md) but are not installable until each SDK ships.
 
 | Language | Status | Install | Guide |
 |---|---|---|---|
@@ -45,7 +45,7 @@ API itself, with each API domain as a namespace (`mail`, `validation`, …). The
 install a separate library per API domain. Webhook receiving ships separately where a language
 warrants it, because the
 receiver runs in the process that accepts callbacks rather than the one that sends mail. The surface every SDK must satisfy is
-fixed in [`client-contract.md`](client-contract.md).
+fixed in [`semantic-layer.md`](semantic-layer.md).
 
 Minimal instantiation, as shipped in the Node.js SDK:
 

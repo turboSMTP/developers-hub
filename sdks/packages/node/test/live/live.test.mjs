@@ -12,7 +12,7 @@
  *
  * They exist to catch what the mocked suite structurally cannot: whether the API
  * *accepts* what the facade serializes. That is not hypothetical — the recipient
- * comma rule in §4.1 was written only after a live run rejected an RFC-correct
+ * comma rule was written only after a live run rejected an RFC-correct
  * quoted display name.
  */
 
@@ -59,7 +59,7 @@ suite('live smoke tests', () => {
   const subject = (name) => `[live] ${name} — ${stamp}`;
 
   // The API is rate limited, and the spec models neither 429 nor rate-limit headers
-  // (contract §7, discrepancy 7), so the suite paces itself instead of firing every
+  // — it is a known spec gap — so the suite paces itself instead of firing every
   // send back to back. node:test already runs these sequentially; the gap makes the
   // throttling deliberate rather than incidental.
   const PACE_MS = Number(process.env.TURBOSMTP_LIVE_PACE_MS ?? 1000);

@@ -1,5 +1,5 @@
 /**
- * Typed error hierarchy for the TurboSMTP SDK (client-contract.md §3.4).
+ * Typed error hierarchy for the TurboSMTP SDK.
  *
  * The generated Layer 1 throws `ResponseError` (any non-2xx) and `FetchError`
  * (transport failure). Layer 2 catches those and normalizes them into this
@@ -60,10 +60,10 @@ export class BadRequestError extends TurboSMTPError {
 }
 
 /**
- * 400 — input-validation subset of BadRequestError, when distinguishable (§3.4).
+ * 400 — input-validation subset of BadRequestError, when distinguishable.
  *
  * Unreachable in P0 and deliberately so: `/mail/send` answers 400 with the
- * send-specific `{ message, errors[] }` body, which §3.4 maps to `BadRequestError`.
+ * send-specific `{ message, errors[] }` body, which maps to `BadRequestError`.
  * The domain 400 enums that map here arrive with the validation domain (P1).
  */
 export class ValidationError extends BadRequestError {

@@ -2,7 +2,7 @@
 
 How a change to the OpenAPI specification becomes five published SDKs. Strategy lives in
 [`plan.md`](./plan.md) and the binding surface in
-[`client-contract.md`](./client-contract.md). This document describes the **operational flow**
+[`semantic-layer.md`](./semantic-layer.md). This document describes the **operational flow**
 those files assume.
 
 ---
@@ -40,9 +40,9 @@ flowchart TD
         H --> T
     end
 
-    CONTRACT["client-contract.md<br/>RATIFIED · review-gated"]
-    CONTRACT -.->|"§6 namespaces, methods, package names"| F
-    CONTRACT -.->|"§3.3 scenarios · §3.4 error taxonomy"| G
+    CONTRACT["semantic-layer.md<br/>the binding facade surface"]
+    CONTRACT -.->|"namespaces, methods, package names"| F
+    CONTRACT -.->|"conformance scenarios · error taxonomy"| G
 
     T --> REG1["npm · PyPI · NuGet<br/>published from this repo"]
     T -->|"split-mirrors.yml<br/>git subtree split"| M
@@ -94,12 +94,12 @@ free tier.
 | **2 — facade** | Hand-authored | Where features stop mapping 1:1 to endpoints: dual-auth hidden behind one credential object, region → host, recipient arrays → CSV, `text`→`content`, `replyTo`→`custom_headers`, base64 attachments, and the 64-bit `mid` read from raw response text because `JSON.parse` rounds past 2^53. Strictly bounded by the contract |
 | **3 — tests** | Derived from the contract | Credential-free and offline via an injected `fetchApi` seam; plus packaging tests asserting every shipped artifact against an explicit export list |
 
-## The contract is the load-bearing part
+## The semantic layer is the load-bearing part
 
-`client-contract.md` is what makes five independently-generated SDKs behave alike — the guarantee no
-generator can provide. It is **ratified and review-gated: amend it before changing an SDK, never
-after**. It fixes the namespaces and method shapes, the error taxonomy, auth and region behaviour,
-the canonical package name per registry, and the priority tiers (P0 Mail → P1 Validation → P2 → P3).
+`semantic-layer.md` is what makes five independently-generated SDKs behave alike — the guarantee no
+generator can provide. **Amend it before changing an SDK, never after.** It fixes the namespaces and
+method shapes, the error taxonomy, auth and region behaviour, the canonical package name per
+registry, and the priority tiers (P0 Mail → P1 Validation → P2 → P3).
 
 ## Automation status
 

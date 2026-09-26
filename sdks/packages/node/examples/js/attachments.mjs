@@ -1,5 +1,5 @@
 /**
- * Attachments (§3.3.5) — a file attachment plus an embedded image.
+ * Attachments — a file attachment plus an embedded image.
  *
  * `Attachment.content` is raw bytes (Uint8Array | ArrayBuffer); the SDK
  * base64-encodes it. Set `contentId` and reference it from HTML as `cid:<id>`;

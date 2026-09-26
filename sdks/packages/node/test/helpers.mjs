@@ -1,5 +1,5 @@
 /**
- * Test helpers for the P0 Mail conformance suite (client-contract.md §3.3).
+ * Test helpers for the P0 Mail conformance suite.
  *
  * Tests drive the facade through an injected `fetchApi` (the same seam the SDK
  * exposes for custom transports). This keeps the suite credential-free and

@@ -1,10 +1,10 @@
 /**
- * Mail namespace — `client.mail.send(...)` (client-contract.md §4).
+ * Mail namespace — `client.mail.send(...)`.
  *
  * This is the curated Layer 2 surface: idiomatic arrays for recipients, `text`/
  * `html` bodies, a first-class `replyTo`, byte attachments (base64 is handled for
  * the developer), and a stringified `messageId`. It maps onto the generated
- * Layer 1 `MailMessage` wire model (§4.2) and hides the dual-auth entirely.
+ * Layer 1 `MailMessage` wire model and hides the dual-auth entirely.
  */
 
 import { TurboSMTPError, toTurboSMTPError } from '../errors';
@@ -87,7 +87,7 @@ function bytesToBase64(input: Uint8Array | ArrayBuffer): string {
 /**
  * Merge custom headers with an explicit `replyTo` (replyTo wins). The pairs land in
  * MIME headers verbatim, so a line break in a name or a value is header injection
- * exactly as it is in an address (§4.1).
+ * exactly as it is in an address.
  */
 function buildCustomHeaders(msg: SendMessage): { [key: string]: string } | undefined {
   const headers: { [key: string]: string } = { ...(msg.headers ?? {}) };
@@ -116,7 +116,7 @@ function toWireAttachment(a: Attachment): WireAttachment {
 }
 
 /**
- * The HTML body with every inline `cid:` reference qualified by the sender domain (§4.5).
+ * The HTML body with every inline `cid:` reference qualified by the sender domain.
  * Returns the body untouched when there is nothing to qualify.
  */
 function toHtmlContent(msg: SendMessage): string | undefined {
@@ -136,8 +136,8 @@ function toHtmlContent(msg: SendMessage): string | undefined {
  * The types mark `from` and `to` required, but the package ships CJS/ESM to
  * JavaScript callers who get no such check. Without this they fault inside
  * `formatAddress` with a `TypeError` naming an internal property, outside the
- * typed hierarchy §3.4 promises. An empty `to` array is left alone: the server
- * rejects it with a 400 (§3.3 scenario 8).
+ * typed hierarchy this SDK promises. An empty `to` array is left alone: the
+ * server rejects it with a 400.
  */
 function required<T>(value: T | null | undefined, field: string): T {
   if (value == null) {
@@ -146,7 +146,7 @@ function required<T>(value: T | null | undefined, field: string): T {
   return value;
 }
 
-/** Map the facade message onto the generated `MailMessage` (§4.2). */
+/** Map the facade message onto the generated `MailMessage`. */
 export function toMailMessage(msg: SendMessage): MailMessage {
   return {
     from: formatAddress(required(msg.from, 'from')),
@@ -169,7 +169,7 @@ export function toMailMessage(msg: SendMessage): MailMessage {
  *
  * `mid` is a 64-bit id. Layer 1 (and `JSON.parse`) coerce it to a JS `number`,
  * which silently rounds any value above 2^53 — so we must read the exact digits
- * from the untouched response text (contract §4.3). Falls back to the parsed
+ * from the untouched response text. Falls back to the parsed
  * number only if the raw scan fails.
  */
 function extractMessageId(rawText: string, parsed: SendSucessResponsetBody | undefined): string {

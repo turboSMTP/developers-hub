@@ -1,5 +1,5 @@
 /**
- * Multiple recipients (§3.3.3) + Reply-To (§3.3.4).
+ * Multiple recipients + Reply-To.
  *
  * `to`, `cc`, and `bcc` are always arrays; the SDK joins them for the wire.
  * `replyTo` is first-class and is sent as a custom `reply-to` header.

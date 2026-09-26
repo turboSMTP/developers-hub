@@ -1,6 +1,6 @@
 /**
- * Address formatting (client-contract.md §4.1), plus conformance scenarios §3.3.9
- * and §3.3.10, which are address rules rather than send-shape rules.
+ * Address formatting, plus the Reply-To precedence and line-break rejection
+ * conformance scenarios, which are address rules rather than send-shape rules.
  *
  * Every address parameter accepts a pre-formatted string, a structured address
  * with an optional display name, or a collection of either. Assertions read the
@@ -70,7 +70,7 @@ test('a comma in a recipient display name is rejected with an actionable message
 
 // The check reads the display name, not the formatted output: a bare CSV is the
 // wire format of these fields, so rejecting it would refuse the exact string the
-// SDK itself emits, and §4.1 passes a pre-formatted string through verbatim.
+// SDK itself emits, and a pre-formatted string passes through verbatim.
 test('a comma-separated recipient string is passed through, not rejected', async () => {
   const body = await send({ ...base, from: 'a@x.com', to: 'b@y.com,c@y.com' });
 
@@ -137,8 +137,8 @@ test('replyTo accepts an address object and reaches custom_headers', async () =>
   assert.equal(body.custom_headers['reply-to'], 'Reply Desk <r@x.com>');
 });
 
-// §3.3.9 — Reply-To precedence ------------------------------------------------
-test('§3.3.9 an explicit replyTo replaces a custom header of any casing', async () => {
+// Reply-To precedence ------------------------------------------------
+test('an explicit replyTo replaces a custom header of any casing', async () => {
   const body = await send({
     ...base,
     from: 'a@x.com',
@@ -163,14 +163,14 @@ test('a custom Reply-To header survives when no replyTo is given', async () => {
   assert.equal(body.custom_headers['Reply-To'], 'kept@x.com');
 });
 
-// §3.3.10 — Line-break rejection ----------------------------------------------
+// Line-break rejection ----------------------------------------------
 // Every address field routes through formatAddress, so the guard is asserted on all
 // five rather than on the one that happened to be reported. Custom headers reach a
 // MIME header just as directly, so they are covered by the same scenario.
 const FIELDS = ['from', 'to', 'cc', 'bcc', 'replyTo'];
 const valid = { from: 'a@x.com', to: ['b@y.com'] };
 
-test('§3.3.10 a line break in a display name is rejected in every address field', async () => {
+test('a line break in a display name is rejected in every address field', async () => {
   for (const field of FIELDS) {
     const injected = { address: 'evil@x.com', name: 'Jane\r\nBcc: evil@example.com' };
     await assert.rejects(
@@ -181,7 +181,7 @@ test('§3.3.10 a line break in a display name is rejected in every address field
   }
 });
 
-test('§3.3.10 a line break in a pre-formatted address string is rejected in every address field', async () => {
+test('a line break in a pre-formatted address string is rejected in every address field', async () => {
   for (const field of FIELDS) {
     const injected = 'evil@x.com\nBcc: evil@example.com';
     await assert.rejects(
@@ -192,7 +192,7 @@ test('§3.3.10 a line break in a pre-formatted address string is rejected in eve
   }
 });
 
-test('§3.3.10 a line break in a custom header is rejected, in the name and in the value', async () => {
+test('a line break in a custom header is rejected, in the name and in the value', async () => {
   const cases = [{ 'X-Foo': 'bar\r\nBcc: evil@example.com' }, { 'X-Foo\r\nBcc: evil@example.com': 'bar' }];
   for (const headers of cases) {
     await assert.rejects(send({ ...base, ...valid, headers }), /line break/i);

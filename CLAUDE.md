@@ -87,8 +87,10 @@ In-repo material the pack does not replace:
 - [`sdks/pipeline.md`](sdks/pipeline.md) — operational flow from canonical spec to registries and mirrors
 - [`sdks/index.md`](sdks/index.md) — per-language SDK status and planned package names
 
-> `sdks/client-contract.md` is **transitional**: it is the semantic layer's current home and is
-> expected to be superseded once the semantic layer proper is built. Treat it as binding until then.
+> [`sdks/semantic-layer.md`](sdks/semantic-layer.md) **is** the semantic layer: the binding,
+> language-agnostic definition of the facade surface every SDK must present, and the common ground
+> for Layer 2 generation. It is public and self-contained. Amend it before changing an SDK, never
+> after. Reference it at a high level only — never by section number, and never from SDK source.
 
 **Two gotchas worth keeping in view:**
 

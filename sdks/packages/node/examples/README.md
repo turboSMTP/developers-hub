@@ -5,17 +5,16 @@ Runnable examples for `@turbosmtp/sdk`, one copy in each language:
 - **`ts/`** — TypeScript. Type-checked in isolation with `npm run typecheck:examples`.
 - **`js/`** — JavaScript (ESM). Run directly with `node` against the live API.
 
-Each example maps to a conformance scenario in
-[`client-contract.md`](../../../client-contract.md) §3.3:
+Each example maps to a conformance scenario exercised by the test suite:
 
 | File | Scenario |
 |---|---|
-| `minimal-send` | §3.3.1 — plain-text send |
-| `html-email` | §3.3.2 — HTML body |
-| `multiple-recipients` | §3.3.3 / §3.3.4 — to/cc/bcc arrays + Reply-To |
-| `attachments` | §3.3.5 — file attachment + embedded image |
-| `eu-region` | §3.3.6 — EU-region routing |
-| `error-handling` | §3.3.7 / §3.3.8 — 401 and 400 handled by type |
+| `minimal-send` | plain-text send |
+| `html-email` | HTML body |
+| `multiple-recipients` | to/cc/bcc arrays + Reply-To |
+| `attachments` | file attachment + embedded image |
+| `eu-region` | EU-region routing |
+| `error-handling` | 401 and 400 handled by type |
 
 > **In-repo import paths.** These files import the SDK by relative path so they run
 > before the package is published — `js/` from the built ESM bundle

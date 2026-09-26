@@ -1,5 +1,5 @@
 /**
- * TurboSMTPClient — the unified entry point (client-contract.md §3.1, §3.2, §3.2b).
+ * TurboSMTPClient — the unified entry point: credentials, region and transport.
  *
  * P0 exposes the `mail` namespace only. Authentication is hidden: the developer
  * supplies a consumerKey/consumerSecret pair and the SDK attaches both headers on
@@ -31,7 +31,7 @@ export interface TurboSMTPClientOptions {
   headers?: Record<string, string>;
 }
 
-/** `/mail/send` hosts by region (client-contract.md §3.2b). */
+/** `/mail/send` hosts by region. Every other operation uses the global API host. */
 const SEND_HOSTS: Record<Region, string> = {
   global: 'https://api.turbo-smtp.com/api/v2',
   eu: 'https://api.eu.turbo-smtp.com/api/v2',

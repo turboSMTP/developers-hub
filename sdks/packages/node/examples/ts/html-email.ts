@@ -1,5 +1,5 @@
 /**
- * HTML send (client-contract.md §3.3.2) — an HTML body.
+ * HTML send — an HTML body.
  *
  * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
  * Run: see examples/README.md (set CONSUMER_KEY / CONSUMER_SECRET first).

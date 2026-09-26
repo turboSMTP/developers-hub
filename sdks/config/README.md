@@ -3,7 +3,7 @@
 Per-language [OpenAPI Generator](https://openapi-generator.tech) config files for **Layer 1**
 (the generated transport + models core). Consumed by the generation script (task 1.6) via
 `-c sdks/config/<lang>.yaml`. Generator version is pinned in [`../openapitools.json`](../openapitools.json)
-(currently 7.24.0). See [`../plan.md`](../plan.md) and [`../client-contract.md`](../client-contract.md).
+(currently 7.24.0). See [`../plan.md`](../plan.md) and [`../semantic-layer.md`](../semantic-layer.md).
 
 ## Generator flavor per language
 

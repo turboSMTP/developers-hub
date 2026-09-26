@@ -1,5 +1,5 @@
 /**
- * Minimal send (client-contract.md §3.3.1) — a plain-text email.
+ * Minimal send — a plain-text email.
  *
  * In your own project, install the package and import from it:
  *     import { TurboSMTPClient } from '@turbosmtp/sdk';

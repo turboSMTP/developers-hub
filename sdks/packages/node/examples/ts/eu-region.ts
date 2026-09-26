@@ -1,5 +1,5 @@
 /**
- * EU-region routing (§3.3.6) — send through EU infrastructure.
+ * EU-region routing — send through EU infrastructure.
  *
  * Pass `region: 'eu'` to route to https://api.eu.turbo-smtp.com/api/v2.
  * The default, `'global'`, uses https://api.turbo-smtp.com/api/v2.

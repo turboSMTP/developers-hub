@@ -1,5 +1,5 @@
 /**
- * Address types and formatting (client-contract.md §4.1).
+ * Address types and formatting.
  */
 import { TurboSMTPError } from '../errors';
 
@@ -60,7 +60,7 @@ export function joinAddresses(input: AddressInput): string {
  * and the fix. `from` and `reply-to` are unaffected — neither is comma-split.
  *
  * Only the display name of an address *object* is checked. A plain string reaches
- * the wire verbatim (§4.1), which keeps a comma-separated list working: that is the
+ * the wire verbatim, which keeps a comma-separated list working: that is the
  * field's own wire format, and rejecting it would refuse the exact string this
  * function returns.
  */

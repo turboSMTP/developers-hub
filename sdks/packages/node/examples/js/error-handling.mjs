@@ -1,5 +1,5 @@
 /**
- * Error handling (§3.3.7 auth failure, §3.3.8 validation error).
+ * Error handling — auth failure and validation error.
  *
  * Every failure throws a subclass of TurboSMTPError. This example triggers a
  * 401 (bad credentials) and a 400 (invalid payload) on purpose and handles each

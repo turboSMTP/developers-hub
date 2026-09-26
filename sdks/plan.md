@@ -16,7 +16,7 @@ Goals and constraints:
 2. **Development home = `developers-hub/sdks/`.** This repo is the single source for docs **and** SDK source **and** all developer material — one repo to commit to, one regeneration PR, one CI run that sees all five languages at once. There is no separate SDK *development* repo. **Publishing** goes through five CI-generated **read-only mirror repos** (`turbosmtp-node`, `-python`, `-dotnet`, `-go`, `-php`): mirrors are build output, not homes. The registries force this — public Packagist cannot read a `composer.json` from a subdirectory (subdirectory packages are paid Private Packagist only), and a Go module in a subdirectory bakes the repo path into its import path and requires prefixed version tags.
 3. **Packaging = one unified package per language** (not separate feature packages). Feature domains are **namespaces within it** (`turbo.mail`, `turbo.validation`, …), shipped incrementally by priority. Internal organization is idiomatic per language. Re-derived 2026-08-14 from each ecosystem's own official guidance — all five answer "how do I offer modular access" with an *intra-package* mechanism, and none recommends splitting a single API client by domain. One carve-out: webhook signature verification is not an API domain. Per-language divergence is permitted in principle and warranted nowhere today.
 4. **Versioning = independent per language.** Each package versions on its own cadence (AWS/Google/Stripe model); there is no lockstep family version, so no language's release ever waits on another's readiness. Release tags in this repo are `<lang>/vX.Y.Z` (e.g. `node/v1.2.0`); the split workflow translates each to an **unprefixed** `vX.Y.Z` on its mirror, which is what pkg.go.dev and Packagist require.
-5. **This repo is the SDK program's decision record** (decided 2026-08-11). `plan.md` and `client-contract.md` govern SDK strategy and contract. The parallel RFC track in the private `turboSMTP/developer-ecosystem` repo — whose SDK-strategy RFC sat open and unreviewed from 2026-07-04 — is **superseded for SDK matters** and will be deprecated; four ideas worth keeping (maintainer-gated ownership, Rust as a sixth language, adopt-vs-build for community clients, and the stale-official-SDK lesson) are recorded there as candidates, not adopted. `turboSMTP-js` and the `@turbosmtp` npm scope were out of scope there; they were settled on 2026-09-23 — `turboSMTP-js` is superseded and Node stays unified.
+5. **This repo is the SDK program's decision record** (decided 2026-08-11). `plan.md` and `semantic-layer.md` govern SDK strategy and the binding facade surface. The parallel RFC track in the private `turboSMTP/developer-ecosystem` repo — whose SDK-strategy RFC sat open and unreviewed from 2026-07-04 — is **superseded for SDK matters** and will be deprecated; four ideas worth keeping (maintainer-gated ownership, Rust as a sixth language, adopt-vs-build for community clients, and the stale-official-SDK lesson) are recorded there as candidates, not adopted. `turboSMTP-js` and the `@turbosmtp` npm scope were out of scope there; they were settled on 2026-09-23 — `turboSMTP-js` is superseded and Node stays unified.
 6. **The three legacy official SDKs are superseded, not modernized** (decided 2026-08-11) — confirming point 3 of the goals above. `turboSMTP-csharp`, `turboSMTP-php` and `turboSMTP-python` satisfy no contract, sit outside this pipeline, were generated from a **SwaggerHub** spec rather than the canonical one, and were **never published to any registry**. Each is deprecated as this effort's replacement for that language publishes. Consequence with teeth: GitHub repo names are case-insensitive-unique, so the legacy `turboSMTP-python`/`turboSMTP-php` **occupy two of the mirror names** in point 2 and must be renamed before those mirrors can exist — archiving does not free a name.
 
 ## Approach: Generated Core + Curated Facade (free stack)
@@ -41,7 +41,7 @@ The facade is **strictly bounded by the contract** — no ad-hoc surface — and
 Contract-conformance tests + a few idiomatic examples per language (AI-assisted), run in CI against a spec-derived mock server (and gated live smoke tests). Feeds the existing `sdks/*.md` guides.
 
 ### Keystone: the language-agnostic SDK contract
-Before any language code, formalize **`sdks/client-contract.md`**: canonical namespaces, method names, parameter/return shapes, error taxonomy, composed-helper inventory, auth/region behavior — **and a priority tier per domain**. Every SDK must satisfy it. This is the cheapest guarantee of cross-language consistency, the reference for the shared test matrix, and the safeguard against OpenAPI Generator's five naming conventions drifting apart.
+Before any language code, formalize **`sdks/semantic-layer.md`**: canonical namespaces, method names, parameter/return shapes, error taxonomy, composed-helper inventory, auth/region behavior — **and a priority tier per domain**. Every SDK must satisfy it. This is the cheapest guarantee of cross-language consistency, the reference for the shared test matrix, and the safeguard against OpenAPI Generator's five naming conventions drifting apart.
 
 ## Packaging & incremental rollout
 
@@ -72,7 +72,7 @@ This repo shifts from docs-only to **docs + SDK source**; language toolchains an
 ```
 sdks/
   plan.md                     # this document
-  client-contract.md          # keystone contract, incl. priority tiers
+  semantic-layer.md           # the binding facade surface, incl. priority tiers
   index.md, nodejs.md, ...    # EXISTING guides — updated once packages are real
   openapitools.json           # pinned generator version
   config/<lang>.yaml          # per-language + per-domain generator config
@@ -102,7 +102,7 @@ sdks/packages/{node,python,csharp,go,php}  +  sdks/webhooks/node-webhook
 
 Note that the mirror **repository** name and the **package** name are independent: the PHP
 mirror is `turbosmtp-php`, but its Packagist package keeps the contracted name
-`turbosmtp/turbosmtp-client` (`client-contract.md` §6).
+`turbosmtp/turbosmtp-client`, as fixed in `semantic-layer.md`.
 
 Because the mirror is canonical for consumers, Go's `go.mod` and PHP's `composer.json`
 declare the **mirror's** identity rather than their in-repo location — `module
@@ -111,7 +111,7 @@ require the main module's path to match its directory, so local builds and tests
 unaffected.
 
 **Go module paths are case-sensitive**, so the declared path is lower-case per
-`client-contract.md` §6. GitHub URLs are case-insensitive, but Go is not: if `go.mod`
+`semantic-layer.md`. GitHub URLs are case-insensitive, but Go is not: if `go.mod`
 declares `github.com/turbosmtp/…` and a user runs `go get github.com/turboSMTP/…`, the
 build fails with *"module declares its path as X but was required as Y"*. Upper-case
 letters also get `!`-escaped in proxy and module-cache paths (`turbo!s!m!t!p`). Any
@@ -125,7 +125,7 @@ the Go SDK's module identity.
 ## Execution phases (priority-driven, interactive)
 
 1. **Save this plan** to `sdks/plan.md`. ✅
-2. **Contract first** — author `sdks/client-contract.md` including priority tiers. Review before code.
+2. **Semantic layer first** — author `sdks/semantic-layer.md` including priority tiers. Review before code.
 3. **Preprocessing spike** — add `sdks/scripts` + `openapitools.json`; bundle the spec; confirm OpenAPI Generator handles our 3.1 constructs, adding the down-convert shim only if needed.
 4. **P0 reference SDK — Node/TS, Mail only** — generate Layer 1 for the Mail domain into `packages/node/`; hand/AI-author Layer 2 `turbo.mail` to satisfy the contract; Layer 3 tests + examples; publish `@turbosmtp/sdk`. This proves the whole pipeline on the highest-value feature.
 5. **P0 across the other four** — same pipeline, Mail domain, each conforming to the contract; reuse CI.
@@ -142,7 +142,7 @@ the Go SDK's module identity.
 
 ## Risks & mitigations
 - **OpenAPI Generator 3.1 gaps** → bundle + spike first; 3.1→3.0.3 down-convert shim only if needed; Kiota as free per-language fallback.
-- **Thicker hand-written facade than paid tools would need** → bound the facade strictly by `client-contract.md`; composed helpers are the only non-trivial code; shared conformance matrix keeps all five aligned.
+- **Thicker hand-written facade than paid tools would need** → bound the facade strictly by `semantic-layer.md`; composed helpers are the only non-trivial code; shared conformance matrix keeps all five aligned.
 - **Namespace drift across languages / tiers** → the contract doc + shared test matrix are the single source of consistency.
 - **Repo scope creep** (docs repo now carries build/publish CI) → isolate language toolchains under `sdks/packages/` and `sdks/`-scoped workflows.
 - **Priority reversals** (a deferred domain becomes urgent) → domain-partitioned generation makes any tier an additive change; no reordering cost.

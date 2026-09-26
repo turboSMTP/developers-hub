@@ -1,5 +1,5 @@
 /**
- * Inline image references (client-contract.md §4.5).
+ * Inline image references.
  *
  * TurboSMTP composes an inline part's Content-ID as `<content_id@sender-domain>`,
  * so a bare `<img src="cid:logo">` reference never matches and the image is

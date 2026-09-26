@@ -23,7 +23,7 @@ const require = createRequire(import.meta.url);
 
 /**
  * The contracted runtime surface of `src/index.ts` — client, namespace, and the
- * §3.4 error taxonomy. Types are compile-time only and cannot appear here.
+ * error taxonomy. Types are compile-time only and cannot appear here.
  * Adding a public export is a deliberate act: update this list in the same commit.
  */
 const CONTRACTED_EXPORTS = [
