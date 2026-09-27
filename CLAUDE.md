@@ -83,8 +83,6 @@ the rule that **the semantic layer is amended before an SDK changes, never after
 
 In-repo material the pack does not replace:
 
-- [`sdks/plan.md`](sdks/plan.md) — strategy narrative: the 3-layer architecture and rollout tiers
-- [`sdks/pipeline.md`](sdks/pipeline.md) — operational flow from canonical spec to registries and mirrors
 - [`sdks/index.md`](sdks/index.md) — per-language SDK status and planned package names
 
 > [`sdks/semantic-layer.md`](sdks/semantic-layer.md) **is** the semantic layer: the binding,

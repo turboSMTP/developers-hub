@@ -1,10 +1,8 @@
 # TurboSMTP SDK — The Semantic Layer
 
 > The semantic layer is the language-agnostic definition of what every TurboSMTP SDK must do, and
-> the **common ground for Layer 2 (facade) generation** across all five languages. Strategy and
-> rationale live in [`plan.md`](./plan.md); the operational flow is in
-> [`pipeline.md`](./pipeline.md). This document is **self-contained** — a contributor needs nothing
-> else to build a conforming facade.
+> the **common ground for Layer 2 (facade) generation** across all five languages. This document is
+> **self-contained** — a contributor needs nothing else to build a conforming facade.
 >
 > Its sections are deliberately unnumbered. Nothing outside this document references a section of
 > it, so there is no numbering to preserve and it can be reorganised whenever that serves a reader.
@@ -30,9 +28,27 @@ corrected upstream — never absorbed silently.
 
 ## Layering recap
 
-The three-layer architecture — Generated Core, Curated Facade, Conformance Tests — and the
-asymmetry in how far each language can hide the generated core are described in
-[`plan.md`](./plan.md) and [`pipeline.md`](./pipeline.md). This document governs the Curated Facade.
+Every SDK is three thin layers.
+
+- **Layer 1 — Generated Core.** Transport, (de)serialization, auth headers, models and multipart,
+  produced by OpenAPI Generator from the bundled specification, committed per language and
+  regenerated when the spec changes. Never hand-edited, and **not governed by this document**.
+- **Layer 2 — Curated Facade.** The unified `TurboSMTPClient` and its domain namespaces — the only
+  published surface, and where it stops mapping 1:1 to endpoints: arrays instead of comma-separated
+  strings, hidden auth, composed helpers. **This document governs Layer 2.**
+- **Layer 3 — Conformance tests.** Derived from the scenarios below. Credential-free and offline,
+  driving the public surface only.
+
+Each layer talks only to the one beneath it, and results and errors travel back up the same path.
+
+> **Hiding Layer 1 is asymmetric, and the asymmetry is accepted.** It is *enforceable* only in
+> **Node** (`exports` encapsulation makes an unlisted subpath throw) and **Go** (`internal/`, which
+> the compiler enforces). **Python** and **PHP** are convention-only, and **C# cannot hide it at
+> all** — the generator emits public types. So in three of five languages a consumer *can* reach
+> Layer 1 and may bind to it. That is documented rather than fought with custom generator
+> templates: what this document guarantees is the Layer 2 surface, not the unreachability of
+> Layer 1. The facade author's obligation is unaffected — Layer 1 is never re-exported, in any
+> language.
 
 ## Cross-cutting conventions
 

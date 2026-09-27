@@ -1,9 +1,10 @@
 # SDK generator configs
 
 Per-language [OpenAPI Generator](https://openapi-generator.tech) config files for **Layer 1**
-(the generated transport + models core). Consumed by the generation script (task 1.6) via
-`-c sdks/config/<lang>.yaml`. Generator version is pinned in [`../openapitools.json`](../openapitools.json)
-(currently 7.24.0). See [`../plan.md`](../plan.md) and [`../semantic-layer.md`](../semantic-layer.md).
+(the generated transport + models core). Consumed by
+[`../scripts/generate.mjs`](../scripts/generate.mjs) via `-c sdks/config/<lang>.yaml`. Generator
+version is pinned in [`../openapitools.json`](../openapitools.json) (currently 7.24.0). See
+[`../semantic-layer.md`](../semantic-layer.md).
 
 ## Generator flavor per language
 
@@ -31,7 +32,7 @@ facade can own the public entrypoint (`TurboSMTPClient`) within the same publish
 | Go | package `generated` | package `turbosmtp` (owns `go.mod`) |
 | PHP | `TurboSMTP\Generated` | `TurboSMTP` |
 
-Package identity matches the registry names fixed in the contract (`@turbosmtp/sdk`, `turbosmtp`,
+Package identity matches the registry names fixed in the semantic layer (`@turbosmtp/sdk`, `turbosmtp`,
 `TurboSMTP`, `turbosmtp/turbosmtp-client`). Packaging/project files (package.json, pyproject, go.mod,
 .csproj, composer.json) are owned by the facade, not the generated core — the script skips generated
 project files (`generateSourceCodeOnly`/`withGoMod:false`/ignore rules) so regeneration never clobbers

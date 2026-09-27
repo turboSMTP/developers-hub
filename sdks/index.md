@@ -71,9 +71,10 @@ both headers for you. Namespaces ship in priority order — `mail` first, `valid
 
 SDKs are built in three layers: a transport client generated from the
 [OpenAPI 3.1 specification](../api-reference/README.md) by `openapi-generator-cli` (pinned in
-[`openapitools.json`](openapitools.json)), a **hand-written facade** that provides the contracted
-surface, and the conformance tests. No custom generator templates are used — ergonomics live in the
-facade, not in the generated layer. See [`plan.md`](plan.md).
+[`openapitools.json`](openapitools.json)), a **hand-written facade** that provides the surface the
+semantic layer defines, and the conformance tests. No custom generator templates are used —
+ergonomics live in the facade, not in the generated layer. See
+[`semantic-layer.md`](semantic-layer.md).
 
 ---
 
