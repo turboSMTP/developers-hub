@@ -45,13 +45,12 @@ See [Getting Started](docs/getting-started.md) for full authentication details.
 
 ## SDKs
 
-| Language | Status | Install |
-|---|---|---|
-| [C#](sdks/csharp.md) | Planned | `dotnet add package TurboSMTP` |
-| [PHP](sdks/php.md) | Planned | `composer require turbosmtp/turbosmtp-client` |
-| [Node.js / TypeScript](sdks/nodejs.md) | Planned | `npm install @turbosmtp/sdk` |
-| [Python](sdks/python.md) | Planned | `pip install turbosmtp` |
-| [Go](sdks/go.md) | Planned | `go get github.com/turboSMTP/turbosmtp-go` |
+Official client libraries for **Node.js/TypeScript, Python, C#, Go** and **PHP**, built on one
+shared surface so that the same operation behaves the same way in every language.
+
+**None is published to a package registry yet.** The Node.js SDK and its webhook receiver are built
+and pending publication; the other four are planned. See **[SDK status](sdks/index.md)** for the
+state of each language and the package name it will ship under.
 
 ---
 

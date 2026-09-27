@@ -13,12 +13,16 @@ Official and community-maintained client libraries for the TurboSMTP API.
 
 | Language | Status | Install | Guide |
 |---|---|---|---|
-| Node.js / TypeScript | Built, publish pending | *not yet published* — planned as `@turbosmtp/sdk` | [nodejs.md](nodejs.md) |
+| Node.js / TypeScript | Built, publish pending | *not yet published* — planned as `@turbosmtp/sdk` | [packages/node](packages/node/README.md) |
 | Node.js webhook receiver | Built, publish pending | *not yet published* — planned as `@turbosmtp/webhook` | [webhooks/node-webhook](webhooks/node-webhook/README.md) |
-| Python | Planned | *not yet published* | [python.md](python.md) |
-| C# | Planned | *not yet published* — planned as `TurboSMTP` (NuGet) | [csharp.md](csharp.md) |
-| Go | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go` | [go.md](go.md) |
-| PHP | Planned | *not yet published* — planned as `turbosmtp/turbosmtp-client` | [php.md](php.md) |
+| Python | Planned | *not yet published* | — |
+| C# | Planned | *not yet published* — planned as `TurboSMTP` (NuGet) | — |
+| Go | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go` | — |
+| PHP | Planned | *not yet published* — planned as `turbosmtp/turbosmtp-client` | — |
+
+A language gets a guide when its package is built: the guide is the package's own README, which is
+also what ships to the registry. The surface every one of them must present is fixed in
+[`semantic-layer.md`](semantic-layer.md).
 
 The Go module path is **lower-case**. Go module paths are case-sensitive while GitHub URLs are not,
 so `go get github.com/turboSMTP/…` against a lower-case `go.mod` fails with *"module declares its

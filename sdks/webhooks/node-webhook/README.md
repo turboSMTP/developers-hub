@@ -6,7 +6,9 @@ Delivery and engagement events (delivered, bounced, opened, clicked, spam, …) 
 callback URL you configure in the TurboSMTP dashboard. This package turns those requests into
 typed events and checks that they really came from TurboSMTP.
 
-Zero runtime dependencies. Node 22 or newer.
+Zero runtime dependencies. Node 22 or newer, and TypeScript 4.7 or newer if you use TypeScript —
+4.7 added the `node16`/`nodenext` module resolution that reads this package's bundled type
+declarations from its `exports` map.
 
 ## Install
 

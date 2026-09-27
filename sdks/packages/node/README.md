@@ -38,6 +38,10 @@ dependency-free client for sending transactional email through the TurboSMTP API
 
 - **Node.js `>= 22`** — the SDK uses the global `fetch`, `Response`, and `Uint8Array`, so no polyfill
   or HTTP dependency is needed.
+- **TypeScript `>= 4.7`**, if you use TypeScript. 4.7 is the release that added `node16`/`nodenext`
+  module resolution, which is what reads the bundled type declarations from this package's
+  `exports` map. On older TypeScript the types still resolve through the legacy `node` resolution
+  mode, but `node16` and `nodenext` will not find them.
 - Works with both **TypeScript** and plain **JavaScript** (CommonJS or ESM consumers).
 
 ---
