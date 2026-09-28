@@ -1,7 +1,7 @@
 # @turbosmtp/sdk
 
 > **Source, issues and pull requests live in
-> [turboSMTP/developers-hub](https://github.com/turboSMTP/developers-hub/tree/main/sdks/packages/node).**
+> [turboSMTP/developers-hub](https://github.com/turboSMTP/developers-hub/tree/main/sdk-integrations/packages/node).**
 > The [`turbosmtp-node`](https://github.com/turboSMTP/turbosmtp-node) repository is a read-only mirror
 > published automatically on release — changes pushed there are overwritten. Please file issues at
 > [developers-hub/issues](https://github.com/turboSMTP/developers-hub/issues).

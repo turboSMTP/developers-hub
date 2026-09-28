@@ -4,12 +4,12 @@ on:
   push:
     paths:
       - 'api-integrations/**'
-      - 'sdks/scripts/check-spec.mjs'
+      - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
       - 'api-integrations/**'
-      - 'sdks/scripts/check-spec.mjs'
+      - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
 
 # Read-only: this workflow checks out the repository, lints the spec and runs the
@@ -31,7 +31,7 @@ jobs:
 
       # Lint the single pre-bundled spec. It carries internal $refs only —
       # there is no Domains/ folder in the served copy. The version is pinned to
-      # match sdks/scripts/generate.mjs; do not float it.
+      # match sdk-integrations/scripts/generate.mjs; do not float it.
       #
       # This lints the SYNCED UPSTREAM copy — the document GitHub Pages serves.
       # Overlays in api-integrations/overlays/ are deliberately not applied here:
@@ -46,4 +46,4 @@ jobs:
       #      documentation and `x-` extensions — and never wire semantics.
       # Runs after the lint so an invalid spec fails on the clearer error first.
       - name: Spec-drift guard
-        run: node sdks/scripts/check-spec.mjs
+        run: node sdk-integrations/scripts/check-spec.mjs

@@ -27,8 +27,8 @@
  * repository is self-hosted and unreachable from one. That variant remains a follow-up.
  *
  * Usage:
- *   node sdks/scripts/check-spec.mjs                  # verify (what CI runs)
- *   node sdks/scripts/check-spec.mjs --write-checksum # record after syncing the spec
+ *   node sdk-integrations/scripts/check-spec.mjs                  # verify (what CI runs)
+ *   node sdk-integrations/scripts/check-spec.mjs --write-checksum # record after syncing the spec
  */
 
 import { spawnSync } from 'node:child_process';
@@ -97,7 +97,7 @@ function checkChecksum() {
     fail(
       `No checksum at api-integrations/upstream/turbo-smtp.sha256.\n` +
         `  If you have just synced the spec, record it:\n` +
-        `      node sdks/scripts/check-spec.mjs --write-checksum`,
+        `      node sdk-integrations/scripts/check-spec.mjs --write-checksum`,
     );
   }
   const recorded = readFileSync(CHECKSUM, 'utf8').trim().split(/\s+/)[0];
@@ -112,7 +112,7 @@ function checkChecksum() {
         `    - the spec was edited in place — revert it and make the change upstream in\n` +
         `      turbo-smtp-openapi, then re-sync; or\n` +
         `    - you have just re-synced legitimately — re-record the checksum:\n` +
-        `          node sdks/scripts/check-spec.mjs --write-checksum\n\n` +
+        `          node sdk-integrations/scripts/check-spec.mjs --write-checksum\n\n` +
         `  If the goal was to change generated SDK code rather than the API contract, an\n` +
         `  overlay in api-integrations/overlays/ is the sanctioned route.`,
     );

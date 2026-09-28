@@ -6,7 +6,7 @@ This file provides guidance to Claude Code when working in this repository.
 
 **TurboSMTP Developers Hub** — the public-facing documentation portal for the TurboSMTP API, and the
 home of the SDK packages built on it. Content is authored in Markdown and published via GitHub
-Pages; CI validates and deploys it automatically on push to `main`. The SDK packages under `sdks/`
+Pages; CI validates and deploys it automatically on push to `main`. The SDK packages under `sdk-integrations/`
 are the exception — they build, lint and test like any code.
 
 ## Authoritative rules: the internal context pack
@@ -34,7 +34,7 @@ Orientation only — the pack carries the full map.
 
 - **`docs/`** — topic guides (getting-started, transactional, validation, webhooks)
 - **`api-integrations/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, plus a self-contained Swagger UI bundle, deployed to GitHub Pages
-- **`sdks/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers
+- **`sdk-integrations/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — `workflows/` (every automation entry point), `actions/` (first-party composite actions — reusable steps, never entry points), and PR/issue templates
 
@@ -67,15 +67,15 @@ Whenever the served spec or the Swagger UI assets are updated upstream, sync the
 1. Verify the bundled spec is valid: `npx @redocly/cli@<pinned> lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml` — the pinned version is in the pack; do not float it.
 2. Copy the spec: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-integrations/upstream/" -Force`
 3. Copy the UI assets: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-integrations/" -Recurse -Force` (ensure `api-integrations/` has no stale `Domains/` folder and no stray root `turbo-smtp.yaml`)
-4. **Re-record the checksum: `node sdks/scripts/check-spec.mjs --write-checksum`** — the spec-drift guard fails CI until this matches, which is the point: it separates a sync from a hand-edit.
-5. Run the guard: `node sdks/scripts/check-spec.mjs`
+4. **Re-record the checksum: `node sdk-integrations/scripts/check-spec.mjs --write-checksum`** — the spec-drift guard fails CI until this matches, which is the point: it separates a sync from a hand-edit.
+5. Run the guard: `node sdk-integrations/scripts/check-spec.mjs`
 6. Confirm the page still loads — the spec URL in `swagger-initializer.js` is resolved by the browser, so a wrong path 404s the live site while CI stays green: `npx --yes http-server api-integrations -p 8080`
 7. Stage and commit the result: `git add api-integrations/` then a `sync: update API docs from turbo-api-2` commit — per **Workflow Rules** below, the user runs this step.
 
 > Step 4 is only ever run as part of a sync. Re-recording the checksum to silence a failing
 > guard, without having re-synced, defeats the one thing it detects.
 
-## SDK Development (`sdks/`)
+## SDK Development (`sdk-integrations/`)
 
 Every SDK standard — layering, public surface, coding conventions, tooling versions, commands and CI
 — is governed by the context pack. Start at its index and follow the routing. The pack also carries
@@ -83,9 +83,9 @@ the rule that **the semantic layer is amended before an SDK changes, never after
 
 In-repo material the pack does not replace:
 
-- [`sdks/index.md`](sdks/index.md) — per-language SDK status and planned package names
+- [`sdk-integrations/index.md`](sdk-integrations/index.md) — per-language SDK status and planned package names
 
-> [`sdks/semantic-layer.md`](sdks/semantic-layer.md) **is** the semantic layer: the binding,
+> [`sdk-integrations/semantic-layer.md`](sdk-integrations/semantic-layer.md) **is** the semantic layer: the binding,
 > language-agnostic definition of the facade surface every SDK must present, and the common ground
 > for Layer 2 generation. It is public and self-contained. Amend it before changing an SDK, never
 > after. Reference it at a high level only — never by section number, and never from SDK source.

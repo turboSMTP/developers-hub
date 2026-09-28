@@ -11,7 +11,7 @@ upstream defect, not a place to shape the API.
 The canonical specification lives in `../../../turbo-smtp-openapi/` and is the single source of
 truth for the wire contract. `../upstream/turbo-smtp.yaml` is a synced copy of it, and that copy is
 what GitHub Pages publishes — **verbatim, with no overlay applied**. Overlays are read by
-`sdks/scripts/generate.mjs` and affect generated SDK code only.
+`sdk-integrations/scripts/generate.mjs` and affect generated SDK code only.
 
 That separation is what makes overlays legitimate rather than a second source of truth. It only
 holds while these rules hold:
@@ -59,7 +59,7 @@ Rules 1, 2 and 4 are enforced by the spec-drift guard, which CI runs on every ch
 `api-integrations/`:
 
 ```
-node sdks/scripts/check-spec.mjs
+node sdk-integrations/scripts/check-spec.mjs
 ```
 
 It bundles the spec twice — once bare, once overlaid — and rejects any difference outside the

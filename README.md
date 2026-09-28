@@ -16,7 +16,7 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 | [Webhooks](docs/webhooks.md) | Real-time delivery and engagement event payloads |
 | [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
 | [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
-| [SDKs](sdks/index.md) | Official client libraries for all supported languages |
+| [SDKs](sdk-integrations/index.md) | Official client libraries for all supported languages |
 | [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview + [live interactive Swagger UI](https://turbosmtp.github.io/developers-hub/) |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
 
@@ -49,7 +49,7 @@ Official client libraries for **Node.js/TypeScript, Python, C#, Go** and **PHP**
 shared surface so that the same operation behaves the same way in every language.
 
 **None is published to a package registry yet.** The Node.js SDK and its webhook receiver are built
-and pending publication; the other four are planned. See **[SDK status](sdks/index.md)** for the
+and pending publication; the other four are planned. See **[SDK status](sdk-integrations/index.md)** for the
 state of each language and the package name it will ship under.
 
 ---

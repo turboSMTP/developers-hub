@@ -36,7 +36,7 @@ Serving one file lets Swagger UI load it in a single request instead of roughly 
 | Property | Value |
 |---|---|
 | Specification Version | OpenAPI 3.1 |
-| Generator Toolchain | `openapi-generator-cli v7.24.0` (pinned in `sdks/openapitools.json`) |
+| Generator Toolchain | `openapi-generator-cli v7.24.0` (pinned in `sdk-integrations/openapitools.json`) |
 | Security Schemes | API Key (raw `Authorization` header) and Consumer Key/Secret header pair |
 
 ---

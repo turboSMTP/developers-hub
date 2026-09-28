@@ -2,7 +2,7 @@
 
 Per-language [OpenAPI Generator](https://openapi-generator.tech) config files for **Layer 1**
 (the generated transport + models core). Consumed by
-[`../scripts/generate.mjs`](../scripts/generate.mjs) via `-c sdks/config/<lang>.yaml`. Generator
+[`../scripts/generate.mjs`](../scripts/generate.mjs) via `-c sdk-integrations/config/<lang>.yaml`. Generator
 version is pinned in [`../openapitools.json`](../openapitools.json) (currently 7.24.0). See
 [`../semantic-layer.md`](../semantic-layer.md).
 

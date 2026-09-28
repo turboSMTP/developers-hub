@@ -1,7 +1,7 @@
 # Lint, typecheck, build and test the SDK packages.
 #
 # The rest of the repository is documentation and a generated spec bundle, covered
-# by validate-openapi.yml, so this workflow is scoped to paths under sdks/.
+# by validate-openapi.yml, so this workflow is scoped to paths under sdk-integrations/.
 name: SDKs CI
 
 on:
@@ -14,15 +14,15 @@ on:
   push:
     branches: [main]
     paths:
-      - 'sdks/**'
+      - 'sdk-integrations/**'
       - 'biome.json'
-      - '.github/workflows/sdks-ci.yml'
+      - '.github/workflows/sdk-integrations-ci.yml'
       - '.github/actions/**'
   pull_request:
     paths:
-      - 'sdks/**'
+      - 'sdk-integrations/**'
       - 'biome.json'
-      - '.github/workflows/sdks-ci.yml'
+      - '.github/workflows/sdk-integrations-ci.yml'
       - '.github/actions/**'
 
 # Least privilege is declared here, at the calling workflow, and covers every job below.
@@ -52,10 +52,10 @@ jobs:
       fail-fast: false
       matrix:
         # The path is carried per package rather than derived from the name: unified SDKs
-        # live under sdks/packages/ and webhook receivers under sdks/webhooks/.
+        # live under sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/.
         package:
-          - { name: node, path: sdks/packages/node }
-          - { name: node-webhook, path: sdks/webhooks/node-webhook }
+          - { name: node, path: sdk-integrations/packages/node }
+          - { name: node-webhook, path: sdk-integrations/webhooks/node-webhook }
         node: [22, 24]
     defaults:
       run:
@@ -76,12 +76,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: sdks/packages/node
+        working-directory: sdk-integrations/packages/node
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-sdk-package
         with:
-          path: sdks/packages/node
+          path: sdk-integrations/packages/node
       - run: npm run typecheck:examples
 
   # Sends real email, so it never runs automatically. GitHub does not expose secrets
@@ -93,12 +93,12 @@ jobs:
     environment: live-smoke
     defaults:
       run:
-        working-directory: sdks/packages/node
+        working-directory: sdk-integrations/packages/node
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-sdk-package
         with:
-          path: sdks/packages/node
+          path: sdk-integrations/packages/node
       - run: npm run test:live
         env:
           TURBOSMTP_CONSUMER_KEY: ${{ secrets.TURBOSMTP_CONSUMER_KEY }}

@@ -3,7 +3,7 @@
 # Every blob committed to this repository is LF, and CI runs on ubuntu-latest,
 # so the Biome formatter is configured for LF. Without this file a Windows
 # checkout (core.autocrlf=true) produces a CRLF working copy in which
-# `biome ci sdks` fails on every file while CI passes — the local verification
+# `biome ci sdk-integrations` fails on every file while CI passes — the local verification
 # suite in refactor-progress.md §6 becomes unrunnable.
 #
 # text=auto detects binary content and leaves it alone; the explicit -text

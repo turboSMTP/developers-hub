@@ -5,11 +5,10 @@
 # The patterns follow closely to .gitignore or .dockerignore.
 #
 # ------------------------------------------------------------------------------
-# TurboSMTP: Layer 2 (the hand-written facade at packages/node/) owns packaging,
-# tsconfig, README and npm publishing. Layer 1 (this directory) is source-only:
-# transport + models regenerated from the spec. The patterns below stop the
-# generator from re-emitting project scaffolding into the committed Layer 1 tree
-# on every run. See sdks/plan.md for the 3-layer architecture.
+# TurboSMTP: these patterns keep regeneration idempotent. Without them the
+# generator re-emits project scaffolding into this directory on every run, so the
+# round-trip diff is never empty and the check that detects real pipeline changes
+# stops meaning anything. Do not remove them.
 package.json
 tsconfig.json
 tsconfig.esm.json

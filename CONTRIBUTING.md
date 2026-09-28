@@ -48,7 +48,7 @@ Use the [Bug Report template](.github/ISSUE_TEMPLATE/bug_report.md) for:
 Community-maintained SDKs are welcome. To register a community SDK:
 1. Open an Issue with the `sdk-proposal` label
 2. Ensure your library is generated from or conforms to the OpenAPI 3.1 spec in `api-integrations/`
-3. Add an entry to `sdks/index.md` via Pull Request
+3. Add an entry to `sdk-integrations/index.md` via Pull Request
 
 ---
 

@@ -14,7 +14,7 @@ name: Split packages to publish mirrors
 # reason this workflow exists.
 #
 # A slug equals its directory's own name, but not its parent: unified SDKs live under
-# sdks/packages/ and webhook receivers under sdks/webhooks/. The `case` below is the one
+# sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/. The `case` below is the one
 # place that mapping is written down — adding a package means adding a line there and a
 # tag glob above, not relying on a path convention.
 #
@@ -94,17 +94,17 @@ jobs:
           pkg="${tag%%/*}"
           version="${tag#*/}"
           # This case is the authoritative slug -> (mirror, directory) map. The prefix is
-          # listed per slug rather than derived as sdks/packages/$pkg, because the webhook
-          # receivers live under sdks/webhooks/. A derived path would silently resolve to a
+          # listed per slug rather than derived as sdk-integrations/packages/$pkg, because the webhook
+          # receivers live under sdk-integrations/webhooks/. A derived path would silently resolve to a
           # directory that does not exist, and the check below would report it as a bad slug
           # rather than a stale mapping.
           case "$pkg" in
-            node)         mirror=turbosmtp-node;         prefix=sdks/packages/node ;;
-            python)       mirror=turbosmtp-python;       prefix=sdks/packages/python ;;
-            csharp)       mirror=turbosmtp-dotnet;       prefix=sdks/packages/csharp ;;
-            go)           mirror=turbosmtp-go;           prefix=sdks/packages/go ;;
-            php)          mirror=turbosmtp-php;          prefix=sdks/packages/php ;;
-            node-webhook) mirror=turbosmtp-node-webhook; prefix=sdks/webhooks/node-webhook ;;
+            node)         mirror=turbosmtp-node;         prefix=sdk-integrations/packages/node ;;
+            python)       mirror=turbosmtp-python;       prefix=sdk-integrations/packages/python ;;
+            csharp)       mirror=turbosmtp-dotnet;       prefix=sdk-integrations/packages/csharp ;;
+            go)           mirror=turbosmtp-go;           prefix=sdk-integrations/packages/go ;;
+            php)          mirror=turbosmtp-php;          prefix=sdk-integrations/packages/php ;;
+            node-webhook) mirror=turbosmtp-node-webhook; prefix=sdk-integrations/webhooks/node-webhook ;;
             *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
           esac
           if [ "$version" = "$tag" ]; then
@@ -128,7 +128,7 @@ jobs:
           PKG: ${{ steps.target.outputs.pkg }}
         run: |
           if [ ! -d "$PREFIX" ]; then
-            echo "::error::No package directory at '$PREFIX' for slug '$PKG'. The slug must equal the directory's own name, and the case block in this workflow must map it to the right parent (sdks/packages/ or sdks/webhooks/)."; exit 1
+            echo "::error::No package directory at '$PREFIX' for slug '$PKG'. The slug must equal the directory's own name, and the case block in this workflow must map it to the right parent (sdk-integrations/packages/ or sdk-integrations/webhooks/)."; exit 1
           fi
 
       - name: Split the package subtree

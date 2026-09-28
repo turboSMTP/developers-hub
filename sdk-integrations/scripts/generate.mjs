@@ -10,7 +10,7 @@
  *   2. filter   : keep only the target domain's tag(s), drop orphaned components  (redocly filter-in
  *                 + --remove-unused-components) → build/turbo-smtp.<domain>.yaml
  *   3. generate : openapi-generator-cli generate -c config/<lang>.yaml            (version pinned in
- *                 sdks/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
+ *                 sdk-integrations/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
  *                 Fed the 3.1 spec directly — no down-convert (see 1.3/1.4).
  *
  * Overlays are a GENERATION-ONLY concern: GitHub Pages serves api-integrations/upstream/ verbatim, so
@@ -27,13 +27,13 @@
  * (CI). Requires Node 18+ and a JVM (the generator is Java; the npm wrapper downloads the jar).
  *
  * Usage (run from anywhere):
- *   node sdks/scripts/generate.mjs [--domain=mail] [--lang=node,python,...] [--out-root=<dir>]
+ *   node sdk-integrations/scripts/generate.mjs [--domain=mail] [--lang=node,python,...] [--out-root=<dir>]
  *                                  [--tags=tagA,tagB] [--skip-bundle]
  *
  * Examples:
- *   node sdks/scripts/generate.mjs                        # P0: mail domain, all 5 languages, canonical layout
- *   node sdks/scripts/generate.mjs --lang=node            # just the Node reference (task 2.1)
- *   node sdks/scripts/generate.mjs --out-root=build/generated   # safe dry run into build/ (git-ignored)
+ *   node sdk-integrations/scripts/generate.mjs                        # P0: mail domain, all 5 languages, canonical layout
+ *   node sdk-integrations/scripts/generate.mjs --lang=node            # just the Node reference (task 2.1)
+ *   node sdk-integrations/scripts/generate.mjs --out-root=build/generated   # safe dry run into build/ (git-ignored)
  *
  * Notes:
  *   - Layer 1 lands in an internal namespace per language (see config/README.md); the hand-written
@@ -113,7 +113,7 @@ function fail(msg) {
   process.exit(1);
 }
 
-/** Run a command string via the shell (cross-platform npx resolution), cwd = sdks/.
+/** Run a command string via the shell (cross-platform npx resolution), cwd = sdk-integrations/.
  *  Aborts the pipeline on non-zero exit. */
 function run(label, cmd) {
   console.log(`\n▶ ${label}\n  ${cmd}`);
