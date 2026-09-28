@@ -3,7 +3,7 @@
  * TurboSMTP SDK — Layer 1 generation pipeline (task 1.6).
  *
  * Pipeline:  overlay  →  bundle  →  filter-by-domain (+ prune)  →  generate per language
- *   0. overlay  : apply api-reference/overlays/*.yaml to the synced spec              (openapi-format)
+ *   0. overlay  : apply api-integrations/overlays/*.yaml to the synced spec              (openapi-format)
  *                 → build/turbo-smtp.overlaid.yaml. SKIPPED ENTIRELY when no overlay exists, so
  *                 the default path is byte-for-byte what it was before overlays landed.
  *   1. bundle   : → build/turbo-smtp.bundled.yaml                                     (redocly bundle)
@@ -13,9 +13,9 @@
  *                 sdks/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
  *                 Fed the 3.1 spec directly — no down-convert (see 1.3/1.4).
  *
- * Overlays are a GENERATION-ONLY concern: GitHub Pages serves api-reference/upstream/ verbatim, so
+ * Overlays are a GENERATION-ONLY concern: GitHub Pages serves api-integrations/upstream/ verbatim, so
  * an overlay never reaches the published contract. It may change operationIds, naming and `x-`
- * extensions; it may never change wire semantics. See api-reference/overlays/README.md — those
+ * extensions; it may never change wire semantics. See api-integrations/overlays/README.md — those
  * rules are what make this reconcilable with the single-source-of-truth constraint.
  *
  * All three tools are pinned to an exact version. Neither the overlay step nor the bundler is a
@@ -73,8 +73,8 @@ const OVERLAY_TOOL = 'openapi-format@1.33.7';
  */
 const GENERATOR_CONFIG = join(SDK_ROOT, 'openapitools.json');
 
-const SPEC_IN = join(REPO_ROOT, 'api-reference', 'upstream', 'turbo-smtp.yaml');
-const OVERLAY_DIR = join(REPO_ROOT, 'api-reference', 'overlays');
+const SPEC_IN = join(REPO_ROOT, 'api-integrations', 'upstream', 'turbo-smtp.yaml');
+const OVERLAY_DIR = join(REPO_ROOT, 'api-integrations', 'overlays');
 const OVERLAID = join(BUILD_DIR, 'turbo-smtp.overlaid.yaml');
 const BUNDLED = join(BUILD_DIR, 'turbo-smtp.bundled.yaml');
 
@@ -140,7 +140,7 @@ function listOverlays() {
 function applyOverlays() {
   const overlays = listOverlays();
   if (overlays.length === 0) {
-    console.log('\n▶ overlay\n  none in api-reference/overlays/ — using the synced spec as-is');
+    console.log('\n▶ overlay\n  none in api-integrations/overlays/ — using the synced spec as-is');
     return SPEC_IN;
   }
   let input = SPEC_IN;

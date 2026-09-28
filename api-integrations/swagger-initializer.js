@@ -9,7 +9,7 @@
 // The URL below is the ONLY spec-path reference in the served bundle, and it is
 // resolved by the browser at runtime: if it is wrong the live site 404s while CI
 // stays green. Nothing validates the uploaded directory. Verify any change to it
-// by serving api-reference/ locally and loading the page.
+// by serving api-integrations/ locally and loading the page.
 
 // Show loader initially
 document.addEventListener('DOMContentLoaded', function () {

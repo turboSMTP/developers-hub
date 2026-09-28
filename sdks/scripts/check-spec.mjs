@@ -5,10 +5,10 @@
  * Two independent checks, both runnable offline:
  *
  *   1. SYNC INTEGRITY — the synced copy still matches the checksum recorded when it was
- *      synced. Catches a hand-edit to api-reference/upstream/turbo-smtp.yaml — a synced
+ *      synced. Catches a hand-edit to api-integrations/upstream/turbo-smtp.yaml — a synced
  *      copy that is never hand-edited — which nothing else detects.
  *
- *   2. OVERLAY BOUNDARY — every overlay in api-reference/overlays/ changes only what
+ *   2. OVERLAY BOUNDARY — every overlay in api-integrations/overlays/ changes only what
  *      the boundary permits: operationIds, naming, documentation and `x-` extensions. Never
  *      wire semantics. Enforced by bundling the spec twice — once bare, once overlaid —
  *      and rejecting any difference outside the allowlist below.
@@ -45,9 +45,9 @@ const BUILD_DIR = join(SDK_ROOT, 'build');
 const REDOCLY = '@redocly/cli@2.47.0';
 const OVERLAY_TOOL = 'openapi-format@1.33.7';
 
-const SPEC = join(REPO_ROOT, 'api-reference', 'upstream', 'turbo-smtp.yaml');
-const CHECKSUM = join(REPO_ROOT, 'api-reference', 'upstream', 'turbo-smtp.sha256');
-const OVERLAY_DIR = join(REPO_ROOT, 'api-reference', 'overlays');
+const SPEC = join(REPO_ROOT, 'api-integrations', 'upstream', 'turbo-smtp.yaml');
+const CHECKSUM = join(REPO_ROOT, 'api-integrations', 'upstream', 'turbo-smtp.sha256');
+const OVERLAY_DIR = join(REPO_ROOT, 'api-integrations', 'overlays');
 
 /**
  * Keys an overlay may change. Everything else is wire semantics by default: the list is an
@@ -95,7 +95,7 @@ function writeChecksum() {
 function checkChecksum() {
   if (!existsSync(CHECKSUM)) {
     fail(
-      `No checksum at api-reference/upstream/turbo-smtp.sha256.\n` +
+      `No checksum at api-integrations/upstream/turbo-smtp.sha256.\n` +
         `  If you have just synced the spec, record it:\n` +
         `      node sdks/scripts/check-spec.mjs --write-checksum`,
     );
@@ -107,14 +107,14 @@ function checkChecksum() {
       `The synced spec does not match its recorded checksum.\n` +
         `      recorded: ${recorded}\n` +
         `      actual:   ${actual}\n\n` +
-        `  api-reference/upstream/turbo-smtp.yaml is a synced copy and is never hand-edited.\n` +
+        `  api-integrations/upstream/turbo-smtp.yaml is a synced copy and is never hand-edited.\n` +
         `  Either:\n` +
         `    - the spec was edited in place — revert it and make the change upstream in\n` +
         `      turbo-smtp-openapi, then re-sync; or\n` +
         `    - you have just re-synced legitimately — re-record the checksum:\n` +
         `          node sdks/scripts/check-spec.mjs --write-checksum\n\n` +
         `  If the goal was to change generated SDK code rather than the API contract, an\n` +
-        `  overlay in api-reference/overlays/ is the sanctioned route.`,
+        `  overlay in api-integrations/overlays/ is the sanctioned route.`,
     );
   }
   console.log(`✔ Sync integrity — spec matches its recorded checksum (${actual.slice(0, 12)}…)`);
@@ -185,7 +185,7 @@ function checkOverlays() {
     if (!/^overlay:\s*['"]?1\.0\.0['"]?\s*$/m.test(text)) {
       fail(
         `${overlay} does not declare \`overlay: 1.0.0\`.\n` +
-          `  api-reference/overlays/ holds OpenAPI Overlay documents only.`,
+          `  api-integrations/overlays/ holds OpenAPI Overlay documents only.`,
       );
     }
   }

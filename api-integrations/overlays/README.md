@@ -56,7 +56,7 @@ the only thing that should invoke it.
 ## Verifying
 
 Rules 1, 2 and 4 are enforced by the spec-drift guard, which CI runs on every change under
-`api-reference/`:
+`api-integrations/`:
 
 ```
 node sdks/scripts/check-spec.mjs

@@ -3,12 +3,12 @@ name: Validate OpenAPI Specification
 on:
   push:
     paths:
-      - 'api-reference/**'
+      - 'api-integrations/**'
       - 'sdks/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
-      - 'api-reference/**'
+      - 'api-integrations/**'
       - 'sdks/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
 
@@ -34,10 +34,10 @@ jobs:
       # match sdks/scripts/generate.mjs; do not float it.
       #
       # This lints the SYNCED UPSTREAM copy — the document GitHub Pages serves.
-      # Overlays in api-reference/overlays/ are deliberately not applied here:
+      # Overlays in api-integrations/overlays/ are deliberately not applied here:
       # they are a code-generation concern and never reach the published spec.
       - name: Validate OpenAPI spec
-        run: npx @redocly/cli@2.47.0 lint api-reference/upstream/turbo-smtp.yaml
+        run: npx @redocly/cli@2.47.0 lint api-integrations/upstream/turbo-smtp.yaml
 
       # Spec-drift guard. Two checks, both offline:
       #   1. the synced copy still matches the checksum recorded when it was synced,

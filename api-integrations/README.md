@@ -19,8 +19,8 @@ A live "Try It" playground for every endpoint, with no local setup required. It 
 The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what is **served** here is a single pre-bundled file carrying internal `$ref`s only:
 
 ```
-api-reference/upstream/turbo-smtp.yaml   # the complete pre-bundled document, served verbatim
-api-reference/overlays/                  # generation-only patches — never served
+api-integrations/upstream/turbo-smtp.yaml   # the complete pre-bundled document, served verbatim
+api-integrations/overlays/                  # generation-only patches — never served
 ```
 
 Serving one file lets Swagger UI load it in a single request instead of roughly ten, which is the main render-speed win. There is no `Domains/` folder in this repository.

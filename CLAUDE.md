@@ -33,7 +33,7 @@ automated.
 Orientation only — the pack carries the full map.
 
 - **`docs/`** — topic guides (getting-started, transactional, validation, webhooks)
-- **`api-reference/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, plus a self-contained Swagger UI bundle, deployed to GitHub Pages
+- **`api-integrations/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, plus a self-contained Swagger UI bundle, deployed to GitHub Pages
 - **`sdks/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — `workflows/` (every automation entry point), `actions/` (first-party composite actions — reusable steps, never entry points), and PR/issue templates
@@ -41,36 +41,36 @@ Orientation only — the pack carries the full map.
 ## Relationship to `turbo-smtp-openapi/`
 
 The canonical **OpenAPI v2 specification** lives in the sibling repository `../turbo-smtp-openapi/`
-and is the source of truth. `api-reference/upstream/turbo-smtp.yaml` here is a synced copy: make spec
+and is the source of truth. `api-integrations/upstream/turbo-smtp.yaml` here is a synced copy: make spec
 changes upstream and re-sync. The rules governing the synced copy, the bundled build input and
 generated Layer 1 are in the pack.
 
-`api-reference/overlays/` does **not** create a second source of truth. Overlays are applied only
+`api-integrations/overlays/` does **not** create a second source of truth. Overlays are applied only
 while generating SDK code; GitHub Pages serves `upstream/` verbatim. An overlay may change
 operationIds, naming and `x-` extensions — never wire semantics — and is deleted when the upstream
-issue it compensates for closes. See `api-reference/overlays/README.md`.
+issue it compensates for closes. See `api-integrations/overlays/README.md`.
 
 ## API Documentation Sync
 
-The `api-reference/` folder mirrors `../turbo-smtp-openapi/turbo-api-2/`, which serves a **single
+The `api-integrations/` folder mirrors `../turbo-smtp-openapi/turbo-api-2/`, which serves a **single
 pre-bundled** `turbo-smtp.yaml` — there is no `Domains/` folder in the served copies. Serving one
 file with only internal `$ref`s lets Swagger UI load in a single request instead of ~10, which is the
 main render-speed win.
 
 > **The spec and the UI assets sync to different places.** The spec lives in
-> `api-reference/upstream/`; the Swagger UI assets live at `api-reference/` root. A blanket recursive
-> copy of `turbo-api-2/*` into `api-reference/` would drop a second `turbo-smtp.yaml` at the root —
+> `api-integrations/upstream/`; the Swagger UI assets live at `api-integrations/` root. A blanket recursive
+> copy of `turbo-api-2/*` into `api-integrations/` would drop a second `turbo-smtp.yaml` at the root —
 > which nothing reads, nothing validates, and which then drifts silently. Copy the two separately.
 
 Whenever the served spec or the Swagger UI assets are updated upstream, sync the changes here:
 
 1. Verify the bundled spec is valid: `npx @redocly/cli@<pinned> lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml` — the pinned version is in the pack; do not float it.
-2. Copy the spec: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-reference/upstream/" -Force`
-3. Copy the UI assets: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-reference/" -Recurse -Force` (ensure `api-reference/` has no stale `Domains/` folder and no stray root `turbo-smtp.yaml`)
+2. Copy the spec: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-integrations/upstream/" -Force`
+3. Copy the UI assets: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-integrations/" -Recurse -Force` (ensure `api-integrations/` has no stale `Domains/` folder and no stray root `turbo-smtp.yaml`)
 4. **Re-record the checksum: `node sdks/scripts/check-spec.mjs --write-checksum`** — the spec-drift guard fails CI until this matches, which is the point: it separates a sync from a hand-edit.
 5. Run the guard: `node sdks/scripts/check-spec.mjs`
-6. Confirm the page still loads — the spec URL in `swagger-initializer.js` is resolved by the browser, so a wrong path 404s the live site while CI stays green: `npx --yes http-server api-reference -p 8080`
-7. Stage and commit the result: `git add api-reference/` then a `sync: update API docs from turbo-api-2` commit — per **Workflow Rules** below, the user runs this step.
+6. Confirm the page still loads — the spec URL in `swagger-initializer.js` is resolved by the browser, so a wrong path 404s the live site while CI stays green: `npx --yes http-server api-integrations -p 8080`
+7. Stage and commit the result: `git add api-integrations/` then a `sync: update API docs from turbo-api-2` commit — per **Workflow Rules** below, the user runs this step.
 
 > Step 4 is only ever run as part of a sync. Re-recording the checksum to silence a failing
 > guard, without having re-synced, defeats the one thing it detects.

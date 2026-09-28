@@ -21,7 +21,7 @@ language's idioms. It exists to:
 **What it governs:** the **Layer 2 facade** surface — everything a developer touches. It does
 **not** dictate Layer 1 (generated) internals, which are per-language and regenerated from the spec.
 
-**Spec source of truth:** the synced OpenAPI 3.1 copy under `../api-reference/upstream/`. Every
+**Spec source of truth:** the synced OpenAPI 3.1 copy under `../api-integrations/upstream/`. Every
 field, enum, host and status code below traces to it. Where the API's real behaviour differs from
 the spec, the difference is recorded in the [Discrepancies register](#discrepancies-register) and
 corrected upstream — never absorbed silently.
