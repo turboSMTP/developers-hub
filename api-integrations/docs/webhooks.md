@@ -2,7 +2,7 @@
 
 Receive real-time notifications for delivery and engagement events as TurboSMTP processes your messages.
 
-> The Event Webhook is configured from the TurboSMTP dashboard — it is not managed through the API described elsewhere in this hub. This page documents the events TurboSMTP pushes to your endpoint and shows how they relate to the send and analytics APIs.
+> The Event Webhook is configured from the TurboSMTP dashboard — it is not managed through the API described elsewhere in this hub, and it does not appear in the OpenAPI specification or the interactive reference. **This page is the authoritative definition of the event payload.** It documents the events TurboSMTP pushes to your endpoint and shows how they relate to the send and analytics APIs.
 
 **On this page:**
 

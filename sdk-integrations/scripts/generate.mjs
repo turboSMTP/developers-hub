@@ -13,8 +13,9 @@
  *                 sdk-integrations/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
  *                 Fed the 3.1 spec directly — no down-convert (see 1.3/1.4).
  *
- * Overlays are a GENERATION-ONLY concern: GitHub Pages serves api-integrations/upstream/ verbatim, so
- * an overlay never reaches the published contract. It may change operationIds, naming and `x-`
+ * Overlays are a GENERATION-ONLY concern: what is published is api-integrations/upstream/ verbatim,
+ * assembled by api-integrations/assemble.mjs, which never reads overlays/ -- so an overlay cannot
+ * reach the published contract. It may change operationIds, naming and `x-`
  * extensions; it may never change wire semantics. See api-integrations/overlays/README.md — those
  * rules are what make this reconcilable with the single-source-of-truth constraint.
  *

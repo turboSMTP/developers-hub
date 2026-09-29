@@ -10,8 +10,9 @@ upstream defect, not a place to shape the API.
 
 The canonical specification lives in `../../../turbo-smtp-openapi/` and is the single source of
 truth for the wire contract. `../upstream/turbo-smtp.yaml` is a synced copy of it, and that copy is
-what GitHub Pages publishes — **verbatim, with no overlay applied**. Overlays are read by
-`sdk-integrations/scripts/generate.mjs` and affect generated SDK code only.
+what gets published — **verbatim, with no overlay applied**. `../assemble.mjs` copies it into the
+tree pushed to the `turbosmtp-swagger-ui` mirror and never reads this directory at all. Overlays are
+read by `sdk-integrations/scripts/generate.mjs` and affect generated SDK code only.
 
 That separation is what makes overlays legitimate rather than a second source of truth. It only
 holds while these rules hold:

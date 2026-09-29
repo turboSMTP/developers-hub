@@ -2,9 +2,10 @@
 /**
  * End-to-end webhook check: send a real mail, receive the real callback, parse it.
  *
- * The parser is asserted against recorded payloads in the test suite. This closes the
- * one gap that cannot close offline — whether TurboSMTP still sends the shape we
- * recorded, and whether `referenceId` comes back on the event as documented.
+ * No recorded payload exists yet: the test suite's fixture is invented, so the parser is
+ * asserted against a shape nobody has observed. This run is what produces the first
+ * recording — it prints the raw body verbatim, the only evidence that can settle what
+ * TurboSMTP actually sends and whether `referenceId` comes back on the event.
  *
  * Operator-driven, and it has to be: the callback URL is configured in the TurboSMTP
  * dashboard and there is no endpoint for it in the OpenAPI spec, so nothing here can
@@ -50,7 +51,7 @@ const reference = `live-loop-${process.pid}-${process.hrtime.bigint()}`;
 let matched = false;
 
 const server = createServer((req, res) => {
-  if (USER && PASS && !verifyBasicAuth(req.headers.authorization, USER, PASS)) {
+  if (USER && PASS && !verifyBasicAuth(req.headers.authorization, `${USER}:${PASS}`)) {
     res.writeHead(401).end();
     return;
   }
@@ -62,6 +63,9 @@ const server = createServer((req, res) => {
   });
   req.on('end', () => {
     res.writeHead(200).end();
+    // The capture. The parser's view is lossy by design, so a run that does not record the
+    // raw bytes settles nothing about the wire contract.
+    console.log(`  raw    ${body}`);
     let events;
     try {
       events = parseWebhookEvents(body);

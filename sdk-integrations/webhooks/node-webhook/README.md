@@ -122,10 +122,6 @@ Live payloads differ from the published documentation in ways that break naive p
   body or configure the upstream parser to preserve `mid` as a string.
 - Bursts arrive **chunked** across multiple requests.
 
-## Related
-
-- [`@turbosmtp/sdk`](../node) — send email through the TurboSMTP API.
-
 ## License
 
 MIT

@@ -85,8 +85,8 @@ Response:
 
 The key is invalidated immediately. An invalid or already-revoked key returns `401`.
 
-[Try it in the API reference →](../api-integrations/index.html#/authentication/AuthenticationLogin)
-[Revoke in the API reference →](../api-integrations/index.html#/authentication/AuthenticationLogout)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/authentication/AuthenticationLogin)
+[Revoke in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/authentication/AuthenticationLogout)
 
 ### Create a Consumer Key
 
@@ -119,7 +119,7 @@ export CONSUMER_SECRET="JOSenWTYopGjhZ1CDvsEbcK9PNUA06Xy"
 
 Consumer keys are the recommended method for production: they don't expose your account password, can be restricted to specific IP addresses, and can be revoked individually with `DELETE /user/consumerKeys/{consumerKey}`. See the [account management guide](account.md#consumer-keys) for listing and deleting keys.
 
-[Try it in the API reference →](../api-integrations/index.html#/consumerkey/createConsumerKey)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/consumerkey/createConsumerKey)
 
 ---
 
@@ -187,4 +187,4 @@ Endpoints on the main host return errors as a JSON object with a `message` field
 - [Manage suppressions](suppressions.md)
 - [Validate email addresses](validation.md)
 - [Set up webhooks](webhooks.md)
-- [Explore the full API reference](../api-integrations/index.html)
+- [Explore the full API reference](https://turbosmtp.github.io/turbosmtp-swagger-ui/)

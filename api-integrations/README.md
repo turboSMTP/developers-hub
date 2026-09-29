@@ -4,23 +4,35 @@ The TurboSMTP API is defined using the **OpenAPI 3.1 specification**, which serv
 
 This page is the narrative overview of the API surface. For the **interactive** reference, use the live Swagger UI below.
 
+For step-by-step integration guides — authentication, sending, analytics, suppressions, validation and webhooks — see [`docs/`](docs/README.md).
+
 ---
 
 ## Interactive Reference
 
-**Live Swagger UI:** [https://turbosmtp.github.io/developers-hub/](https://turbosmtp.github.io/developers-hub/)
+**Live Swagger UI:** [https://turbosmtp.github.io/turbosmtp-swagger-ui/](https://turbosmtp.github.io/turbosmtp-swagger-ui/)
 
-A live "Try It" playground for every endpoint, with no local setup required. It is published from the self-contained Swagger UI bundle in this folder (`index.html` + `upstream/turbo-smtp.yaml`) and redeployed automatically on every change via the [deploy-swagger-ui workflow](../.github/workflows/deploy-swagger-ui.yml).
+A live "Try It" playground for every endpoint, with no local setup required.
+
+**This repository does not serve it.** The site is published from
+[`turboSMTP/turbosmtp-swagger-ui`](https://github.com/turboSMTP/turbosmtp-swagger-ui), a read-only
+mirror assembled from the two halves below — the vendored UI in `swagger-ui/` and the synced spec in
+`upstream/` — and force-pushed by the
+[publish-api-reference workflow](../.github/workflows/publish-api-reference.yml) on every change.
+Never commit to the mirror; it is regenerated on every publish.
 
 ---
 
 ## Specification Source
 
-The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what is **served** here is a single pre-bundled file carrying internal `$ref`s only:
+The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what is **published** is a single pre-bundled file carrying internal `$ref`s only:
 
 ```
-api-integrations/upstream/turbo-smtp.yaml   # the complete pre-bundled document, served verbatim
-api-integrations/overlays/                  # generation-only patches — never served
+api-integrations/upstream/turbo-smtp.yaml   # the complete pre-bundled document, published verbatim
+api-integrations/swagger-ui/                # the vendored Swagger UI, exactly as turbo-api-2 ships it
+api-integrations/overlays/                  # generation-only patches — never published
+api-integrations/docs/                      # human-facing topic guides — never published
+api-integrations/assemble.mjs               # flattens the two into the publishable tree
 ```
 
 Serving one file lets Swagger UI load it in a single request instead of roughly ten, which is the main render-speed win. There is no `Domains/` folder in this repository.
@@ -28,6 +40,8 @@ Serving one file lets Swagger UI load it in a single request instead of roughly 
 `upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` (see the "API Documentation Sync" section of the repo `CLAUDE.md`) and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
 
 `overlays/` holds OpenAPI Overlay documents applied **only** while generating SDK code. They never touch the published spec and may never change wire semantics — see [`overlays/README.md`](overlays/README.md) for the rules.
+
+`docs/` holds the topic guides. They are hand-authored — never generated, never synced — and are not published to the mirror. Note in particular that [`docs/webhooks.md`](docs/webhooks.md) defines the Event Webhook payload, which appears in **no** OpenAPI document: the upstream spec carries only an empty `callbacks: {}` stub. Nothing derives that page, so a spec sync must never overwrite it.
 
 ---
 

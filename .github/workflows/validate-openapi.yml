@@ -1,14 +1,21 @@
 name: Validate OpenAPI Specification
 
 on:
+  # Scoped to what this workflow actually reads: the lint targets upstream/, and the drift
+  # guard reads upstream/ plus overlays/. A blanket 'api-integrations/**' also fires on
+  # docs/ and swagger-ui/ — a Redocly lint and a drift guard for a Markdown or UI-asset
+  # change. Keep this an allowlist: a denylist needs extending every time something
+  # non-spec lands in api-integrations/.
   push:
     paths:
-      - 'api-integrations/**'
+      - 'api-integrations/upstream/**'
+      - 'api-integrations/overlays/**'
       - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
-      - 'api-integrations/**'
+      - 'api-integrations/upstream/**'
+      - 'api-integrations/overlays/**'
       - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
 
@@ -33,7 +40,8 @@ jobs:
       # there is no Domains/ folder in the served copy. The version is pinned to
       # match sdk-integrations/scripts/generate.mjs; do not float it.
       #
-      # This lints the SYNCED UPSTREAM copy — the document GitHub Pages serves.
+      # This lints the SYNCED UPSTREAM copy — the document that gets published, assembled
+      # into the turbosmtp-swagger-ui mirror by api-integrations/assemble.mjs.
       # Overlays in api-integrations/overlays/ are deliberately not applied here:
       # they are a code-generation concern and never reach the published spec.
       - name: Validate OpenAPI spec

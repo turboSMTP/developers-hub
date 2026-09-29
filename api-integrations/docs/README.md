@@ -13,4 +13,4 @@ Topic guides for integrating with the TurboSMTP API. Start with **Getting Starte
 | [Account Management](account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
 | [Subaccounts](subaccounts.md) | Multi-tenant client management for agency plans |
 
-For the OpenAPI specification and interactive reference, see [API Reference](../api-integrations/README.md). For client libraries, see [SDKs](../sdk-integrations/index.md).
+For the OpenAPI specification, see the [API Reference](../README.md). For an interactive playground, use the [live Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/).

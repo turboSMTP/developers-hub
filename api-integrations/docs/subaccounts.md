@@ -69,7 +69,7 @@ Response:
 
 `limit` is the allowed send volume per `plan_limit_interval` (`Daily`, `Monthly`, or `Yearly` — always following the main account's interval); `sent` is usage in the current period; `-1` means unlimited. `expired` indicates whether the plan expiration date is overdue.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/getSubaccounts)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/getSubaccounts)
 
 ---
 
@@ -95,7 +95,7 @@ Response:
 
 Note: The parameter name `Email` is capitalized.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/checkEmailExists)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/checkIfAccountEmailExists)
 
 ---
 
@@ -154,7 +154,7 @@ Response (`201 Created`):
 
 Use the public country/state lookups in [Account → Reference Data](account.md#reference-data) to populate `country` and `region`.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/createSubaccount)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/createSubaccount)
 
 ---
 
@@ -221,7 +221,7 @@ Response:
 
 Unknown IDs return `404` with `subaccount_not_found`.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/getSubaccountDetails)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/getSubaccountDetails)
 
 ### Update
 
@@ -265,7 +265,7 @@ Response:
 
 Update the same fields as creation (email excluded); `first_name`, `last_name`, `ip`, and `policy_agree` are required in the body. The same password and IP validations apply when those fields are sent.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/updateSubaccount)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/updateSubaccountDetails)
 
 ---
 
@@ -301,7 +301,7 @@ Response:
 
 `limit` is the number of emails per the plan's interval. **`-1` means no limit.** It cannot exceed your parent account's limit (`400` `limit_should_not_be_higher_than_parent_account_limit`) or be lower than `-1`.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/UpdateSubaccountSMTPLimit)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/UpdateSubaccountSMTPLimit)
 
 ### Active Status
 
@@ -333,7 +333,7 @@ Response:
 
 Users cannot log in to an inactive subaccount; note that sending also requires the subaccount's subscription to be active.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/UpdateSubaccountStatus)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/UpdateSubaccountStatus)
 
 ### Current Plan
 
@@ -363,7 +363,7 @@ Response:
 
 Returns the subaccount's ID, parent ID, IP address, active status, limit, usage (`sent`), last used timestamp, plan expiration, plan interval, and expired flag.
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/CheckPlan)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/getActivePlan)
 
 ---
 
@@ -390,7 +390,7 @@ Response:
 
 Use the returned `auth` value as the `Authorization` header — subsequent calls operate in the subaccount's context, exactly like a key from [`POST /authorize`](getting-started.md#get-an-api-key).
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/SubaccountAuthenticationLogin)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/SubaccountAuthenticationLogin)
 
 ---
 
@@ -413,7 +413,7 @@ Response:
 }
 ```
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/getAgencyLogo)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/getLogoFile)
 
 **`POST /subaccounts/logo`**
 
@@ -431,7 +431,7 @@ Response (`201 Created`):
 }
 ```
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/uploadAgencyLogo)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/uploadLogoFile)
 
 **`DELETE /subaccounts/logo`**
 
@@ -448,7 +448,7 @@ Response:
 }
 ```
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/deleteAgencyLogo)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/deleteLogoFile)
 
 ### Agency Details
 
@@ -470,7 +470,7 @@ Response:
 }
 ```
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/getAgencySettings)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/getAgencySettings)
 
 **`PATCH /subaccounts/agency`**
 
@@ -499,7 +499,7 @@ Response:
 | `agency_website` | 128 |
 | `agency_footer` | 2048 |
 
-[Try it in the API reference →](../api-integrations/index.html#/subaccounts/updateAgencySettings)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/subaccounts/updateAgencySettings)
 
 ---
 
@@ -523,4 +523,4 @@ Walk through the full lifecycle of a client subaccount — from checking availab
 
 - [Account management (consumer keys, alerts)](account.md)
 - [Getting started with authentication](getting-started.md)
-- [Full API reference →](../api-integrations/index.html)
+- [Full API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/)

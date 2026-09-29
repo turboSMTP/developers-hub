@@ -214,4 +214,4 @@ Variants: `"Wrong credentials specified"` (invalid key pair) and `"Account for <
 - [Track delivery, opens, and clicks in Analytics](analytics.md)
 - [Receive real-time events via webhooks](webhooks.md)
 - [Manage bounces and unsubscribes with Suppressions](suppressions.md)
-- [Try it in the API reference](../api-integrations/index.html#/mail/sendEmail)
+- [Try it in the API reference](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/mail/sendEmail)

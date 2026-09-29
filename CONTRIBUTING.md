@@ -28,7 +28,7 @@ Please use the provided [PR template](.github/pull_request_template.md) and fill
 ## Documentation Standards
 
 - All documentation is written in Markdown
-- Follow the existing folder structure under `docs/`
+- Follow the existing folder structure under `api-integrations/docs/`
 - Code examples must be tested and functional
 - API examples must reference the OpenAPI 3.1 specification in `api-integrations/`
 

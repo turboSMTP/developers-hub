@@ -65,8 +65,8 @@ Visit the returned `url` to complete payment in the billing system.
 
 `400` errors: `missing_required_parameter_amount`, `amount_should_be_integer`, `amount_should_not_be_less_than_15`, `amount_should_not_be_higher_than_1800`, `can_not_buy_extra_credit_without_active_plan` (an active plan is required).
 
-[Try it in the API reference →](../api-integrations/index.html#/email-validator/getEmailValidationSubscription)
-[Buy credits in the API reference →](../api-integrations/index.html#/billing/buyEmailValidatorCredits)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/email-validator/getEmailValidationSubscription)
+[Buy credits in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/billing/buyEmailValidatorCredits)
 
 ---
 
@@ -120,7 +120,7 @@ Useful fields beyond `status`/`sub_status`:
 
 `400` errors: `invalid_email_address`, `missing_required_parameter_email`.
 
-[Try it in the API reference →](../api-integrations/index.html#/email-validator/validateEmail)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/email-validator/validateEmail)
 
 ---
 
@@ -277,7 +277,7 @@ Response:
 
 Unknown list IDs return `404` with `{"message": "list_not_found"}` on all list endpoints.
 
-[Try it in the API reference →](../api-integrations/index.html#/email-validator/uploadEmailValidationFile)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/email-validator/uploadEmailValidationFile)
 
 ---
 
@@ -308,7 +308,7 @@ Every validated address gets a `status` and, where applicable, a `sub_status`.
 
 ### Other Sub-Statuses
 
-Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for example `alias_address` and `leading_period_removed` (valid), `mailbox_not_found`, `failed_syntax_check`, `possible_typo`, `no_dns_entries`, `mailbox_quota_exceeded`, `does_not_accept_mail`, `unroutable_ip_address` (invalid), and `antispam_system`, `greylisted`, `timeout_exceeded`, `failed_smtp_connection`, `forcible_disconnect`, `mail_server_did_not_respond`, `mail_server_temporary_error`, `exception_occurred` (unknown). `greylisted` addresses often validate successfully on a second pass. The full catalog with explanations is in the [API reference](../api-integrations/index.html#/email-validator/validateEmail).
+Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for example `alias_address` and `leading_period_removed` (valid), `mailbox_not_found`, `failed_syntax_check`, `possible_typo`, `no_dns_entries`, `mailbox_quota_exceeded`, `does_not_accept_mail`, `unroutable_ip_address` (invalid), and `antispam_system`, `greylisted`, `timeout_exceeded`, `failed_smtp_connection`, `forcible_disconnect`, `mail_server_did_not_respond`, `mail_server_temporary_error`, `exception_occurred` (unknown). `greylisted` addresses often validate successfully on a second pass. The full catalog with explanations is in the [API reference](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/email-validator/validateEmail).
 
 ---
 
@@ -325,4 +325,4 @@ Sub-statuses also qualify `valid`, `invalid`, and `unknown` results — for exam
 
 - [Add failed addresses to Suppressions](suppressions.md)
 - [Send to your cleaned list](transactional.md)
-- [Full API reference](../api-integrations/index.html#/email-validator/validateEmail)
+- [Full API reference](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/email-validator/validateEmail)

@@ -98,7 +98,7 @@ curl -G https://pro.api.serversmtp.com/api/v2/suppressions \
 }
 ```
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/getSuppressions)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/getSuppressions)
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `page_should_be_integer`, `page_should_be_greater_than_0`, `limit_should_be_integer`, `limit_should_be_greater_than_0`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
@@ -132,7 +132,7 @@ Returns the same format as [GET /suppressions](#query-suppressions) above (an ob
 | `filter` | Text to match |
 | `smart_search` | `true`/`false` |
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/filterSuppressions)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/filterSuppressions)
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `page_should_be_integer`, `page_should_be_greater_than_0`, `limit_should_be_integer`, `limit_should_be_greater_than_0`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
@@ -179,7 +179,7 @@ Response — addresses are partitioned into accepted and rejected:
 
 `400` errors: `missing_upload_file`, `invalid_mail_address_list`.
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/importSuppressions)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/importSuppressions)
 
 ---
 
@@ -201,7 +201,7 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/bulk_delete \
 
 Response: `{"success": true}`. Sending an empty list returns `400` with `no_contacts_were_provided`.
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/bulkDeleteSuppressions)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/bulkDeleteSuppressions)
 
 ### By Filter
 
@@ -222,7 +222,7 @@ curl -X POST https://pro.api.serversmtp.com/api/v2/suppressions/delete \
 
 > **Destructive operation.** A broad date range with no `filter`/`filter_by` deletes *all* suppressions in that range — bounces and spam complaints included. Run the identical body against `POST /suppressions` first to preview exactly what will be removed.
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/deleteFilterSuppressions)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/deleteFilterSuppressions)
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`.
 
@@ -275,7 +275,7 @@ Returns the same CSV format as [GET /suppressions/csv](#export-to-csv) above.
 
 `400` errors: `missing_required_parameter_from`, `from_format_should_be_yyyy-mm-dd`, `missing_required_parameter_to`, `to_format_should_be_yyyy-mm-dd`, `smart_search_should_be_true_or_false`, `orderby_can_only_be_date_or_source_or_recipient_or_reason`, `ordertype_should_be_asc_or_desc`.
 
-[Try it in the API reference →](../api-integrations/index.html#/suppressions/exportSuppressionsDataCSV)
+[Try it in the API reference →](https://turbosmtp.github.io/turbosmtp-swagger-ui/#/suppressions/exportSuppressionsDataCSV)
 
 ---
 
