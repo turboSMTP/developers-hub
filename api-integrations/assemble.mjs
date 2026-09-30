@@ -5,9 +5,9 @@
 // WHY THIS EXISTS. developers-hub does not serve GitHub Pages. The site is published
 // from turbosmtp-swagger-ui, a read-only mirror, and that mirror is FLAT: index.html
 // and turbo-smtp.yaml sit side by side. The flatness is what lets
-// swagger-ui/swagger-initializer.js carry upstream's own `url: "./turbo-smtp.yaml"`
-// with ZERO divergence from turbo-api-2 -- which is in turn why the sync procedure in
-// CLAUDE.md can be a blanket overwrite with nothing excluded.
+// swagger-ui/swagger-initializer.js keep `url: "./turbo-smtp.yaml"` exactly as shipped
+// -- the path already resolves in the mirror, so the UI assets need no local divergence
+// and can be refreshed by a blanket overwrite.
 //
 // The spec is deliberately NOT stored flat here. It lives at upstream/turbo-smtp.yaml
 // because it is the source of truth for five SDKs, read by scripts/generate.mjs and

@@ -37,7 +37,7 @@ api-integrations/assemble.mjs               # flattens the two into the publisha
 
 Serving one file lets Swagger UI load it in a single request instead of roughly ten, which is the main render-speed win. There is no `Domains/` folder in this repository.
 
-`upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` (see the "API Documentation Sync" section of the repo `CLAUDE.md`) and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
+`upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml), and an in-place edit is caught by the spec-drift guard, `sdk-integrations/scripts/check-spec.mjs`.
 
 `overlays/` holds OpenAPI Overlay documents applied **only** while generating SDK code. They never touch the published spec and may never change wire semantics — see [`overlays/README.md`](overlays/README.md) for the rules.
 
