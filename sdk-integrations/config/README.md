@@ -22,18 +22,26 @@ no Kiota fallback needed.
 ## Layer 1 / Layer 2 layout
 
 These configs generate **Layer 1 only**, into an **internal namespace** so the hand-written Layer 2
-facade can own the public entrypoint (`TurboSMTPClient`) within the same published package:
+facade can own the public entrypoint (`TurboSMTPClient`) within each published package:
 
 | Language | Layer 1 (generated) namespace | Public facade surface |
 |---|---|---|
-| Node/TS | emitted to `packages/node/src/generated/` | `@turbosmtp/sdk` |
+| Node/TS | emitted to each package's `src/generated/` | `@turbosmtp/mail`, `@turbosmtp/sdk` |
 | Python | `turbosmtp._generated` | `turbosmtp` |
 | C# | `TurboSMTP.Generated` | `TurboSMTP` |
 | Go | package `generated` | package `turbosmtp` (owns `go.mod`) |
 | PHP | `TurboSMTP\Generated` | `TurboSMTP` |
 
-Package identity matches the registry names fixed in the semantic layer (`@turbosmtp/sdk`, `turbosmtp`,
-`TurboSMTP`, `turbosmtp/turbosmtp-client`). Packaging/project files (package.json, pyproject, go.mod,
+A language ships **two API packages** — a mail package and a unified one — and both are generated
+from the single config above. The config is domain-agnostic, so what distinguishes them is what the
+script passes per run: the domain filter, the output directory, and the published package name
+(`--additional-properties`, which overrides the config's default). There is deliberately no second
+config file — a per-language config that named one package would stop being reusable across tiers,
+which is the property the omissions below exist to preserve. The table's "public facade surface"
+column names the unified package; each language's mail package is its counterpart, and both are
+fixed in the semantic layer's naming map.
+
+Package identity matches the registry names fixed in the semantic layer. Packaging/project files (package.json, pyproject, go.mod,
 .csproj, composer.json) are owned by the facade, not the generated core — the script skips generated
 project files (`generateSourceCodeOnly`/`withGoMod:false`/ignore rules) so regeneration never clobbers
 the facade's packaging.

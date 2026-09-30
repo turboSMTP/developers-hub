@@ -1,7 +1,7 @@
 /**
  * HTML send — an HTML body.
  *
- * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: see examples/README.md (set CONSUMER_KEY / CONSUMER_SECRET first).
  */
 import { TurboSMTPClient } from '../../src/index';

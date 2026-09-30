@@ -1,6 +1,6 @@
 # Examples
 
-Runnable examples for `@turbosmtp/sdk`, one copy in each language:
+Runnable examples for `@turbosmtp/mail`, one copy in each language:
 
 - **`ts/`** — TypeScript. Type-checked in isolation with `npm run typecheck:examples`.
 - **`js/`** — JavaScript (ESM). Run directly with `node` against the live API.
@@ -19,7 +19,7 @@ Each example maps to a conformance scenario exercised by the test suite:
 > **In-repo import paths.** These files import the SDK by relative path so they run
 > before the package is published — `js/` from the built ESM bundle
 > `../../dist/esm/index.mjs`, `ts/` from the source `../../src/index`. In your own
-> project you'd instead write `import { TurboSMTPClient } from '@turbosmtp/sdk';`.
+> project you'd instead write `import { TurboSMTPClient } from '@turbosmtp/mail';`.
 >
 > The `js/` examples deliberately target the ESM build while the test suite targets
 > the CJS build (`dist/cjs/index.js`), so both published artifacts get exercised.

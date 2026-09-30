@@ -7,30 +7,34 @@ name: Split packages to publish mirrors
 # link to and (for Go and PHP) actually consume.
 #
 # Tag convention:  <package>/vX.Y.Z  here  ->  vX.Y.Z  on the mirror.
-# The prefix is a package slug, not a language: it equals the language for the five
-# unified SDKs only because each one is that language's single publishable unit.
+# The prefix is a package slug, not a language. A language ships two API packages — a mail
+# package and a unified one — so a slug names a package and never a language on its own.
 # The mirror tag MUST be unprefixed: Go resolves versions from root-module tags, and
 # Packagist reads composer.json from the repository root. That translation is the whole
 # reason this workflow exists.
 #
-# A slug equals its directory's own name, but not its parent: unified SDKs live under
+# A slug equals its directory's own name, but not its parent: API packages live under
 # sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/. The `case` below is the one
 # place that mapping is written down — adding a package means adding a line there and a
 # tag glob above, not relying on a path convention.
 #
 # Requires a secret `MIRROR_TOKEN` — a PAT or GitHub App installation token with
-# `contents: write` on every turbosmtp-* mirror the `case` below resolves to
-# (six today: the five unified SDKs plus turbosmtp-node-webhook). A token scoped
-# to fewer repos passes every check here and 403s on the final push.
+# `contents: write` on every turbosmtp-* mirror the `case` below resolves to. A token
+# scoped to fewer repos passes every check here and 403s on the final push.
 
 on:
   push:
     tags:
       - 'node/v*'
+      - 'node-mail/v*'
       - 'python/v*'
+      - 'python-mail/v*'
       - 'csharp/v*'
+      - 'csharp-mail/v*'
       - 'go/v*'
+      - 'go-mail/v*'
       - 'php/v*'
+      - 'php-mail/v*'
       - 'node-webhook/v*'
   workflow_dispatch:
     inputs:
@@ -100,10 +104,15 @@ jobs:
           # rather than a stale mapping.
           case "$pkg" in
             node)         mirror=turbosmtp-node;         prefix=sdk-integrations/packages/node ;;
+            node-mail)    mirror=turbosmtp-node-mail;    prefix=sdk-integrations/packages/node-mail ;;
             python)       mirror=turbosmtp-python;       prefix=sdk-integrations/packages/python ;;
+            python-mail)  mirror=turbosmtp-python-mail;  prefix=sdk-integrations/packages/python-mail ;;
             csharp)       mirror=turbosmtp-dotnet;       prefix=sdk-integrations/packages/csharp ;;
+            csharp-mail)  mirror=turbosmtp-dotnet-mail;  prefix=sdk-integrations/packages/csharp-mail ;;
             go)           mirror=turbosmtp-go;           prefix=sdk-integrations/packages/go ;;
+            go-mail)      mirror=turbosmtp-go-mail;      prefix=sdk-integrations/packages/go-mail ;;
             php)          mirror=turbosmtp-php;          prefix=sdk-integrations/packages/php ;;
+            php-mail)     mirror=turbosmtp-php-mail;     prefix=sdk-integrations/packages/php-mail ;;
             node-webhook) mirror=turbosmtp-node-webhook; prefix=sdk-integrations/webhooks/node-webhook ;;
             *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
           esac

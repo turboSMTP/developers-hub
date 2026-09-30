@@ -5,7 +5,7 @@
  * 401 (bad credentials) and a 400 (invalid payload) on purpose and handles each
  * by type. Neither case sends mail.
  *
- * In your own project: import from '@turbosmtp/sdk'.
+ * In your own project: import from '@turbosmtp/mail'.
  * Run: see examples/README.md (set CONSUMER_KEY / CONSUMER_SECRET first).
  */
 import {

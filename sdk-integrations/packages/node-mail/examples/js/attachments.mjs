@@ -10,7 +10,7 @@
  *     import { readFile } from 'node:fs/promises';
  *     const pdf = await readFile('invoice.pdf');
  *
- * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: node examples/js/attachments.mjs  (build first; set creds).
  */
 import { TurboSMTPClient } from '../../dist/esm/index.mjs';

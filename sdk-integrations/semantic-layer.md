@@ -33,9 +33,11 @@ Every SDK is three thin layers.
 - **Layer 1 — Generated Core.** Transport, (de)serialization, auth headers, models and multipart,
   produced by OpenAPI Generator from the bundled specification, committed per language and
   regenerated when the spec changes. Never hand-edited, and **not governed by this document**.
-- **Layer 2 — Curated Facade.** The unified `TurboSMTPClient` and its domain namespaces — the only
+- **Layer 2 — Curated Facade.** The `TurboSMTPClient` and its domain namespaces — the only
   published surface, and where it stops mapping 1:1 to endpoints: arrays instead of comma-separated
-  strings, hidden auth, composed helpers. **This document governs Layer 2.**
+  strings, hidden auth, composed helpers. Each published API package provides its own
+  `TurboSMTPClient` carrying the namespaces that package ships; the class, its constructor and its
+  behaviour are identical in both. **This document governs Layer 2.**
 - **Layer 3 — Conformance tests.** Derived from the scenarios below. Credential-free and offline,
   driving the public surface only.
 
@@ -66,7 +68,8 @@ language (idiomatic casing applies).
 | Send method | `mail.send(msg)` | `mail.send(...)` | `Mail.SendAsync(req)` | `Mail.Send(req)` | `getMail()->send([...])` |
 | Async convention | Promise | sync + `AsyncTurboSMTPClient` (later) | `…Async` + `Task<T>` | `(T, error)` | sync |
 | `from` field | `from` | `from_` / `from_address` | `From` | `From` | `from` |
-| Package | `@turbosmtp/sdk` (npm) | `turbosmtp` (PyPI) | `TurboSMTP` (NuGet) | `github.com/turbosmtp/turbosmtp-go` | `turbosmtp/turbosmtp-client` (Packagist) |
+| Mail package | `@turbosmtp/mail` (npm) | `turbosmtp-mail` (PyPI) | `TurboSMTP.Mail` (NuGet) | `github.com/turbosmtp/turbosmtp-go-mail` | `turbosmtp/turbosmtp-mail` (Packagist) |
+| Unified package | `@turbosmtp/sdk` (npm) | `turbosmtp` (PyPI) | `TurboSMTP` (NuGet) | `github.com/turbosmtp/turbosmtp-go` | `turbosmtp/turbosmtp-client` (Packagist) |
 
 Notes:
 - `from` is a reserved word in Python; use `from_` (with `from_address` accepted as an alias). Every
@@ -388,6 +391,19 @@ Namespaces are confirmed as: **`mail`, `validation`, `analytics`, `suppressions`
 | **P3 / maybe-never** | `billing` | `/billing/*` | — | implement only if justified |
 | **P3 / maybe-never** | `alerts` | alerts | — | low priority |
 | **P3 / maybe-never** | `meta` | countries/states | — | low priority |
+
+**Which distribution carries which namespace.** The `mail` namespace ships in the mail package;
+every other namespace in this table ships in the unified package. The two are independent — neither
+depends on the other, and the unified package is not a superset — so a consumer needing `mail` and
+`validation` installs both and constructs a client from each. The namespace names, method shapes and
+behaviour fixed in this document are identical either way: a namespace does not change because of
+the package it arrives in, which is what the note above fixes.
+
+Because the packages are independent, each carries its own copy of the error taxonomy: an error
+class from the mail package and the same-named class from the unified package are **distinct
+types**, and an `instanceof` or equivalent type check written against one does not match the other.
+A consumer using both handles each package's errors separately, and no SDK presents them as
+interchangeable.
 
 **Coverage caveat — orphaned operations (do NOT promise in any SDK).** These are defined in the
 upstream domain files but never wired into the root `paths:`, so they are pruned from the served

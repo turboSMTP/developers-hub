@@ -1,8 +1,8 @@
-# @turbosmtp/sdk
+# @turbosmtp/mail
 
 > **Source, issues and pull requests live in
-> [turboSMTP/developers-hub](https://github.com/turboSMTP/developers-hub/tree/main/sdk-integrations/packages/node).**
-> The [`turbosmtp-node`](https://github.com/turboSMTP/turbosmtp-node) repository is a read-only mirror
+> [turboSMTP/developers-hub](https://github.com/turboSMTP/developers-hub/tree/main/sdk-integrations/packages/node-mail).**
+> The [`turbosmtp-node-mail`](https://github.com/turboSMTP/turbosmtp-node-mail) repository is a read-only mirror
 > published automatically on release — changes pushed there are overwritten. Please file issues at
 > [developers-hub/issues](https://github.com/turboSMTP/developers-hub/issues).
 
@@ -14,8 +14,10 @@ dependency-free client for sending transactional email through the TurboSMTP API
 - **Idiomatic** — recipient arrays, `text`/`html` bodies, byte attachments (base64 handled for you),
   a typed error hierarchy, and a single options object for configuration.
 
-> **Status:** `0.1.0` — P0 covers the `mail` namespace (`client.mail.send`). Email Validation and the
-> other domains land in later releases.
+> **Status:** `0.2.0` — this package is the `mail` namespace (`client.mail.send`). Email Validation
+> and every other domain ship in `@turbosmtp/sdk`, a separate package; the two are independent and
+> neither contains the other. `0.1.0` under this name came from a retired project and is not a
+> predecessor of this one.
 
 ---
 
@@ -49,7 +51,7 @@ dependency-free client for sending transactional email through the TurboSMTP API
 ## Installation
 
 ```bash
-npm install @turbosmtp/sdk
+npm install @turbosmtp/mail
 ```
 
 You'll need your **Consumer Key** and **Consumer Secret** from the TurboSMTP dashboard. Keep them out
@@ -62,7 +64,7 @@ of source control — the examples below read them from environment variables.
 Send a plain-text email in a few lines.
 
 ```typescript
-import { TurboSMTPClient } from '@turbosmtp/sdk';
+import { TurboSMTPClient } from '@turbosmtp/mail';
 
 const client = new TurboSMTPClient({
   consumerKey: process.env.CONSUMER_KEY!,
@@ -82,7 +84,7 @@ console.log(`Queued as ${messageId}`);
 The same code in JavaScript (ESM):
 
 ```javascript
-import { TurboSMTPClient } from '@turbosmtp/sdk';
+import { TurboSMTPClient } from '@turbosmtp/mail';
 
 const client = new TurboSMTPClient({
   consumerKey: process.env.CONSUMER_KEY,
@@ -297,7 +299,7 @@ import {
   AuthenticationError,
   BadRequestError,
   NetworkError,
-} from '@turbosmtp/sdk';
+} from '@turbosmtp/mail';
 
 try {
   await client.mail.send({ from: 'you@yourdomain.com', to: ['recipient@example.com'], text: 'Hi' });

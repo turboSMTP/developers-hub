@@ -4,7 +4,7 @@
  * `to`, `cc`, and `bcc` are always arrays; the SDK joins them for the wire.
  * `replyTo` is first-class and is sent as a custom `reply-to` header.
  *
- * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: see examples/README.md (set CONSUMER_KEY / CONSUMER_SECRET first).
  */
 import { TurboSMTPClient } from '../../src/index';

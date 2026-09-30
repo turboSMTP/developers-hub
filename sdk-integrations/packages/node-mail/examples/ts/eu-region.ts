@@ -1,10 +1,10 @@
 /**
- * Minimal send — a plain-text email.
+ * EU-region routing — send through EU infrastructure.
  *
- * In your own project, install the package and import from it:
- *     import { TurboSMTPClient } from '@turbosmtp/sdk';
- * These in-repo examples import from the source so they run before publish.
+ * Pass `region: 'eu'` to route to https://api.eu.turbo-smtp.com/api/v2.
+ * The default, `'global'`, uses https://api.turbo-smtp.com/api/v2.
  *
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: see examples/README.md (set CONSUMER_KEY / CONSUMER_SECRET first).
  */
 import { TurboSMTPClient } from '../../src/index';
@@ -21,16 +21,16 @@ async function main(): Promise<void> {
   const from = process.env.EXAMPLE_FROM ?? 'you@yourdomain.com';
   const to = (process.env.EXAMPLE_TO ?? 'recipient@example.com').split(',');
 
-  const client = new TurboSMTPClient({ consumerKey, consumerSecret });
+  const client = new TurboSMTPClient({ consumerKey, consumerSecret, region: 'eu' });
 
   const { messageId } = await client.mail.send({
     from,
     to,
-    subject: 'Hello from TurboSMTP',
-    text: 'Sent with the TurboSMTP Node.js SDK.',
+    subject: 'Hello from the EU region',
+    text: 'This send was routed through EU infrastructure.',
   });
 
-  console.log(`Queued as ${messageId}`);
+  console.log(`Queued (EU) as ${messageId}`);
 }
 
 main().catch((err) => {

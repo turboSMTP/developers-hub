@@ -7,7 +7,7 @@ description: >-
 inputs:
   path:
     description: >-
-      Repository-relative path to the package directory, e.g. sdk-integrations/packages/node or
+      Repository-relative path to the package directory, e.g. sdk-integrations/packages/node-mail or
       sdk-integrations/webhooks/node-webhook. Passed explicitly because a package's directory is not
       derivable from its name — unified SDKs live under sdk-integrations/packages/ and webhook
       receivers under sdk-integrations/webhooks/.

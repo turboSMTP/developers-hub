@@ -34,7 +34,7 @@ automated.
 Orientation only — the pack carries the full map.
 
 - **`api-integrations/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, the vendored Swagger UI (`swagger-ui/`), and the topic guides in `docs/` (getting-started, transactional, validation, webhooks). `assemble.mjs` flattens the spec and the UI — and nothing else — into the tree published to the `turbosmtp-swagger-ui` mirror
-- **`sdk-integrations/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the unified SDKs, `webhooks/` for the receivers
+- **`sdk-integrations/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the API packages, `webhooks/` for the receivers
 - **`ai-integrations/`** — MCP Server and Agent Skills documentation
 - **`.github/`** — `workflows/` (every automation entry point), `actions/` (first-party composite actions — reusable steps, never entry points), and PR/issue templates
 

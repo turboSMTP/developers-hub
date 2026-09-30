@@ -11,17 +11,22 @@ Official and community-maintained client libraries for the TurboSMTP API.
 > that do not exist. Planned package names are fixed in
 > [`semantic-layer.md`](semantic-layer.md) but are not installable until each SDK ships.
 
-| Language | Status | Install | Guide |
-|---|---|---|---|
-| Node.js / TypeScript | Built, publish pending | *not yet published* — planned as `@turbosmtp/sdk` | [packages/node](packages/node/README.md) |
-| Node.js webhook receiver | Built, publish pending | *not yet published* — planned as `@turbosmtp/webhook` | [webhooks/node-webhook](webhooks/node-webhook/README.md) |
-| Python | Planned | *not yet published* | — |
-| C# | Planned | *not yet published* — planned as `TurboSMTP` (NuGet) | — |
-| Go | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go` | — |
-| PHP | Planned | *not yet published* — planned as `turbosmtp/turbosmtp-client` | — |
+| Language | Package | Status | Install | Guide |
+|---|---|---|---|---|
+| Node.js / TypeScript | mail | Built, publish pending | *not yet published* — planned as `@turbosmtp/mail` | [packages/node-mail](packages/node-mail/README.md) |
+| Node.js / TypeScript | unified | Not started | *not yet published* — planned as `@turbosmtp/sdk` | — |
+| Node.js webhook receiver | — | Built, publish pending | *not yet published* — planned as `@turbosmtp/webhook` | [webhooks/node-webhook](webhooks/node-webhook/README.md) |
+| Python | mail | Planned | *not yet published* | — |
+| Python | unified | Planned | *not yet published* | — |
+| C# | mail | Planned | *not yet published* — planned as `TurboSMTP.Mail` (NuGet) | — |
+| C# | unified | Planned | *not yet published* — planned as `TurboSMTP` (NuGet) | — |
+| Go | mail | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go-mail` | — |
+| Go | unified | Planned | *not yet published* — planned as `github.com/turbosmtp/turbosmtp-go` | — |
+| PHP | mail | Planned | *not yet published* — planned as `turbosmtp/turbosmtp-mail` | — |
+| PHP | unified | Planned | *not yet published* — planned as `turbosmtp/turbosmtp-client` | — |
 
-A language gets a guide when its package is built: the guide is the package's own README, which is
-also what ships to the registry. The surface every one of them must present is fixed in
+A language gets a guide when each of its packages is built: a guide is that package's own README,
+which is also what ships to the registry. The surface every one of them must present is fixed in
 [`semantic-layer.md`](semantic-layer.md).
 
 The Go module path is **lower-case**. Go module paths are case-sensitive while GitHub URLs are not,
@@ -44,17 +49,19 @@ each replacement ships, so they remain readable until then.
 
 ## SDK Design Philosophy
 
-All official TurboSMTP SDKs expose a **unified client surface** — one package per language for the
-API itself, with each API domain as a namespace (`mail`, `validation`, …). There is no need to
-install a separate library per API domain. Webhook receiving ships separately where a language
-warrants it, because the
-receiver runs in the process that accepts callbacks rather than the one that sends mail. The surface every SDK must satisfy is
-fixed in [`semantic-layer.md`](semantic-layer.md).
+All official TurboSMTP SDKs expose the same **client surface** — a `TurboSMTPClient` whose API
+domains are reached as namespaces (`client.mail`, `client.validation`, …). That surface arrives in
+two packages per language, split where the API itself splits: a **mail package** for sending, and a
+**unified package** carrying every other domain. Most integrations only send, so most only need the
+mail package. The two are independent — neither contains the other — so a project needing both
+installs both and constructs a client from each. Webhook receiving ships separately again, because
+the receiver runs in the process that accepts callbacks rather than the one that sends mail. The
+surface every SDK must satisfy is fixed in [`semantic-layer.md`](semantic-layer.md).
 
-Minimal instantiation, as shipped in the Node.js SDK:
+Minimal instantiation, as shipped in the Node.js mail package:
 
 ```typescript
-import { TurboSMTPClient } from '@turbosmtp/sdk';
+import { TurboSMTPClient } from '@turbosmtp/mail';
 
 const client = new TurboSMTPClient({
   consumerKey: process.env.CONSUMER_KEY!,
@@ -70,8 +77,9 @@ const { messageId } = await client.mail.send({
 ```
 
 Authentication is a `consumerKey`/`consumerSecret` pair, not a single API key, and the SDK attaches
-both headers for you. Namespaces ship in priority order — `mail` first, `validation` next — so
-`client.validation` is not yet available in any SDK.
+both headers for you — identically in both API packages, which take the same constructor options.
+Namespaces ship in priority order — `mail` first, `validation` next — so `client.validation` is not
+yet available in any SDK, and no unified package has been built.
 
 SDKs are built in three layers: a transport client generated from the
 [OpenAPI 3.1 specification](../api-integrations/README.md) by `openapi-generator-cli` (pinned in

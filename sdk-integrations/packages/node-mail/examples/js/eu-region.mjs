@@ -4,7 +4,7 @@
  * Pass `region: 'eu'` to route to https://api.eu.turbo-smtp.com/api/v2.
  * The default, `'global'`, uses https://api.turbo-smtp.com/api/v2.
  *
- * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: node examples/js/eu-region.mjs  (build first; set creds).
  */
 import { TurboSMTPClient } from '../../dist/esm/index.mjs';

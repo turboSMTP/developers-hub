@@ -1,5 +1,5 @@
 
-# SendBadRequestResponseBody
+# SendSucessResponsetBody
 
 
 ## Properties
@@ -7,18 +7,18 @@
 Name | Type
 ------------ | -------------
 `message` | string
-`errors` | Array&lt;string&gt;
+`mid` | number
 
 ## Example
 
 ```typescript
-import type { SendBadRequestResponseBody } from '@turbosmtp/sdk'
+import type { SendSucessResponsetBody } from '@turbosmtp/mail'
 
 // TODO: Update the object below with actual values
 const example = {
-  "message": error,
-  "errors": [missing or not valid sender email (from)],
-} satisfies SendBadRequestResponseBody
+  "message": OK,
+  "mid": 1688566310828572700,
+} satisfies SendSucessResponsetBody
 
 console.log(example)
 
@@ -27,7 +27,7 @@ const exampleJSON: string = JSON.stringify(example)
 console.log(exampleJSON)
 
 // Parse the JSON string back to an object
-const exampleParsed = JSON.parse(exampleJSON) as SendBadRequestResponseBody
+const exampleParsed = JSON.parse(exampleJSON) as SendSucessResponsetBody
 console.log(exampleParsed)
 ```
 

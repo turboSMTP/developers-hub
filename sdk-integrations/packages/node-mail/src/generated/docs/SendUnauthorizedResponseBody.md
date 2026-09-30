@@ -13,7 +13,7 @@ Name | Type
 ## Example
 
 ```typescript
-import type { SendUnauthorizedResponseBody } from '@turbosmtp/sdk'
+import type { SendUnauthorizedResponseBody } from '@turbosmtp/mail'
 
 // TODO: Update the object below with actual values
 const example = {

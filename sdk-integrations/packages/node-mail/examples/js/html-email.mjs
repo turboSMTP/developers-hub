@@ -1,11 +1,8 @@
 /**
- * Minimal send — a plain-text email.
+ * HTML send — an HTML body.
  *
- * In your own project, install the package and import from it:
- *     import { TurboSMTPClient } from '@turbosmtp/sdk';
- * These in-repo examples import from the built output (run `npm run build` first).
- *
- * Run: node examples/js/minimal-send.mjs  (set CONSUMER_KEY / CONSUMER_SECRET first).
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
+ * Run: node examples/js/html-email.mjs  (build first; set CONSUMER_KEY / CONSUMER_SECRET).
  */
 import { TurboSMTPClient } from '../../dist/esm/index.mjs';
 
@@ -24,8 +21,8 @@ const client = new TurboSMTPClient({ consumerKey, consumerSecret });
 const { messageId } = await client.mail.send({
   from,
   to,
-  subject: 'Hello from TurboSMTP',
-  text: 'Sent with the TurboSMTP Node.js SDK.',
+  subject: 'Your receipt',
+  html: '<h1>Thanks!</h1><p>Your order is <strong>confirmed</strong>.</p>',
 });
 
 console.log(`Queued as ${messageId}`);

@@ -90,14 +90,48 @@ const DOMAIN_TAGS = {
   account: ['consumerkey', 'authentication'],
 };
 
-// Language → generator config + canonical Layer 1 output dir (relative to SDK_ROOT).
+// A language ships two API packages, and the domain decides which one a run targets: `mail`
+// generates into the mail package, every other domain into the unified one. The generator config
+// is shared — it is domain-agnostic by design (see config/README.md) — so what differs per package
+// is the output directory and the published name the generator stamps into its own docs.
+const MAIL = 'mail';
+const UNIFIED = 'unified';
+
+// Language → generator config + per-package Layer 1 output dir (relative to SDK_ROOT) and
+// published package name.
 const LANGS = {
-  node: { config: 'config/node.yaml', out: 'packages/node/src/generated' },
-  python: { config: 'config/python.yaml', out: 'packages/python' },
-  csharp: { config: 'config/csharp.yaml', out: 'packages/csharp' },
-  go: { config: 'config/go.yaml', out: 'packages/go/generated' },
-  php: { config: 'config/php.yaml', out: 'packages/php' },
+  node: {
+    config: 'config/node.yaml',
+    nameProp: 'npmName',
+    mail: { out: 'packages/node-mail/src/generated', name: '@turbosmtp/mail' },
+    unified: { out: 'packages/node/src/generated', name: '@turbosmtp/sdk' },
+  },
+  python: {
+    config: 'config/python.yaml',
+    nameProp: 'projectName',
+    mail: { out: 'packages/python-mail', name: 'turbosmtp-mail' },
+    unified: { out: 'packages/python', name: 'turbosmtp' },
+  },
+  csharp: {
+    config: 'config/csharp.yaml',
+    nameProp: 'packageName',
+    mail: { out: 'packages/csharp-mail', name: 'TurboSMTP.Mail.Generated' },
+    unified: { out: 'packages/csharp', name: 'TurboSMTP.Generated' },
+  },
+  go: {
+    config: 'config/go.yaml',
+    mail: { out: 'packages/go-mail/generated' },
+    unified: { out: 'packages/go/generated' },
+  },
+  php: {
+    config: 'config/php.yaml',
+    mail: { out: 'packages/php-mail' },
+    unified: { out: 'packages/php' },
+  },
 };
+
+// Which API package a domain's Layer 1 belongs to.
+const packageFor = (domain) => (domain === MAIL ? MAIL : UNIFIED);
 
 function parseArgs(argv) {
   const args = {};
@@ -189,19 +223,27 @@ function main() {
     `npx --yes ${REDOCLY} bundle "${BUNDLED}" --config "${filterCfg}" --remove-unused-components -o "${filtered}"`,
   );
 
-  // 3. Generate each language from the filtered, domain-scoped spec.
+  // 3. Generate each language from the filtered, domain-scoped spec, into the API package the
+  //    domain belongs to. --out-root keys on package as well as language, or two domains would
+  //    overwrite each other in a dry run.
+  const pkg = packageFor(domain);
   for (const l of langs) {
+    const target = LANGS[l][pkg];
     const outDir = args['out-root']
-      ? join(resolve(String(args['out-root'])), l)
-      : join(SDK_ROOT, LANGS[l].out);
+      ? join(resolve(String(args['out-root'])), l, pkg)
+      : join(SDK_ROOT, target.out);
+    // The published name is a per-run value, not a second config file: one config per language
+    // stays domain-agnostic, and the CLI property overrides the config's default.
+    const nameOverride =
+      LANGS[l].nameProp && target.name ? ` --additional-properties=${LANGS[l].nameProp}=${target.name}` : '';
     run(
-      `generate ${l} (${domain})`,
+      `generate ${l} (${domain} → ${pkg} package)`,
       `npx --yes @openapitools/openapi-generator-cli --openapitools "${GENERATOR_CONFIG}" generate ` +
-        `-i "${filtered}" -c "${join(SDK_ROOT, LANGS[l].config)}" -o "${outDir}"`,
+        `-i "${filtered}" -c "${join(SDK_ROOT, LANGS[l].config)}" -o "${outDir}"${nameOverride}`,
     );
   }
 
-  console.log(`\n✔ Done — domain "${domain}", languages: ${langs.join(', ')}.`);
+  console.log(`\n✔ Done — domain "${domain}" → ${pkg} package, languages: ${langs.join(', ')}.`);
 }
 
 main();

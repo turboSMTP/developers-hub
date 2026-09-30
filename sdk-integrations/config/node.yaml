@@ -3,8 +3,11 @@
 # See sdk-integrations/config/README.md for rationale, layout, and the domain-partitioning approach.
 generatorName: typescript-fetch
 additionalProperties:
-  npmName: "@turbosmtp/sdk"          # public package; facade owns package.json (Layer 1 emitted to src/generated)
-  npmVersion: 0.1.0
+  npmName: "@turbosmtp/sdk"          # fallback only — generate.mjs overrides this per run with the
+                                     # target API package's name (--additional-properties). Kept so a
+                                     # bare generator invocation still produces something coherent.
+                                     # The facade owns package.json; Layer 1 lands in src/generated.
+  npmVersion: 0.1.0                  # not published from here — the facade's package.json is authoritative
   supportsES6: true
   useSingleRequestParameter: true    # single object param — matches the facade's option-object style
   enumUnknownDefaultCase: true       # forward-compat: unknown enum values (status/sub_status) don't break deserialization

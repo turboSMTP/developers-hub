@@ -4,7 +4,7 @@
  * `to`, `cc`, and `bcc` are always arrays; the SDK joins them for the wire.
  * `replyTo` is first-class and is sent as a custom `reply-to` header.
  *
- * In your own project: import { TurboSMTPClient } from '@turbosmtp/sdk';
+ * In your own project: import { TurboSMTPClient } from '@turbosmtp/mail';
  * Run: node examples/js/multiple-recipients.mjs  (build first; set creds).
  */
 import { TurboSMTPClient } from '../../dist/esm/index.mjs';

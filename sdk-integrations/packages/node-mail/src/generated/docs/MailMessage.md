@@ -22,7 +22,7 @@ Name | Type
 ## Example
 
 ```typescript
-import type { MailMessage } from '@turbosmtp/sdk'
+import type { MailMessage } from '@turbosmtp/mail'
 
 // TODO: Update the object below with actual values
 const example = {

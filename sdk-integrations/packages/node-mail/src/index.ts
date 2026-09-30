@@ -1,5 +1,5 @@
 /**
- * @turbosmtp/sdk — public entry point.
+ * @turbosmtp/mail — public entry point.
  *
  * Layer 2 (curated facade). The generated Layer 1 lives under `./generated` and
  * is intentionally NOT re-exported here — only the contracted surface is public.

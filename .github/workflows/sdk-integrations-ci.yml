@@ -54,7 +54,7 @@ jobs:
         # The path is carried per package rather than derived from the name: unified SDKs
         # live under sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/.
         package:
-          - { name: node, path: sdk-integrations/packages/node }
+          - { name: node-mail, path: sdk-integrations/packages/node-mail }
           - { name: node-webhook, path: sdk-integrations/webhooks/node-webhook }
         node: [22, 24]
     defaults:
@@ -76,12 +76,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: sdk-integrations/packages/node
+        working-directory: sdk-integrations/packages/node-mail
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-sdk-package
         with:
-          path: sdk-integrations/packages/node
+          path: sdk-integrations/packages/node-mail
       - run: npm run typecheck:examples
 
   # Sends real email, so it never runs automatically. GitHub does not expose secrets
@@ -93,12 +93,12 @@ jobs:
     environment: live-smoke
     defaults:
       run:
-        working-directory: sdk-integrations/packages/node
+        working-directory: sdk-integrations/packages/node-mail
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-sdk-package
         with:
-          path: sdk-integrations/packages/node
+          path: sdk-integrations/packages/node-mail
       - run: npm run test:live
         env:
           TURBOSMTP_CONSUMER_KEY: ${{ secrets.TURBOSMTP_CONSUMER_KEY }}

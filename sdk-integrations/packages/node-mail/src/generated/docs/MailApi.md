@@ -22,11 +22,11 @@ Send email message  ###### Servers  | Host | Region | |---|---| | &#x60;https://
 import {
   Configuration,
   MailApi,
-} from '@turbosmtp/sdk';
-import type { SendEmailRequest } from '@turbosmtp/sdk';
+} from '@turbosmtp/mail';
+import type { SendEmailRequest } from '@turbosmtp/mail';
 
 async function example() {
-  console.log("🚀 Testing @turbosmtp/sdk SDK...");
+  console.log("🚀 Testing @turbosmtp/mail SDK...");
   const config = new Configuration({ 
     // To configure API key authorization: consumerSecret
     apiKey: "YOUR API KEY",
