@@ -85,14 +85,6 @@ git clone https://github.com/turboSMTP/ai-agent-skills
 # (instructions to be published upon release)
 ```
 
----
-
-## Contributing a Skill
-
-Have domain expertise to share? The Agent Skills library is open-source. See [CONTRIBUTING.md](../CONTRIBUTING.md) for guidelines on submitting a new skill.
-
----
-
 ## Related
 
 - [MCP Server](mcp-server.md) — The execution layer that skills operate on top of

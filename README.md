@@ -16,7 +16,7 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 | [Webhooks](api-integrations/docs/webhooks.md) | Real-time delivery and engagement event payloads |
 | [Account Management](api-integrations/docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
 | [Subaccounts](api-integrations/docs/subaccounts.md) | Multi-tenant client management for agency plans |
-| [SDKs](sdk-integrations/index.md) | Official client libraries for all supported languages |
+| [SDKs](#sdks) | Official client libraries for all supported languages |
 | [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview + [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
 
@@ -46,11 +46,20 @@ See [Getting Started](api-integrations/docs/getting-started.md) for full authent
 ## SDKs
 
 Official client libraries for **Node.js/TypeScript, Python, C#, Go** and **PHP**, built on one
-shared surface so that the same operation behaves the same way in every language.
+shared surface so that the same operation behaves the same way in every language. That surface is
+defined in [`semantic-layer.md`](sdk-integrations/semantic-layer.md).
 
-**None is published to a package registry yet.** The Node.js SDK and its webhook receiver are built
-and pending publication; the other four are planned. See **[SDK status](sdk-integrations/index.md)** for the
-state of each language and the package name it will ship under.
+**Nothing from this programme is published yet.** Two packages are built and pending publication —
+each is documented by its own README, which is also what will ship to the registry:
+
+- [`@turbosmtp/mail`](sdk-integrations/packages/node-mail/README.md) — sending, Node.js/TypeScript
+- [`@turbosmtp/webhook`](sdk-integrations/webhooks/node-webhook/README.md) — webhook receiver, Node.js/TypeScript
+
+> **Installing either name today gets retired code.** `@turbosmtp/mail` and `@turbosmtp/webhook` are
+> already live at `0.1.0` from `turboSMTP-js`, the superseded Node SDK that predates this programme.
+> This programme continues both names starting at `0.2.0`, because npm never frees a published
+> version number. `turboSMTP-js` and the `turboSMTP-csharp`, `turboSMTP-php` and `turboSMTP-python`
+> repositories are all superseded; each is deprecated as its replacement ships.
 
 ---
 
@@ -60,12 +69,6 @@ TurboSMTP is an AI-native platform. Integrate directly into your AI workflows:
 
 - **[MCP Server](ai-integrations/mcp-server.md)** — Connect any MCP-compatible AI agent (Claude, Cursor, etc.) to TurboSMTP with zero custom integration code.
 - **[Agent Skills](ai-integrations/agent-skills.md)** — Open-source SKILL.md packages that embed TurboSMTP deliverability expertise into your AI agents.
-
----
-
-## Contributing
-
-We welcome contributions to documentation, SDKs, and AI integrations. See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
 ---
 

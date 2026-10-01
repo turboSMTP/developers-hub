@@ -10,7 +10,8 @@ sdk-integrations/build/
 # public repository, so the pattern must keep matching wherever the folder lands.
 superpowers/
 
-# Layout-refactor working records. Local-only: they quote the private context pack
-# verbatim, with file and line references, and this repository is public.
+# Working records. Local-only: they quote the private context pack verbatim, with file
+# and line references, and this repository is public.
 /refactor-progress.md
 /Alternative SDK Repository Structures.md
+/content-audit-ledger.md

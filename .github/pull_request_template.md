@@ -16,7 +16,6 @@ Closes #
 
 ## Checklist
 
-- [ ] I have read [CONTRIBUTING.md](../CONTRIBUTING.md)
 - [ ] My changes follow the existing documentation structure
 - [ ] Code examples have been tested (if applicable)
 - [ ] The OpenAPI spec remains valid (if modified)

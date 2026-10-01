@@ -103,9 +103,16 @@ TurboSMTPClient({
   consumerKey:    "…",   // required
   consumerSecret: "…",   // required
   region:         "global" | "eu",   // optional, default "global"
-  timeout, maxRetries, …             // optional transport tuning
+  // transport seam — per-language spelling; Node: fetchApi
 })
 ```
+
+> **Transport tuning is not specified yet.** A request timeout with a documented, overridable
+> default is a requirement this layer still owes: no SDK implements one today, and until it is
+> specified here each language would invent its own. It will be added to the shape above, with the
+> default stated, before a second SDK ships. Retry tuning is deliberately absent rather than
+> pending — `/mail/send` is not idempotent and is never retried automatically, so P0 has nothing to
+> configure.
 
 - For every P0 operation the SDK sends **both** the `consumerKey` and `consumerSecret` headers.
 - The SDK **never** sends `Authorization` in P0. `/mail/send` requires the consumer pair and rejects

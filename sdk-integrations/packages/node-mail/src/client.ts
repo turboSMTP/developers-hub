@@ -41,6 +41,12 @@ export class TurboSMTPClient {
   /** The mail namespace — `client.mail.send(...)`. */
   readonly mail: MailNamespace;
 
+  /**
+   * `consumerKey`, `consumerSecret` and `region` are the contracted surface every language
+   * presents, and `fetchApi` is this language's spelling of the transport seam. `headers` is
+   * neither: a local escape hatch, deliberately outside the cross-language contract, so no other
+   * SDK has to carry it. Promoting it is a decision for all five packages, not this one.
+   */
   constructor(options: TurboSMTPClientOptions) {
     if (!options?.consumerKey || !options.consumerSecret) {
       throw new TurboSMTPError('TurboSMTPClient requires both `consumerKey` and `consumerSecret`.');

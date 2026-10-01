@@ -21,8 +21,9 @@ for this project's standards, architecture, tooling and process.
   Do not load the whole pack. The index is the complete list of what the pack governs — this file
   deliberately does not duplicate it, so it cannot fall out of step.
 - The pack's `system/` subdirectory is harness-owned — do not route into it.
-- The internal repository is **private**. A contributor without access should work from this file and
-  [`CONTRIBUTING.md`](CONTRIBUTING.md) alone; nothing here requires the pack to be readable.
+- The internal repository is **private**. Everything needed to work in this repository is in this
+  file; nothing here requires the pack to be readable. Where a procedure below depends on a pinned
+  version or an exact command, it states it rather than pointing at the pack.
 
 The pack is where to look for the exact validation commands and their order, the approved stack and
 pinned tool versions, where a component lives and how the spec derives into packages, SDK layering
@@ -66,7 +67,7 @@ main render-speed win.
 
 Whenever the served spec or the Swagger UI assets are updated upstream, sync the changes here:
 
-1. Verify the bundled spec is valid: `npx @redocly/cli@<pinned> lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml` — the pinned version is in the pack; do not float it.
+1. Verify the bundled spec is valid: `npx @redocly/cli@2.47.0 lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`. Do not float the version — it is pinned to match `sdk-integrations/scripts/check-spec.mjs`, which is what CI runs.
 2. Copy the spec: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-integrations/upstream/" -Force`
 3. Copy the UI assets: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-integrations/swagger-ui/" -Recurse -Force` (ensure `swagger-ui/` has no stale `Domains/` folder and no stray `turbo-smtp.yaml`). **Nothing else is excluded** — `swagger-ui/` is byte-identical to what `turbo-api-2` ships, `swagger-initializer.js` included, so a blanket overwrite is correct and intended.
 4. **Re-record the checksum: `node sdk-integrations/scripts/check-spec.mjs --write-checksum`** — the spec-drift guard fails CI until this matches, which is the point: it separates a sync from a hand-edit.
@@ -84,8 +85,6 @@ Every SDK standard — layering, public surface, coding conventions, tooling ver
 the rule that **the semantic layer is amended before an SDK changes, never after**.
 
 In-repo material the pack does not replace:
-
-- [`sdk-integrations/index.md`](sdk-integrations/index.md) — per-language SDK status and planned package names
 
 > [`sdk-integrations/semantic-layer.md`](sdk-integrations/semantic-layer.md) **is** the semantic layer: the binding,
 > language-agnostic definition of the facade surface every SDK must present, and the common ground
