@@ -1,10 +1,8 @@
-# OpenAPI Generator config — C# (Layer 1 generated core)
-# Flavor: csharp with the modern HttpClient library. (Kiota fallback ruled out — 1.3 spike passed.)
-# See sdk-integrations/config/README.md for rationale, layout, and the domain-partitioning approach.
+# See sdk-integrations/config/README.md for flavor rationale, layout, and domain partitioning.
 generatorName: csharp
 additionalProperties:
-  packageName: TurboSMTP.Generated   # internal namespace; the facade owns the public `TurboSMTP` surface
+  packageName: TurboSMTP.Generated
   packageVersion: 0.1.0
   library: httpclient
   targetFramework: net8.0
-  nullableReferenceTypes: true       # map type:[x,"null"] to C# nullable reference types
+  nullableReferenceTypes: true       # maps the spec's type:[x,"null"] to C# nullable reference types

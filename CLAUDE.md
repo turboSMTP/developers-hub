@@ -48,10 +48,8 @@ against the assembled tree, why the versions are pinned — are in the pack.
 
 ## SDK Development (`sdk-integrations/`)
 
-Every SDK standard is governed by the pack. Two things it does not carry:
+Every SDK standard is governed by the pack. One thing it does not carry:
 
-- **`skipFormModel=true` is the generator's default and drops multipart upload request models.**
-  Verify multipart explicitly when configuring the validation, suppressions and subaccount domains.
 - **Reference [`semantic-layer.md`](sdk-integrations/semantic-layer.md) at a high level only** — never
   by section number, and never from SDK source. That document is deliberately unnumbered and may be
   reorganised at any time, so a citation into it is a reference that silently goes stale.

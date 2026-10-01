@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * TurboSMTP SDK — Layer 1 generation pipeline (task 1.6).
+ * TurboSMTP SDK — Layer 1 generation pipeline.
  *
  * Pipeline:  overlay  →  bundle  →  filter-by-domain (+ prune)  →  generate per language
  *   0. overlay  : apply api-integrations/overlays/*.yaml to the synced spec              (openapi-format)
@@ -11,7 +11,7 @@
  *                 + --remove-unused-components) → build/turbo-smtp.<domain>.yaml
  *   3. generate : openapi-generator-cli generate -c config/<lang>.yaml            (version pinned in
  *                 sdk-integrations/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
- *                 Fed the 3.1 spec directly — no down-convert (see 1.3/1.4).
+ *                 Fed the 3.1 spec directly — no down-convert shim.
  *
  * Overlays are a GENERATION-ONLY concern: what is published is api-integrations/upstream/ verbatim,
  * assembled by api-integrations/assemble.mjs, which never reads overlays/ -- so an overlay cannot
@@ -35,13 +35,13 @@
  *
  * Examples:
  *   node sdk-integrations/scripts/generate.mjs                        # P0: mail domain, all 5 languages, canonical layout
- *   node sdk-integrations/scripts/generate.mjs --lang=node            # just the Node reference (task 2.1)
+ *   node sdk-integrations/scripts/generate.mjs --lang=node            # just the Node reference
  *   node sdk-integrations/scripts/generate.mjs --out-root=build/generated   # safe dry run into build/ (git-ignored)
  *
  * Notes:
  *   - Layer 1 lands in an internal namespace per language (see config/README.md); the hand-written
  *     Layer 2 facade owns the public entrypoint and packaging. Skipping generated project files
- *     (package.json / .csproj / composer.json) is handled per-package at scaffolding time (2.1+).
+ *     (package.json / .csproj / composer.json) is handled per-package when that package is scaffolded.
  */
 
 import { spawnSync } from 'node:child_process';
