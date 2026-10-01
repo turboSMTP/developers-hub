@@ -52,9 +52,8 @@ mkdirSync(OUT, { recursive: true });
 cpSync(UI_DIR, OUT, { recursive: true }); // the vendored UI, verbatim
 cpSync(SPEC, join(OUT, 'turbo-smtp.yaml')); // the spec, FLATTENED beside index.html
 
-// Pages on the mirror is branch-source, where Jekyll runs -- unlike this repository's
-// Actions-based Pages, where .nojekyll is a no-op. Written here rather than committed so
-// swagger-ui/ stays exactly what turbo-api-2 ships.
+// Pages on the mirror is branch-source, where Jekyll runs, so .nojekyll has to be there.
+// Written at assembly rather than committed so swagger-ui/ stays exactly what turbo-api-2 ships.
 writeFileSync(join(OUT, '.nojekyll'), '');
 
 console.log(`assemble: wrote ${OUT}`);

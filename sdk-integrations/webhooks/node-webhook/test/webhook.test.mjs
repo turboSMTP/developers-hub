@@ -1,9 +1,12 @@
 /**
  * Event webhook conformance.
  *
- * The assertions pin the payload shape TurboSMTP actually sends, which differs
- * from the published documentation: the object is flat, `status` is uppercase,
- * the timestamp key is capitalised, and `mid` is a 64-bit snowflake.
+ * No real payload has been recorded yet — this fixture is provisional. It follows
+ * the shape in api-integrations/docs/webhooks.md (flat object, uppercase `status`,
+ * `mid` as a string) but uses the capitalised `Timestamp` key, which the docs do
+ * not show. The parser accepts both spellings on purpose, and both are covered
+ * below; scripts/live-loop.mjs produces the recording that would settle which one
+ * TurboSMTP actually sends.
  */
 
 import assert from 'node:assert/strict';

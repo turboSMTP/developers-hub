@@ -24,7 +24,7 @@ import { createRequire } from 'node:module';
 
 const require = createRequire(import.meta.url);
 const { parseWebhookEvents, verifyBasicAuth } = require('../dist/cjs/index.js');
-const { TurboSMTPClient } = require('../../node/dist/cjs/index.js');
+const { TurboSMTPClient } = require('../../../packages/node-mail/dist/cjs/index.js');
 
 const arg = (name, fallback) => {
   const hit = process.argv.find((a) => a.startsWith(`--${name}=`));
