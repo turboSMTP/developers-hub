@@ -1,12 +1,3 @@
-/**
- * TurboSMTPClient — the unified entry point: credentials, region and transport.
- *
- * P0 exposes the `mail` namespace only. Authentication is hidden: the developer
- * supplies a consumerKey/consumerSecret pair and the SDK attaches both headers on
- * every request. `Authorization` is never sent (POST /mail/send rejects it). The
- * `region` option selects the send host; no other host varies in P0.
- */
-
 import { TurboSMTPError } from './errors';
 import { Configuration, MailApi } from './generated/src';
 import { MailNamespace } from './mail';

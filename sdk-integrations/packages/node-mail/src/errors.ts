@@ -62,9 +62,9 @@ export class BadRequestError extends TurboSMTPError {
 /**
  * 400 — input-validation subset of BadRequestError, when distinguishable.
  *
- * Unreachable in P0 and deliberately so: `/mail/send` answers 400 with the
- * send-specific `{ message, errors[] }` body, which maps to `BadRequestError`.
- * The domain 400 enums that map here arrive with the validation domain (P1).
+ * Part of the contracted taxonomy every SDK presents, but never raised here:
+ * `/mail/send` answers 400 with `{ message, errors[] }`, which maps to
+ * `BadRequestError`. Do not delete it as unreachable.
  */
 export class ValidationError extends BadRequestError {
   constructor(message: string, init: TurboSMTPErrorInit & { errors?: string[] } = {}) {
@@ -89,7 +89,7 @@ export class NotFoundError extends TurboSMTPError {
   }
 }
 
-/** 429 — rate limited. Defensive: the spec omits it, but we honor `Retry-After` if returned. */
+/** 429 — rate limited. Defensive: the spec omits it, but we surface `Retry-After` if returned. */
 export class RateLimitError extends TurboSMTPError {
   /** Seconds to wait before retrying, parsed from the `Retry-After` header if present. */
   readonly retryAfter?: number;
