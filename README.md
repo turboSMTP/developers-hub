@@ -8,16 +8,8 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 
 | Section | Description |
 |---|---|
-| [Getting Started](api-integrations/docs/getting-started.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
-| [Transactional Email](api-integrations/docs/transactional.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
-| [Analytics](api-integrations/docs/analytics.md) | Per-message delivery events, status lifecycle, and CSV export |
-| [Suppressions](api-integrations/docs/suppressions.md) | Query, import, export, and delete suppressed addresses |
-| [Email Validation](api-integrations/docs/validation.md) | Real-time single-address validation and bulk list workflows |
-| [Webhooks](api-integrations/docs/webhooks.md) | Real-time delivery and engagement event payloads |
-| [Account Management](api-integrations/docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
-| [Subaccounts](api-integrations/docs/subaccounts.md) | Multi-tenant client management for agency plans |
+| [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview, the eight integration guides, and the [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
 | [SDKs](#sdks) | Official client libraries for all supported languages |
-| [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview + [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
 
 ---

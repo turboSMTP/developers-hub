@@ -4,7 +4,21 @@ The TurboSMTP API is defined using the **OpenAPI 3.1 specification**, which serv
 
 This page is the narrative overview of the API surface. For the **interactive** reference, use the live Swagger UI below.
 
-For step-by-step integration guides — authentication, sending, analytics, suppressions, validation and webhooks — see [`docs/`](docs/README.md).
+## Integration guides
+
+Step-by-step guides for each area of the API. Start with **Getting Started** for authentication and
+your first send, then go to the area you need.
+
+| Guide | Description |
+|---|---|
+| [Getting Started](docs/getting-started.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
+| [Transactional Email](docs/transactional.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
+| [Analytics](docs/analytics.md) | Per-message delivery events, status lifecycle, and CSV export |
+| [Suppressions](docs/suppressions.md) | Query, import, export, and delete suppressed addresses |
+| [Email Validation](docs/validation.md) | Real-time single-address validation and bulk list workflows |
+| [Webhooks](docs/webhooks.md) | Real-time delivery and engagement event payloads |
+| [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
+| [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
 
 ---
 
