@@ -103,7 +103,7 @@ In-repo material the pack does not replace:
 
 - All content is Markdown. Follow the existing folder structure under `api-integrations/docs/`.
 - Code examples must be tested and use realistic values (no placeholder tokens in final form).
-- API examples must align with the OpenAPI spec in `../turbo-smtp-openapi/`.
+- API examples must align with the OpenAPI spec in `../turbo-smtp-openapi/` — for every operation the spec carries. `api-integrations/docs/webhooks.md` is the exception: the Event Webhook payload appears in no specification, so that page derives from nothing and is never reconciled against the spec.
 - Adhere to the PR template in `.github/pull_request_template.md`.
 
 ## Workflow Rules

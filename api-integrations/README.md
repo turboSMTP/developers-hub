@@ -55,7 +55,7 @@ Serving one file lets Swagger UI load it in a single request instead of roughly 
 
 `overlays/` holds OpenAPI Overlay documents applied **only** while generating SDK code. They never touch the published spec and may never change wire semantics — see [`overlays/README.md`](overlays/README.md) for the rules.
 
-`docs/` holds the topic guides. They are hand-authored — never generated, never synced — and are not published to the mirror. Note in particular that [`docs/webhooks.md`](docs/webhooks.md) defines the Event Webhook payload, which appears in **no** OpenAPI document: the upstream spec carries only an empty `callbacks: {}` stub. Nothing derives that page, so a spec sync must never overwrite it.
+`docs/` holds the topic guides. They are hand-authored — never generated, never synced — and are not published to the mirror. Note in particular that [`docs/webhooks.md`](docs/webhooks.md) defines the Event Webhook payload, which appears in **no** OpenAPI document: the upstream spec describes no callback and no event payload anywhere. Nothing derives that page, so a spec sync must never overwrite it.
 
 ---
 

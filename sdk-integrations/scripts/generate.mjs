@@ -25,7 +25,9 @@
  * the floor is the version actually validated.
  *
  * Cross-platform by design: pure Node + `npx`, so it runs identically on Windows (local) and Linux
- * (CI). Requires Node 18+ and a JVM (the generator is Java; the npm wrapper downloads the jar).
+ * (CI). Requires Node 18+ and a JDK — Java 17 is what this project runs. The generator is a Java
+ * program and the npm wrapper only downloads its jar, not a runtime, so a machine without a JDK
+ * fails here rather than at install time.
  *
  * Usage (run from anywhere):
  *   node sdk-integrations/scripts/generate.mjs [--domain=mail] [--lang=node,python,...] [--out-root=<dir>]
