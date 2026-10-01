@@ -281,6 +281,10 @@ Every failure throws a subclass of `TurboSMTPError`. Catch the base class to han
 specific subclass to branch on the failure kind. Each error carries `status` (the HTTP status, or
 `null` for transport failures), `message`, and `raw` (the parsed response body when available).
 
+> **Errors are package-scoped.** If you also install `@turbosmtp/sdk`, its `TurboSMTPError` is a
+> different class from this one — an `instanceof` check against one will not match the other. Catch
+> each package's errors using that package's own import.
+
 | Error | HTTP | Extra properties |
 |---|---|---|
 | `TurboSMTPError` | — | base class; `status`, `raw` |
