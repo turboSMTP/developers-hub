@@ -38,8 +38,7 @@ Every SDK is three thin layers.
   strings, hidden auth, composed helpers. Each published API package provides its own
   `TurboSMTPClient` carrying the namespaces that package ships; the class, its constructor and its
   behaviour are identical in both. **This document governs Layer 2.**
-- **Layer 3 — Conformance tests.** Derived from the scenarios below. Credential-free and offline,
-  driving the public surface only.
+- **Layer 3 — Conformance tests.** Derived from the scenarios below, driving the public surface only.
 
 Each layer talks only to the one beneath it, and results and errors travel back up the same path.
 
@@ -146,8 +145,8 @@ deployments need it).
 
 ### P0 Mail conformance scenarios
 
-Every SDK's Layer 3 tests must cover these **11 scenarios**. They run against the Prism mock server
-(credential-free) except where a live send is noted; scenarios 1–2 also back a gated live smoke test.
+Every SDK's Layer 3 tests must cover these **11 scenarios**. What each one asserts is fixed here;
+how the tests are run, gated and reported is not this document's concern.
 
 | # | Scenario | Asserts |
 |---|---|---|
