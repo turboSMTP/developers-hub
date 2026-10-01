@@ -4,60 +4,28 @@ This file provides guidance to Claude Code when working in this repository.
 
 ## Project Overview
 
-**TurboSMTP Developers Hub** — the public-facing documentation portal for the TurboSMTP API, and the
-home of the SDK packages built on it. Content is authored in Markdown; CI validates it on push to
-`main`. The API reference is published from a separate read-only mirror, `turbosmtp-swagger-ui` —
-**this repository serves no website**. The SDK packages under `sdk-integrations/` are the exception —
-they build, lint and test like any code.
+**TurboSMTP Developers Hub** — the public documentation portal for the TurboSMTP API, and the home of
+the SDK packages built on it. **This repository serves no website**: the API reference is published
+from the read-only `turbosmtp-swagger-ui` mirror, so there is no Pages workflow here and no site to
+build. The SDK packages under `sdk-integrations/` are the exception to "it's all Markdown" — they
+build, lint and test like any code.
 
 ## Authoritative rules: the internal context pack
 
 The **context pack** in the sibling repository `developers-hub-internal` is the authoritative source
-for this project's standards, architecture, tooling and process.
+for this project's standards, architecture, tooling and process. **Where this file and the pack
+disagree, the pack wins.**
 
-- **Where this file and the pack disagree, the pack wins.** This file carries only what the pack does
-  not cover, plus the orientation needed to work without it.
-- **Start at the pack's index and follow its routing**, then open only the one or two files it names.
-  Do not load the whole pack. The index is the complete list of what the pack governs — this file
-  deliberately does not duplicate it, so it cannot fall out of step.
-- The pack's `system/` subdirectory is harness-owned — do not route into it.
-- The internal repository is **private**. Everything needed to work in this repository is in this
-  file; nothing here requires the pack to be readable. Where a procedure below depends on a pinned
-  version or an exact command, it states it rather than pointing at the pack.
+Start at the pack's index — it states its own routing rules, lists everything the pack governs, and
+is the only place that list is maintained. This file does not restate it.
 
-The pack is where to look for the exact validation commands and their order, the approved stack and
-pinned tool versions, where a component lives and how the spec derives into packages, SDK layering
-and the semantic layer's authority, and the CI workflow rules — including what is deliberately not
-automated.
-
-## Repository Structure
-
-Orientation only — the pack carries the full map.
-
-- **`api-integrations/`** — the pre-bundled OpenAPI 3.1 spec (`upstream/turbo-smtp.yaml`), the generation-only `overlays/`, the vendored Swagger UI (`swagger-ui/`), and the topic guides in `docs/`, indexed by `api-integrations/README.md`. `assemble.mjs` flattens the spec and the UI — and nothing else — into the tree published to the `turbosmtp-swagger-ui` mirror
-- **`sdk-integrations/`** — SDK strategy docs, generator config, the generation and spec-guard scripts, and the source per unit: `packages/` for the API packages, `webhooks/` for the receivers
-- **`ai-integrations/`** — MCP Server and Agent Skills documentation
-- **`.github/`** — `workflows/` (every automation entry point), `actions/` (first-party composite actions — reusable steps, never entry points), and PR/issue templates
-
-## Relationship to `turbo-smtp-openapi/`
-
-The canonical **OpenAPI v2 specification** lives in the sibling repository `../turbo-smtp-openapi/`
-and is the source of truth. `api-integrations/upstream/turbo-smtp.yaml` here is a synced copy: make spec
-changes upstream and re-sync. The rules governing the synced copy, the bundled build input and
-generated Layer 1 are in the pack.
-
-`api-integrations/overlays/` does **not** create a second source of truth. Overlays are applied only
-while generating SDK code; what is published is `upstream/` verbatim, and overlays are never
-assembled into it. An overlay may change
-operationIds, naming and `x-` extensions — never wire semantics — and is deleted when the upstream
-issue it compensates for closes. See `api-integrations/overlays/README.md`.
+What is here instead: the handful of things the pack does not cover, and the rules about how *you*
+work in this repository.
 
 ## API Documentation Sync
 
-The `api-integrations/` folder mirrors `../turbo-smtp-openapi/turbo-api-2/`, which serves a **single
-pre-bundled** `turbo-smtp.yaml` — there is no `Domains/` folder in the served copies. Serving one
-file with only internal `$ref`s lets Swagger UI load in a single request instead of ~10, which is the
-main render-speed win.
+`api-integrations/` mirrors `../turbo-smtp-openapi/turbo-api-2/`, which serves a **single pre-bundled**
+`turbo-smtp.yaml` — there is no `Domains/` folder in the served copies.
 
 > **The spec and the UI assets sync to different places.** The spec goes to
 > `api-integrations/upstream/`; the Swagger UI assets go to `api-integrations/swagger-ui/`. A blanket
@@ -65,49 +33,38 @@ main render-speed win.
 > which nothing reads, nothing validates, and which `assemble.mjs` would then publish alongside the
 > real one. Copy the two separately.
 
-Whenever the served spec or the Swagger UI assets are updated upstream, sync the changes here:
+When the served spec or the UI assets change upstream:
 
-1. Verify the bundled spec is valid: `npx @redocly/cli@2.47.0 lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`. Do not float the version — it is pinned to match `sdk-integrations/scripts/check-spec.mjs`, which is what CI runs.
-2. Copy the spec: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-integrations/upstream/" -Force`
-3. Copy the UI assets: `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-integrations/swagger-ui/" -Recurse -Force` (ensure `swagger-ui/` has no stale `Domains/` folder and no stray `turbo-smtp.yaml`). **Nothing else is excluded** — `swagger-ui/` is byte-identical to what `turbo-api-2` ships, `swagger-initializer.js` included, so a blanket overwrite is correct and intended.
-4. **Re-record the checksum: `node sdk-integrations/scripts/check-spec.mjs --write-checksum`** — the spec-drift guard fails CI until this matches, which is the point: it separates a sync from a hand-edit.
-5. Run the guard: `node sdk-integrations/scripts/check-spec.mjs`
-6. Confirm the page still loads — **assemble it first**, because the published tree is flat and this repository's layout is not: `node api-integrations/assemble.mjs --out ../.site-check`, then `npx --yes http-server ../.site-check -p 8080 -d false` and open `http://127.0.0.1:8080/`. The spec URL in `swagger-initializer.js` is resolved by the browser, so a wrong path 404s the live site while CI stays green. Pass `-d false`: without it a missing index returns a 200 directory listing where Pages returns 404, and the check passes when it should fail.
-7. Stage and commit the result: `git add api-integrations/` then a `sync: update API docs from turbo-api-2` commit — per **Workflow Rules** below, the user runs this step.
+1. `npx @redocly/cli@2.47.0 lint ../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml`
+2. `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/turbo-smtp.yaml" -Destination "./api-integrations/upstream/" -Force`
+3. `Copy-Item -Path "../turbo-smtp-openapi/turbo-api-2/*" -Exclude "turbo-smtp.yaml" -Destination "./api-integrations/swagger-ui/" -Recurse -Force` — **nothing else is excluded**; `swagger-ui/` is byte-identical to what `turbo-api-2` ships, `swagger-initializer.js` included. Afterwards check for a stale `Domains/` folder or a stray `turbo-smtp.yaml`.
+4. `node sdk-integrations/scripts/check-spec.mjs --write-checksum`
+5. `node sdk-integrations/scripts/check-spec.mjs`
+6. `node api-integrations/assemble.mjs --out ../.site-check`, then `npx --yes http-server ../.site-check -p 8080 -d false`, and open `http://127.0.0.1:8080/` to confirm the page loads.
+7. Stage and commit — per **Workflow Rules**, you do not run this step.
 
-> Step 4 is only ever run as part of a sync. Re-recording the checksum to silence a failing
-> guard, without having re-synced, defeats the one thing it detects.
+The rules governing each step — when the checksum may be re-recorded, why the page is verified
+against the assembled tree, why the versions are pinned — are in the pack.
 
 ## SDK Development (`sdk-integrations/`)
 
-Every SDK standard — layering, public surface, coding conventions, tooling versions, commands and CI
-— is governed by the context pack. Start at its index and follow the routing. The pack also carries
-the rule that **the semantic layer is amended before an SDK changes, never after**.
+Every SDK standard is governed by the pack. Two things it does not carry:
 
-In-repo material the pack does not replace:
-
-> [`sdk-integrations/semantic-layer.md`](sdk-integrations/semantic-layer.md) **is** the semantic layer: the binding,
-> language-agnostic definition of the facade surface every SDK must present, and the common ground
-> for Layer 2 generation. It is public and self-contained. Amend it before changing an SDK, never
-> after. Reference it at a high level only — never by section number, and never from SDK source.
-
-**Two gotchas worth keeping in view:**
-
-- The generator's default `skipFormModel=true` drops multipart upload request models — verify
-  multipart explicitly when configuring the validation, suppressions and subaccount domains.
-- Never invoke `openapi-generator-cli` without `--openapitools`. Its implicit config lookup does not
-  honour `cwd` reliably; left to itself it silently re-pins to the latest release and writes a fresh
-  `openapitools.json` at the repository root. `generate.mjs` passes the flag — use the script.
+- **`skipFormModel=true` is the generator's default and drops multipart upload request models.**
+  Verify multipart explicitly when configuring the validation, suppressions and subaccount domains.
+- **Reference [`semantic-layer.md`](sdk-integrations/semantic-layer.md) at a high level only** — never
+  by section number, and never from SDK source. That document is deliberately unnumbered and may be
+  reorganised at any time, so a citation into it is a reference that silently goes stale.
 
 ## Documentation Standards
 
-- All content is Markdown. Follow the existing folder structure under `api-integrations/docs/`.
-- Code examples must be tested and use realistic values (no placeholder tokens in final form).
-- API examples must align with the OpenAPI spec in `../turbo-smtp-openapi/` — for every operation the spec carries. `api-integrations/docs/webhooks.md` is the exception: the Event Webhook payload appears in no specification, so that page derives from nothing and is never reconciled against the spec.
-- Adhere to the PR template in `.github/pull_request_template.md`.
+API examples must align with the OpenAPI spec in `../turbo-smtp-openapi/` — for every operation the
+spec carries. **`api-integrations/docs/webhooks.md` is the exception:** the Event Webhook payload
+appears in no specification, so that page derives from nothing and is never reconciled against the
+spec. Do not "correct" it toward the spec; there is nothing there to correct it to.
 
 ## Workflow Rules
 
-- **Never commit or push** unless the user explicitly asks for it.
-- **Branch naming:** Use `fix/<description>` for bug corrections, `feat/<description>` for new content additions.
-- **PR process:** All changes go through a pull request against `main`. Use the GitHub PR template.
+- **Never commit or push** unless the user explicitly asks for it. The user stages and commits.
+- **Branch naming:** `fix/<description>` for corrections, `feat/<description>` for new content.
+- **PR process:** changes go through a pull request against `main`, using the GitHub PR template.
