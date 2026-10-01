@@ -10,7 +10,7 @@ Welcome to the official TurboSMTP developer portal. This repository is the singl
 |---|---|
 | [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview, the eight integration guides, and the [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
 | [SDKs](#sdks) | Official client libraries for all supported languages |
-| [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills for AI-native workflows |
+| [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills — designed, not yet built |
 
 ---
 
@@ -57,10 +57,10 @@ each is documented by its own README, which is also what will ship to the regist
 
 ## AI Integrations
 
-TurboSMTP is an AI-native platform. Integrate directly into your AI workflows:
+Two AI integrations are designed but **not yet built** — nothing is available to install:
 
-- **[MCP Server](ai-integrations/mcp-server.md)** — Connect any MCP-compatible AI agent (Claude, Cursor, etc.) to TurboSMTP with zero custom integration code.
-- **[Agent Skills](ai-integrations/agent-skills.md)** — Open-source SKILL.md packages that embed TurboSMTP deliverability expertise into your AI agents.
+- **[MCP Server](ai-integrations/mcp-server.md)** — would let any MCP-compatible agent reach TurboSMTP without bespoke integration code.
+- **[Agent Skills](ai-integrations/agent-skills.md)** — would package TurboSMTP deliverability expertise as SKILL.md files.
 
 ---
 
