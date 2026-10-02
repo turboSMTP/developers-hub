@@ -8,7 +8,7 @@
 - [ ] New documentation (new guide, new section)
 - [ ] SDK update or addition
 - [ ] CI/CD workflow change
-- [ ] API specification update
+- [ ] API spec sync from upstream `turbo-smtp-openapi`
 
 ## Related Issue
 
@@ -18,4 +18,4 @@ Closes #
 
 - [ ] My changes follow the existing documentation structure
 - [ ] Code examples have been tested (if applicable)
-- [ ] The OpenAPI spec remains valid (if modified)
+- [ ] If this is a spec sync, the checksum was re-recorded as part of it

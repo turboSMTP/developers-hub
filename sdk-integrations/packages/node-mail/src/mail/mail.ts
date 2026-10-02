@@ -62,6 +62,14 @@ export interface SendMessage {
 export interface SendResult {
   /** The message id (`mid`), stringified — a 64-bit id is unsafe as a JS number. */
   messageId: string;
+  // TODO: decide what this field is for. Established so far — it is typed with a generated
+  // Layer 1 model, which is the only path by which a generated type reaches the published
+  // `.d.ts`; it is populated by a cast over unparsed JSON rather than a validated parse, so
+  // the type asserts a shape nothing checks; and nothing in this repository reads it. It is
+  // also not part of the cross-language contract, so its type is a local choice.
+  // The options are to remove it, give it a facade-owned type, or widen it to `unknown`.
+  // Removing it is free before `0.2.0` is published and breaking afterwards, so this is
+  // worth settling before the first release.
   /** The raw success body (`{ message, mid }`), for callers who want it. */
   raw?: SendSucessResponsetBody;
 }
