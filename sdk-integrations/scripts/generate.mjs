@@ -21,8 +21,7 @@
  *
  * All three tools are pinned to an exact version. Neither the overlay step nor the bundler is a
  * passive step: their output is the generator's input, so a minor in either changes the committed
- * Layer 1 without any spec change. Hence the policy: never a range permitting minors, and
- * the floor is the version actually validated.
+ * Layer 1 without any spec change.
  *
  * Cross-platform by design: pure Node + `npx`, so it runs identically on Windows (local) and Linux
  * (CI). Requires Node 18+ and a JDK — Java 17 is what this project runs. The generator is a Java
@@ -57,12 +56,9 @@ const BUILD_DIR = join(SDK_ROOT, 'build');
 const REDOCLY = '@redocly/cli@2.47.0';
 
 /**
- * Overlay applier. Redocly cannot do this: 2.47.0 has no `overlay` command, and an `overlays:` key
- * is rejected both at config root and under `apis.<name>` — after which `bundle` silently emits the
- * unmodified document, which is the dangerous failure mode. Hence a second pinned tool.
- *
- * `--no-sort` is MANDATORY: openapi-format reorders keys by default, which would rewrite the whole
- * bundle and bury the overlay's actual effect in the diff.
+ * Overlay applier — a second tool because Redocly applies no overlays: an `overlays:` key is
+ * rejected at config root and under `apis.<name>`, and `bundle` then silently emits the unmodified
+ * document. `--no-sort` is MANDATORY (see the invocation below).
  */
 const OVERLAY_TOOL = 'openapi-format@1.33.7';
 

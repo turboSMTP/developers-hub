@@ -41,7 +41,7 @@ const SDK_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const REPO_ROOT = resolve(SDK_ROOT, '..');
 const BUILD_DIR = join(SDK_ROOT, 'build');
 
-/** Kept in step with generate.mjs — both feed the same pipeline. */
+/** Pinned. This version is named in four places across the repository; they change together. */
 const REDOCLY = '@redocly/cli@2.47.0';
 const OVERLAY_TOOL = 'openapi-format@1.33.7';
 
