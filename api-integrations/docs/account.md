@@ -408,7 +408,7 @@ Follow the principle of least privilege when creating keys for production integr
 
 2. **Restrict by IP** — include your sending server's IPv4 address in the `ips` array. This limits damage if the key is compromised.
 
-3. **Store the secret securely** — the `consumerSecret` is returned only at creation time. Store it in your secrets manager (e.g., environment variables, HashiCorp Vault, AWS Secrets Manager), never in version control.
+3. **Store the secret securely** — the `consumerSecret` is returned only at creation time. Keep it in a managed secret store (HashiCorp Vault, AWS Secrets Manager, or your platform's equivalent) and let that store inject it into your process at run time, commonly as an environment variable. Never commit it to version control.
 
 4. **Monitor usage** — set up alerts (see Recipe: Monitor Account Quota below) to detect unusual activity.
 

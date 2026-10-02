@@ -9,9 +9,8 @@ name: Split packages to publish mirrors
 # Tag convention:  <package>/vX.Y.Z  here  ->  vX.Y.Z  on the mirror.
 # The prefix is a package slug, not a language. A language ships two API packages — a mail
 # package and a unified one — so a slug names a package and never a language on its own.
-# The mirror tag MUST be unprefixed: Go resolves versions from root-module tags, and
-# Packagist reads composer.json from the repository root. That translation is the whole
-# reason this workflow exists.
+# The mirror tag MUST be unprefixed — Go and Packagist both require it, and that
+# translation is the whole reason this workflow exists.
 #
 # A slug equals its directory's own name, but not its parent: API packages live under
 # sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/. The `case` below is the one
