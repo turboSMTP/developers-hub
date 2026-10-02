@@ -339,9 +339,8 @@ const client = new TurboSMTPClient({
 });
 ```
 
-This is the same seam the SDK's own conformance tests use. `fetchApi` is a plain constructor
-option rather than a dependency resolved from a container, so the seam is visible in the
-signature and a test double needs no framework — the SDK ships none and imposes none.
+This is the same seam the SDK's own conformance tests use: `fetchApi` is a plain function, so a
+test double needs no mocking framework and the package brings no test-only dependencies of its own.
 
 ---
 

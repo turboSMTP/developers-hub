@@ -25,10 +25,9 @@ on:
       - '.github/workflows/sdk-integrations-ci.yml'
       - '.github/actions/**'
 
-# Least privilege is declared here, at the calling workflow, and covers every job below.
-# A composite action cannot declare `permissions` of its own, so moving a step into
-# .github/actions/ does not move responsibility for its token scope — this block still
-# owns it. Widen it per job only where a job demonstrably needs more.
+# Least privilege for every job below, including the steps delegated to .github/actions/ —
+# a composite action cannot declare `permissions` of its own, so this block is the only
+# place that scope is set.
 permissions:
   contents: read
 
