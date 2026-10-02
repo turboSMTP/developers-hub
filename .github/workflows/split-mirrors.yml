@@ -44,13 +44,10 @@ on:
 
 # READ, not write — deliberately, even though this workflow pushes.
 #
-# The push goes to a *mirror* repository and authenticates with MIRROR_TOKEN, never with
-# GITHUB_TOKEN. GITHUB_TOKEN is used for exactly one thing here: cloning this repository
-# at the tag. Granting `contents: write` would buy nothing and would undo the protection
-# that `persist-credentials: false` exists to provide — with credentials left in
-# .git/config, a bad or empty MIRROR_TOKEN silently falls back to GITHUB_TOKEN, which is
-# how a failed run once surfaced as an opaque 403 (see the checkout step). Read-only means
-# that fallback cannot write anywhere even if the guard is removed.
+# The push goes to a *mirror* repository and authenticates with MIRROR_TOKEN. GITHUB_TOKEN
+# is used for exactly one thing here: cloning this repository at the tag. A bad or empty
+# MIRROR_TOKEN falling back to GITHUB_TOKEN is how a failed run once surfaced as an opaque
+# 403 — see the checkout step, which sets `persist-credentials: false` for that reason.
 permissions:
   contents: read
 

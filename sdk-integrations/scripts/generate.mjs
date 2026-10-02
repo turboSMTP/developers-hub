@@ -67,12 +67,10 @@ const REDOCLY = '@redocly/cli@2.47.0';
 const OVERLAY_TOOL = 'openapi-format@1.33.7';
 
 /**
- * Passed to every generator invocation as `--openapitools`. Do not rely on the wrapper finding
- * this file on its own: its implicit lookup does not honour `cwd` consistently across shells.
- * Spawned through a Windows shell it skips this file, silently re-pins to the latest release and
- * writes a fresh `openapitools.json` at the repository root to record it — so the "pinned"
- * generator floats, and the only visible symptom is a changed `.openapi-generator/VERSION` inside
- * the regenerated Layer 1. Naming the file explicitly makes the pin hold on every platform.
+ * Passed to every generator invocation as `--openapitools`. The wrapper's implicit lookup does not
+ * honour `cwd` consistently across shells — spawned through a Windows shell it skips this file and
+ * the pin silently floats, with no failure. Naming the file explicitly makes it hold on every
+ * platform.
  */
 const GENERATOR_CONFIG = join(SDK_ROOT, 'openapitools.json');
 
