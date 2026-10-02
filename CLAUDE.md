@@ -64,5 +64,3 @@ spec. Do not "correct" it toward the spec; there is nothing there to correct it 
 ## Workflow Rules
 
 - **Never commit or push** unless the user explicitly asks for it. The user stages and commits.
-- **Branch naming:** `fix/<description>` for corrections, `feat/<description>` for new content.
-- **PR process:** changes go through a pull request against `main`, using the GitHub PR template.
