@@ -25,31 +25,6 @@ field, enum, host and status code below traces to it. Where the API's real behav
 the spec, the difference is recorded in the [Discrepancies register](#discrepancies-register) and
 corrected upstream — never absorbed silently.
 
-## Layering recap
-
-Every SDK is three thin layers.
-
-- **Layer 1 — Generated Core.** Transport, (de)serialization, auth headers, models and multipart,
-  produced by OpenAPI Generator from the bundled specification, committed per language and
-  regenerated when the spec changes. Never hand-edited, and **not governed by this document**.
-- **Layer 2 — Curated Facade.** The `TurboSMTPClient` and its domain namespaces — the only
-  published surface, and where it stops mapping 1:1 to endpoints: arrays instead of comma-separated
-  strings, hidden auth, composed helpers. Each published API package provides its own
-  `TurboSMTPClient` carrying the namespaces that package ships; the class, its constructor and its
-  behaviour are identical in both. **This document governs Layer 2.**
-- **Layer 3 — Conformance tests.** Derived from the scenarios below, driving the public surface only.
-
-Each layer talks only to the one beneath it, and results and errors travel back up the same path.
-
-> **Hiding Layer 1 is asymmetric, and the asymmetry is accepted.** It is *enforceable* only in
-> **Node** (`exports` encapsulation makes an unlisted subpath throw) and **Go** (`internal/`, which
-> the compiler enforces). **Python** and **PHP** are convention-only, and **C# cannot hide it at
-> all** — the generator emits public types. So in most of the supported languages a consumer *can* reach
-> Layer 1 and may bind to it. That is documented rather than fought with custom generator
-> templates: what this document guarantees is the Layer 2 surface, not the unreachability of
-> Layer 1. The facade author's obligation is unaffected — Layer 1 is never re-exported, in any
-> language.
-
 ## Cross-cutting conventions
 
 ### Naming map
@@ -57,30 +32,22 @@ Each layer talks only to the one beneath it, and results and errors travel back 
 One concept, one idiomatic spelling per language. The **canonical client class is `TurboSMTPClient`** in every
 language (idiomatic casing applies).
 
-| Concept | Node/TS | Python | C# | Go | PHP |
-|---|---|---|---|---|---|
-| Client class | `TurboSMTPClient` | `TurboSMTPClient` | `TurboSMTPClient` | `Client` | `TurboSMTPClient` |
-| Constructor | `new TurboSMTPClient(opts)` | `TurboSMTPClient(**opts)` | `new TurboSMTPClient(options)` | `turbosmtp.NewClient(opts)` | `new TurboSMTPClient($options)` |
-| Mail namespace | `client.mail` | `client.mail` | `client.Mail` | `client.Mail` | `$client->getMail()` |
-| Validation namespace | `client.validation` | `client.validation` | `client.Validation` | `client.Validation` | `$client->getValidation()` |
-| Send method | `mail.send(msg)` | `mail.send(...)` | `Mail.SendAsync(req)` | `Mail.Send(req)` | `getMail()->send([...])` |
-| Async convention | Promise | sync + `AsyncTurboSMTPClient` (later) | `…Async` + `Task<T>` | `(T, error)` | sync |
-| `from` field | `from` | `from_` / `from_address` | `From` | `From` | `from` |
-| Mail package | `@turbosmtp/mail` (npm) | `turbosmtp-mail` (PyPI) | `TurboSMTP.Mail` (NuGet) | `github.com/turbosmtp/turbosmtp-go-mail` | `turbosmtp/turbosmtp-mail` (Packagist) |
-| Unified package | `@turbosmtp/sdk` (npm) | `turbosmtp` (PyPI) | `TurboSMTP` (NuGet) | `github.com/turbosmtp/turbosmtp-go` | `turbosmtp/turbosmtp-client` (Packagist) |
+| Concept | Node/TS |
+|---|---|
+| Client class | `TurboSMTPClient` |
+| Constructor | `new TurboSMTPClient(opts)` |
+| Mail namespace | `client.mail` |
+| Validation namespace | `client.validation` |
+| Send method | `mail.send(msg)` |
+| Async convention | Promise |
+| `from` field | `from` |
+| Mail package | `@turbosmtp/mail` (npm) |
+| Unified package | `@turbosmtp/sdk` (npm) |
 
 Notes:
-- `from` is a reserved word in Python; use `from_` (with `from_address` accepted as an alias). Every
-  other language uses the plain `from`/`From`.
-- Go conventionally names the package-level type `Client` (used as `turbosmtp.Client`); the
-  constructor `NewClient` returns it. This is the one deviation from the literal `TurboSMTPClient`
-  string, and it is the idiomatic equivalent.
-- **Registry casing is lowercase** everywhere (`turbosmtp` / `@turbosmtp` / `TurboSMTP`). Go module
-  paths are case-sensitive while GitHub URLs are not, so a mixed-case path in `go.mod` fails for
-  anyone who types it the other way.
 - Initialization is a **single options object passed to the constructor** (see
   [Auth model](#auth-model)). The `…ConfigurationBuilder` + `.Build()` pattern used by the
-  superseded C#/PHP SDKs is not carried forward in any language.
+  superseded C#/PHP SDKs is not carried forward.
 
 > **There is deliberately no transport row yet.** Seam mechanisms differ by design across the
 > supported ecosystems, and generalising one from the languages that happen to spell it the same way
