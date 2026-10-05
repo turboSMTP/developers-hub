@@ -1,11 +1,6 @@
 name: Validate OpenAPI Specification
 
 on:
-  # Scoped to what this workflow actually reads: the lint targets upstream/, and the drift
-  # guard reads upstream/ plus overlays/. A blanket 'api-integrations/**' also fires on
-  # docs/ and swagger-ui/ — a Redocly lint and a drift guard for a Markdown or UI-asset
-  # change. Keep this an allowlist: a denylist needs extending every time something
-  # non-spec lands in api-integrations/.
   push:
     paths:
       - 'api-integrations/upstream/**'
@@ -36,22 +31,9 @@ jobs:
         with:
           node-version: '20'
 
-      # Lint the single pre-bundled spec. It carries internal $refs only —
-      # there is no Domains/ folder in the served copy. The version is pinned to
-      # match sdk-integrations/scripts/generate.mjs; do not float it.
-      #
-      # This lints the SYNCED UPSTREAM copy — the document that gets published, assembled
-      # into the turbosmtp-swagger-ui mirror by api-integrations/assemble.mjs.
-      # Overlays in api-integrations/overlays/ are deliberately not applied here:
-      # they are a code-generation concern and never reach the published spec.
       - name: Validate OpenAPI spec
         run: npx @redocly/cli@2.47.0 lint api-integrations/upstream/turbo-smtp.yaml
 
-      # Spec-drift guard. Two checks, both offline:
-      #   1. the synced copy still matches the checksum recorded when it was synced,
-      #      catching an in-place edit of a file that is never hand-edited;
-      #   2. every overlay changes only what the boundary permits — operationIds, naming,
-      #      documentation and `x-` extensions — and never wire semantics.
       # Runs after the lint so an invalid spec fails on the clearer error first.
       - name: Spec-drift guard
         run: node sdk-integrations/scripts/check-spec.mjs

@@ -1,8 +1,5 @@
 name: Publish API reference to the mirror
 
-# developers-hub does not serve GitHub Pages. The API reference is published from
-# turbosmtp-swagger-ui, a read-only mirror this workflow assembles and force-pushes.
-#
 # The mirror is FLAT: index.html and turbo-smtp.yaml sit side by side. That is why
 # api-integrations/swagger-ui/swagger-initializer.js keeps `url: "./turbo-smtp.yaml"`
 # exactly as shipped -- the path already resolves in the mirror, so the UI assets need
@@ -18,8 +15,7 @@ on:
       - '.github/workflows/publish-api-reference.yml'
   workflow_dispatch:
 
-# READ, not write -- the same reasoning as split-mirrors.yml: the push authenticates with
-# MIRROR_TOKEN, and GITHUB_TOKEN only clones this repository.
+# READ, not write -- same reasoning as split-mirrors.yml.
 permissions:
   contents: read
 
