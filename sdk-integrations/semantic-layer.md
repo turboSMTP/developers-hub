@@ -76,8 +76,7 @@ TurboSMTPClient({
 
 ### Region model
 
-Region is a **constructor option** (superseding the old C# `SetRegion()` / PHP `setRegion()`
-builder methods), an enum: **`global`** (default) or **`eu`**.
+Region is a **constructor option**, an enum: **`global`** (default) or **`eu`**.
 
 Region affects **only the `/mail/send` host** today. Every other operation always uses the global
 API server. Hosts (from the spec):
@@ -92,9 +91,6 @@ An unrecognised `region` **MUST be rejected at construction** with the SDK's bas
 than left to fall through: an unset base URL resolves to the global API host, which does not serve
 `/mail/send`, so the request succeeds against the wrong server
 ([discrepancy 12](#discrepancies-register); scenario 11).
-
-A raw `baseUrl` override escape-hatch is **out of scope** for now (may be revisited if self-hosted
-deployments need it).
 
 ### Mail conformance scenarios
 
