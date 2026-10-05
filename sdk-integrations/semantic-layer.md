@@ -46,14 +46,7 @@ language (idiomatic casing applies).
 
 Notes:
 - Initialization is a **single options object passed to the constructor** (see
-  [Auth model](#auth-model)). The `…ConfigurationBuilder` + `.Build()` pattern used by the
-  superseded C#/PHP SDKs is not carried forward.
-
-> **There is deliberately no transport row yet.** Seam mechanisms differ by design across the
-> supported ecosystems, and generalising one from the languages that happen to spell it the same way
-> would be wrong. The row is added once enough SDKs exist to generalise from. Until then one floor holds
-> regardless: a container-free, discovery-free way to supply the transport always exists, so a
-> single conformance recipe stays valid in every language.
+  [Auth model](#auth-model)).
 
 ### Auth model
 
@@ -68,24 +61,18 @@ TurboSMTPClient({
   consumerKey:    "…",   // required
   consumerSecret: "…",   // required
   region:         "global" | "eu",   // optional, default "global"
-  // transport seam — per-language spelling; Node: fetchApi
+  // transport seam — Node: fetchApi
 })
 ```
 
 > **Transport tuning is not specified yet.** A request timeout with a documented, overridable
-> default is a requirement this layer still owes: no SDK implements one today, and until it is
-> specified here each language would invent its own. It will be added to the shape above, with the
-> default stated, before a second SDK ships. Retry tuning is deliberately absent rather than
+> default is a requirement this layer still owes: no SDK implements one today. It will be added to
+> the shape above, with the default stated. Retry tuning is deliberately absent rather than
 > pending — `/mail/send` is not idempotent and is never retried automatically, so the Mail domain has nothing to
 > configure.
 
-- For every operation specified so far, the SDK sends **both** the `consumerKey` and `consumerSecret` headers.
-- The SDK **never** sends `Authorization` today. `/mail/send` requires the consumer pair and rejects
-  the raw key with `401` — the developer never learns this.
-- **Deferred `apiKey` extension point.** When the `account` domain introduces `Authorization`-only
-  operations (consumer-key management, `/authorize`), an optional `apiKey` field is added to the
-  credential object and the SDK routes per operation. Not needed today because no specified operation can use it.
-  This is an **additive** change — it will not break the credential shape above.
+- Every operation today sends **both** `consumerKey` and `consumerSecret`; the SDK never sends `Authorization`.
+- When the `account` domain ships, the credential object gains an optional `apiKey` field, added without changing the shape above.
 
 ### Region model
 
@@ -181,11 +168,8 @@ so future domain additions are drop-in.
 
 ### Retries & backoff
 
-Framework-level policy, configurable via `maxRetries` (default small, e.g. 2):
-
-- Retry idempotent requests (GET) on transport errors and on `429`/`5xx` with exponential backoff.
-- Do **not** auto-retry non-idempotent `/mail/send` by default (avoid duplicate sends); a `429` on
-  send surfaces as `RateLimitError` for the caller to handle.
+Configurable via `maxRetries` (default small, e.g. 2); currently applies only to `GET`. A `429` on
+`/mail/send` is not retried — it surfaces as `RateLimitError`.
 
 ## Mail domain (full detail)
 
