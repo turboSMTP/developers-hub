@@ -15,7 +15,7 @@ the generator version is pinned in [`../openapitools.json`](../openapitools.json
 | Go | `go` | net/http | nullable → `Nullable<T>` wrappers |
 | PHP | `php` | Guzzle | |
 
-All five were validated against the bundled 3.1 spec when the generators were selected — no
+All were validated against the bundled 3.1 spec when the generators were selected — no
 down-convert shim and no Kiota fallback needed.
 
 ## Generated namespace per language
@@ -33,7 +33,7 @@ entrypoint:
 
 ## What these configs deliberately omit
 
-A config is domain-agnostic and reused across every tier and both API packages, so what varies per
+A config is domain-agnostic and reused across every tier and every API package, so what varies per
 run is passed by the script rather than baked in here.
 
 - **`inputSpec` / `outputDir`** — supplied per run by the generation script.

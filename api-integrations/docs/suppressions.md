@@ -140,7 +140,7 @@ Returns the same format as [GET /suppressions](#query-suppressions) above (an ob
 
 ## Add Suppressions
 
-**`POST /suppressions/import`** — two request formats:
+**`POST /suppressions/import`** — supports the following request formats:
 
 **JSON** (`type: "manual"`) for a list of addresses:
 

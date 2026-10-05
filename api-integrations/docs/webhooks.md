@@ -216,7 +216,7 @@ For querying the same lifecycle historically (rather than receiving it as a push
 
 ## Correlating Events with Your System
 
-Two values let you join webhook events back to your own records:
+The following values let you join webhook events back to your own records:
 
 - **`mid`** — every event carries the message ID returned by `/mail/send` at send time.
 - **`reference_id`** — the OpenAPI specification defines the `reference_id` send field as *"custom argument included within an email to be added to the Event Webhook response"*. Set it at send time to attach your own correlation key (an order ID, a user ID) to the message's events.

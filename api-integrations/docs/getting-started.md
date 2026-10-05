@@ -8,7 +8,7 @@ Everything you need to make your first TurboSMTP API call.
 
 ## Base URLs
 
-The TurboSMTP API v2 is served from two hosts:
+The TurboSMTP API v2 is served from a general-purpose host and a region-aware send host:
 
 | Host | Used for |
 |---|---|
@@ -22,7 +22,7 @@ The TurboSMTP API v2 is served from two hosts:
 
 ## Authentication
 
-The API supports two authentication methods, both passed as HTTP headers:
+The API supports the following authentication methods, all passed as HTTP headers:
 
 | Method | Headers | Lifetime | Best for |
 |---|---|---|---|
@@ -31,7 +31,7 @@ The API supports two authentication methods, both passed as HTTP headers:
 
 > **Note:** The API key is sent as the raw value of the `Authorization` header. Do **not** prefix it with `Bearer` or any other scheme.
 
-Two endpoint-specific rules to remember:
+Endpoint-specific rules to remember:
 
 - **`POST /mail/send` accepts only `consumerKey`/`consumerSecret`.** Requests with an `Authorization` header are rejected with `401`.
 - **Consumer key management (`/user/consumerKeys`) accepts only the `Authorization` header.** You cannot create or delete consumer keys while authenticated with a consumer key.

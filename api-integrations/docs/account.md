@@ -23,7 +23,7 @@ Manage the credentials and settings of your TurboSMTP account: account details, 
 
 Consumer keys are permanent API credentials — see [Getting Started](getting-started.md#create-a-consumer-key) for why they're recommended in production.
 
-> **API key required:** all three endpoints below accept only the `Authorization` header. Consumer key listing, creation, and deletion are not allowed when authenticated via consumer key.
+> **API key required:** all endpoints below accept only the `Authorization` header. Consumer key listing, creation, and deletion are not allowed when authenticated via consumer key.
 
 ### List
 
@@ -177,7 +177,7 @@ Returns `{"message": "success"}`. A wrong `current_password` returns `403` with 
 
 ## Forgot Password
 
-A three-step, token-based reset flow. **Tokens are valid for 1 hour.**
+A multi-step, token-based reset flow. **Tokens are valid for 1 hour.**
 
 ### 1. Request a reset email
 
@@ -208,7 +208,7 @@ Response:
 }
 ```
 
-An invalid or expired token returns `403` with `token_is_invalid`. Unlike the other two steps, this check requires authentication (`Authorization` header).
+An invalid or expired token returns `403` with `token_is_invalid`. Unlike the other steps in this flow, this check requires authentication (`Authorization` header).
 
 ### 3. Set the new password
 
@@ -364,7 +364,7 @@ Top up Email Validation Credits with **`POST /billing/buy_emailvalidation_credit
 
 ## Reference Data
 
-Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](subaccounts.md)). Both endpoints are **public** — no authentication required.
+Country and state lookups, useful for building address forms (e.g. when creating [subaccounts](subaccounts.md)). These endpoints are **public** — no authentication required.
 
 **`GET /meta/countries`**
 

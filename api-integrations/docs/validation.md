@@ -38,7 +38,7 @@ curl https://pro.api.serversmtp.com/api/v2/emailvalidation/subscription \
 }
 ```
 
-The two credit types work differently:
+The credit types work differently:
 
 - **`free_credits`** are measured in units — 1 credit validates 1 email — and renew each period (see `latest_period_start_date` / `period_expiration_date`).
 - **`paid_credits`** is a monetary balance. As validations are performed the balance is deducted; the cost per validation is variable and depends on the amount of validated emails.

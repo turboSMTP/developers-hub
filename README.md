@@ -8,7 +8,7 @@ Welcome to the official TurboSMTP developer portal — guides, SDKs and the API 
 
 | Section | Description |
 |---|---|
-| [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview, the eight integration guides, and the [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
+| [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview, the integration guides, and the [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
 | [SDKs](#sdks) | Official client libraries for all supported languages |
 | [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills — designed, not yet built |
 
@@ -41,13 +41,13 @@ Official client libraries for **Node.js/TypeScript, Python, C#, Go** and **PHP**
 shared surface so that the same operation behaves the same way in every language. That surface is
 defined in [`semantic-layer.md`](sdk-integrations/semantic-layer.md).
 
-**Nothing from this programme is published yet.** Two packages are built and pending publication —
+**Nothing from this programme is published yet.** The following packages are built and pending publication —
 each is documented by its own README, which is also what will ship to the registry:
 
 - [`@turbosmtp/mail`](sdk-integrations/packages/node-mail/README.md) — sending, Node.js/TypeScript
 - [`@turbosmtp/webhook`](sdk-integrations/webhooks/node-webhook/README.md) — webhook receiver, Node.js/TypeScript
 
-Four repositories previously carried the official label — `turboSMTP-js`, `turboSMTP-csharp`,
+The following repositories previously carried the official label — `turboSMTP-js`, `turboSMTP-csharp`,
 `turboSMTP-php` and `turboSMTP-python`. All are superseded by the SDKs above and are deprecated per
 language as each replacement ships.
 

@@ -176,7 +176,7 @@ Common uses:
 
 ## Tracking Sends
 
-Two request fields help you correlate sends with later events:
+The following request fields help you correlate sends with later events:
 
 - **`reference_id`** — a per-message custom argument included in [Event Webhook](webhooks.md) payloads, ideal for joining webhook events back to records in your system.
 - **`X-campaign-ID`** — a campaign label surfaced as `x_campaign_id` in [Analytics](analytics.md) results; search for it with the free-text `filter` parameter.

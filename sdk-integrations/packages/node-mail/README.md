@@ -245,7 +245,7 @@ npm test          # offline; mocked transport, no credentials needed
 npm run test:live # sends real email, requires credentials
 ```
 
-The live suite is skipped unless all four variables are set:
+The live suite is skipped unless every one of the following variables is set:
 
 ```bash
 TURBOSMTP_CONSUMER_KEY=... TURBOSMTP_CONSUMER_SECRET=... \

@@ -1,7 +1,7 @@
 # TurboSMTP SDK — The Semantic Layer
 
 > The semantic layer is the language-agnostic definition of what every TurboSMTP SDK must do, and
-> the **common ground for Layer 2 (facade) generation** across all five languages. This document is
+> the **common ground for Layer 2 (facade) generation** across every supported language. This document is
 > **self-contained** — a contributor needs nothing else to build a conforming facade.
 >
 > Its sections are deliberately unnumbered. Nothing outside this document references a section of
@@ -10,13 +10,13 @@
 ## Purpose & scope
 
 This defines the **single, canonical developer-facing surface** for the TurboSMTP client libraries
-in all five languages — **Node.js/TypeScript, Python, C#, Go, PHP** — independent of any one
+in every supported language — **Node.js/TypeScript, Python, C#, Go, PHP** — independent of any one
 language's idioms. It exists to:
 
 - guarantee cross-language consistency (same namespaces, methods, params, returns, errors);
 - serve as the reference for the shared conformance test matrix
   ([P0 Mail conformance scenarios](#p0-mail-conformance-scenarios));
-- prevent OpenAPI Generator's five naming conventions from drifting apart.
+- prevent OpenAPI Generator's per-language naming conventions from drifting apart.
 
 **What it governs:** the **Layer 2 facade** surface — everything a developer touches. It does
 **not** dictate Layer 1 (generated) internals, which are per-language and regenerated from the spec.
@@ -45,7 +45,7 @@ Each layer talks only to the one beneath it, and results and errors travel back 
 > **Hiding Layer 1 is asymmetric, and the asymmetry is accepted.** It is *enforceable* only in
 > **Node** (`exports` encapsulation makes an unlisted subpath throw) and **Go** (`internal/`, which
 > the compiler enforces). **Python** and **PHP** are convention-only, and **C# cannot hide it at
-> all** — the generator emits public types. So in three of five languages a consumer *can* reach
+> all** — the generator emits public types. So in most of the supported languages a consumer *can* reach
 > Layer 1 and may bind to it. That is documented rather than fought with custom generator
 > templates: what this document guarantees is the Layer 2 surface, not the unreachability of
 > Layer 1. The facade author's obligation is unaffected — Layer 1 is never re-exported, in any
@@ -55,7 +55,7 @@ Each layer talks only to the one beneath it, and results and errors travel back 
 
 ### Naming map
 
-One concept, five idiomatic spellings. The **canonical client class is `TurboSMTPClient`** in every
+One concept, one idiomatic spelling per language. The **canonical client class is `TurboSMTPClient`** in every
 language (idiomatic casing applies).
 
 | Concept | Node/TS | Python | C# | Go | PHP |
@@ -83,9 +83,9 @@ Notes:
   [Auth model](#auth-model)). The `…ConfigurationBuilder` + `.Build()` pattern used by the
   superseded C#/PHP SDKs is not carried forward in any language.
 
-> **There is deliberately no transport row yet.** Seam mechanisms differ by design across the five
-> ecosystems, and generalising one from the two languages that happen to spell it the same way
-> would be wrong. The row is added once three of the five SDKs exist. Until then one floor holds
+> **There is deliberately no transport row yet.** Seam mechanisms differ by design across the
+> supported ecosystems, and generalising one from the languages that happen to spell it the same way
+> would be wrong. The row is added once enough SDKs exist to generalise from. Until then one floor holds
 > regardless: a container-free, discovery-free way to supply the transport always exists, so a
 > single conformance recipe stays valid in every language.
 
@@ -314,7 +314,7 @@ SendResult { messageId: string }
 ```
 
 - `messageId` = `mid` **stringified**. `mid` is an int64, which is unsafe as a JavaScript `number`;
-  every language returns it as a string so the surface is identical across all five.
+  every language returns it as a string so the surface is identical across every language.
 - `message` (e.g. `"OK"`) is not surfaced as a primary field; SDKs may expose it as `SendResult.raw`
   but the contracted, tested field is `messageId`.
 
