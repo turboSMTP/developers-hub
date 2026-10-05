@@ -1,8 +1,7 @@
 # TurboSMTP SDK — The Semantic Layer
 
 > The semantic layer is the language-agnostic definition of what every TurboSMTP SDK must do, and
-> the **common ground for Layer 2 (facade) generation** across every supported language. This document is
-> **self-contained** — a contributor needs nothing else to build a conforming facade.
+> the **common ground for Layer 2 (facade) generation** across every supported language.
 >
 > Its sections are deliberately unnumbered. Nothing outside this document references a section of
 > it, so there is no numbering to preserve and it can be reorganised whenever that serves a reader.
@@ -15,7 +14,7 @@ language's idioms. It exists to:
 
 - guarantee cross-language consistency (same namespaces, methods, params, returns, errors);
 - serve as the reference for the shared conformance test matrix
-  ([P0 Mail conformance scenarios](#p0-mail-conformance-scenarios));
+  ([Mail conformance scenarios](#mail-conformance-scenarios));
 - prevent OpenAPI Generator's per-language naming conventions from drifting apart.
 
 **What it governs:** the **Layer 2 facade** surface — everything a developer touches. It does
@@ -95,7 +94,7 @@ The facade **hides this entirely**. The developer supplies one credential object
 the correct headers per operation, so which scheme an endpoint takes is never something a caller
 has to learn.
 
-**P0 credential shape — `consumerKey` + `consumerSecret` only:**
+**Current credential shape — `consumerKey` + `consumerSecret` only:**
 
 ```
 TurboSMTPClient({
@@ -110,16 +109,16 @@ TurboSMTPClient({
 > default is a requirement this layer still owes: no SDK implements one today, and until it is
 > specified here each language would invent its own. It will be added to the shape above, with the
 > default stated, before a second SDK ships. Retry tuning is deliberately absent rather than
-> pending — `/mail/send` is not idempotent and is never retried automatically, so P0 has nothing to
+> pending — `/mail/send` is not idempotent and is never retried automatically, so the Mail domain has nothing to
 > configure.
 
-- For every P0 operation the SDK sends **both** the `consumerKey` and `consumerSecret` headers.
-- The SDK **never** sends `Authorization` in P0. `/mail/send` requires the consumer pair and rejects
+- For every operation specified so far, the SDK sends **both** the `consumerKey` and `consumerSecret` headers.
+- The SDK **never** sends `Authorization` today. `/mail/send` requires the consumer pair and rejects
   the raw key with `401` — the developer never learns this.
-- **Deferred `apiKey` extension point.** When a P2+ domain introduces `Authorization`-only
+- **Deferred `apiKey` extension point.** When the `account` domain introduces `Authorization`-only
   operations (consumer-key management, `/authorize`), an optional `apiKey` field is added to the
-  credential object and the SDK routes per operation. Not in P0 because no P0 operation can use it.
-  This is an **additive** change — it will not break the P0 shape.
+  credential object and the SDK routes per operation. Not needed today because no specified operation can use it.
+  This is an **additive** change — it will not break the credential shape above.
 
 ### Region model
 
@@ -140,10 +139,10 @@ than left to fall through: an unset base URL resolves to the global API host, wh
 `/mail/send`, so the request succeeds against the wrong server
 ([discrepancy 12](#discrepancies-register); scenario 11).
 
-A raw `baseUrl` override escape-hatch is **out of scope** for P0 (may be revisited if self-hosted
+A raw `baseUrl` override escape-hatch is **out of scope** for now (may be revisited if self-hosted
 deployments need it).
 
-### P0 Mail conformance scenarios
+### Mail conformance scenarios
 
 Every SDK's Layer 3 tests must cover these **11 scenarios**. What each one asserts is fixed here;
 how the tests are run, gated and reported is not this document's concern.
@@ -210,8 +209,8 @@ no cursor** — end-of-data is inferred when a page returns fewer than `limit` r
 
 The facade exposes, for every paged domain method, an **auto-pagination iterator** (async iterator /
 generator / `range`-style channel / `Iterator` per language) that transparently walks pages. Manual
-`page`/`limit` access remains available. **P0 has no paged endpoint** — this framework is defined now
-so P1/P2 additions are drop-in.
+`page`/`limit` access remains available. **Mail has no paged endpoint** — this framework is defined now
+so future domain additions are drop-in.
 
 ### Retries & backoff
 
@@ -221,7 +220,7 @@ Framework-level policy, configurable via `maxRetries` (default small, e.g. 2):
 - Do **not** auto-retry non-idempotent `/mail/send` by default (avoid duplicate sends); a `429` on
   send surfaces as `RateLimitError` for the caller to handle.
 
-## P0 — Mail domain (full detail)
+## Mail domain (full detail)
 
 **Namespace:** `mail`. **Method:** `send`. **Backing operation:** `sendEmail` — `POST /mail/send`,
 request schema `MailMessage`, success `SendSucessResponsetBody`.
@@ -350,10 +349,10 @@ Rules:
 
 Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's job.
 
-## P1 — Email Validation (framework + `validateList` sketch)
+## Email Validation (framework + `validateList` sketch)
 
-> **Full P1 method signatures and return schemas are not yet specified.** This section fixes the
-> namespace, the composed-helper shape and the result vocabulary; the rest lands when P1 starts.
+> **Full Email Validation method signatures and return schemas are not yet specified.** This section fixes the
+> namespace, the composed-helper shape and the result vocabulary; the rest lands when this domain is built.
 
 **Namespace:** `validation`. Backing operations are the served `/emailvalidation/*` set
 (`getEmailValidationSubscription`, `uploadEmailValidationFile`, `getEmailValidationLists`,
@@ -376,7 +375,7 @@ Planned surface:
 - `sub_status` enum (24 values incl. `''`, `role_based`, `disposable`, `mailbox_not_found`,
   `greylisted`, `possible_typo`, …) — carried through verbatim.
 
-## Priority tiers, namespaces & domain coverage
+## Namespaces & domain coverage
 
 Namespaces are confirmed as: **`mail`, `validation`, `analytics`, `suppressions`, `subaccounts`,
 `account`**.
@@ -386,17 +385,17 @@ Namespaces are confirmed as: **`mail`, `validation`, `analytics`, `suppressions`
 > many packages the surface arrives in. A change to a *distribution* name is not a change to an
 > *import* name, and does not touch this table.
 
-| Tier | Namespace(s) | Domain | Auth path | Status |
-|---|---|---|---|---|
-| **P0** | `mail` | `/mail/send` | consumerKey+secret | ship first (reference SDK) |
-| **P1** | `validation` | `/emailvalidation/*` | consumerKey+secret | after P0; incl. `validateList` |
-| **P2** | `analytics` | `/analytics*` | consumerKey+secret | later |
-| **P2** | `suppressions` | `/suppressions*` | consumerKey+secret | later |
-| **P2** | `subaccounts` | `/subaccounts*` | consumerKey+secret (plan-gated 403) | later |
-| **P2** | `account` | `/user/consumerKeys*`, `/authorize`, `/deauthorize` | **`Authorization` (apiKey)** | later — **introduces the deferred `apiKey` credential** ([Auth model](#auth-model)) |
-| **P3 / maybe-never** | `billing` | `/billing/*` | — | implement only if justified |
-| **P3 / maybe-never** | `alerts` | alerts | — | low priority |
-| **P3 / maybe-never** | `meta` | countries/states | — | low priority |
+| Namespace | Domain | Auth path | Status |
+|---|---|---|---|
+| `mail` | `/mail/send` | consumerKey+secret | ship first (reference SDK) |
+| `validation` | `/emailvalidation/*` | consumerKey+secret | next; incl. `validateList` |
+| `analytics` | `/analytics*` | consumerKey+secret | later |
+| `suppressions` | `/suppressions*` | consumerKey+secret | later |
+| `subaccounts` | `/subaccounts*` | consumerKey+secret (plan-gated 403) | later |
+| `account` | `/user/consumerKeys*`, `/authorize`, `/deauthorize` | **`Authorization` (apiKey)** | later — **introduces the deferred `apiKey` credential** ([Auth model](#auth-model)) |
+| `billing` | `/billing/*` | — | implement only if justified |
+| `alerts` | alerts | — | low priority |
+| `meta` | countries/states | — | low priority |
 
 **Which distribution carries which namespace.** The `mail` namespace ships in the mail package;
 every other namespace in this table ships in the unified package. The two are independent — neither
@@ -431,7 +430,7 @@ fix is always the server's.
 
 | # | Discrepancy | Facade handling |
 |---|---|---|
-| 1 | `/mail/send` `security` advertises `ApiKeyAuth: []`, but the endpoint **rejects** `Authorization` (401) — consumerKey+secret only | Facade never sends `Authorization` for send; the P0 credential is the consumer pair only |
+| 1 | `/mail/send` `security` advertises `ApiKeyAuth: []`, but the endpoint **rejects** `Authorization` (401) — consumerKey+secret only | Facade never sends `Authorization` for send; the Mail-domain credential is the consumer pair only |
 | 2 | `to`/`cc`/`bcc` are single **comma-separated strings**, not arrays | Facade takes one or many addresses, formats and joins to CSV |
 | 3 | **Reply-To is not a field** — it lives in `custom_headers["reply-to"]` | First-class `replyTo` param injected into `custom_headers` |
 | 4 | Body fields are `content` / `html_content` | Facade uses `text` / `html` |

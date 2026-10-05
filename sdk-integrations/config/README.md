@@ -41,9 +41,9 @@ run is passed by the script rather than baked in here.
   domain's tag(s) using Redocly's `filter-in` decorator with `--remove-unused-components` to prune
   the components the filtered operations no longer reach. The generator's own
   `openapi-normalizer FILTER` was the alternative and is not used.
-- **`skipFormModel`** — left at the generator default (`true`) because **P0 Mail has no multipart**.
+- **`skipFormModel`** — left at the generator default (`true`) because **Mail has no multipart**.
   That default drops multipart upload request models; **flip it to `false`, or handle the fields as
-  operation params, when configuring P1 validation upload and P2 suppressions-import and
+  operation params, when configuring validation upload and suppressions-import and
   subaccount-logo.**
 - **Package name** — overridden per run via `--additional-properties`. A config that named one
   package would stop being reusable across the mail and unified packages.
