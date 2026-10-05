@@ -332,9 +332,8 @@ commits to it. This list changes whenever the upstream wiring does.
 Spec-vs-reality gaps the facade papers over (each one drives a mapping/decision above). **Entry
 numbers are stable** — never renumbered, never reused, never retired.
 
-An entry marked **Stopgap** records a guard the SDK carries only because the server's own error is
-unclear or wrong. It names the guard and the condition under which the guard is removed; the real
-fix is always the server's.
+An entry marked **Stopgap** is a guard that exists only because the server's own error is unclear;
+the table states its removal condition.
 
 | # | Discrepancy | Facade handling |
 |---|---|---|
