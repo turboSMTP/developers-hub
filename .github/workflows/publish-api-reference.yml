@@ -70,7 +70,7 @@ jobs:
           set -euo pipefail
           cd "${RUNNER_TEMP}/site"
           test -f index.html && test -f turbo-smtp.yaml && test -f .nojekyll
-          test ! -e overlays && test ! -e upstream && test ! -e docs && test ! -e assemble.mjs
+          test ! -e upstream && test ! -e docs && test ! -e assemble.mjs
           test ! -e README.md && test ! -e turbo-smtp.sha256
           ls -la
 

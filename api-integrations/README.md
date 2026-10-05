@@ -44,7 +44,6 @@ The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what
 ```
 api-integrations/upstream/turbo-smtp.yaml   # the complete pre-bundled document, published verbatim
 api-integrations/swagger-ui/                # the vendored Swagger UI, exactly as turbo-api-2 ships it
-api-integrations/overlays/                  # generation-only patches — never published
 api-integrations/docs/                      # human-facing topic guides — never published
 api-integrations/assemble.mjs               # flattens the two into the publishable tree
 ```
@@ -52,8 +51,6 @@ api-integrations/assemble.mjs               # flattens the two into the publisha
 Serving one file lets Swagger UI load it in a single request instead of roughly ten, which is the main render-speed win. There is no `Domains/` folder in this repository.
 
 `upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml), and an in-place edit is caught by the spec-drift guard, `sdk-integrations/scripts/check-spec.mjs`.
-
-`overlays/` holds OpenAPI Overlay documents applied **only** while generating SDK code. They never touch the published spec and may never change wire semantics — see [`overlays/README.md`](overlays/README.md) for the rules.
 
 `docs/` holds the topic guides. They are hand-authored — never generated, never synced — and are not published to the mirror. Note in particular that [`docs/webhooks.md`](docs/webhooks.md) defines the Event Webhook payload, which appears in **no** OpenAPI document: the upstream spec describes no callback and no event payload anywhere. Nothing derives that page, so a spec sync must never overwrite it.
 

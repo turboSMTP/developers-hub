@@ -4,13 +4,11 @@ on:
   push:
     paths:
       - 'api-integrations/upstream/**'
-      - 'api-integrations/overlays/**'
       - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
       - 'api-integrations/upstream/**'
-      - 'api-integrations/overlays/**'
       - 'sdk-integrations/scripts/check-spec.mjs'
       - '.github/workflows/validate-openapi.yml'
 

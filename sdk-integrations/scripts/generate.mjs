@@ -2,10 +2,7 @@
 /**
  * TurboSMTP SDK — Layer 1 generation pipeline.
  *
- * Pipeline:  overlay  →  bundle  →  filter-by-domain (+ prune)  →  generate per language
- *   0. overlay  : apply api-integrations/overlays/*.yaml to the synced spec              (openapi-format)
- *                 → build/turbo-smtp.overlaid.yaml. SKIPPED ENTIRELY when no overlay exists, so
- *                 the default path is byte-for-byte what it was before overlays landed.
+ * Pipeline:  bundle  →  filter-by-domain (+ prune)  →  generate per language
  *   1. bundle   : → build/turbo-smtp.bundled.yaml                                     (redocly bundle)
  *   2. filter   : keep only the target domain's tag(s), drop orphaned components  (redocly filter-in
  *                 + --remove-unused-components) → build/turbo-smtp.<domain>.yaml
@@ -13,15 +10,8 @@
  *                 sdk-integrations/openapitools.json, passed explicitly — see GENERATOR_CONFIG below).
  *                 Fed the 3.1 spec directly — no down-convert shim.
  *
- * Overlays are a GENERATION-ONLY concern: what is published is api-integrations/upstream/ verbatim,
- * assembled by api-integrations/assemble.mjs, which never reads overlays/ -- so an overlay cannot
- * reach the published contract. It may change operationIds, naming and `x-`
- * extensions; it may never change wire semantics. See api-integrations/overlays/README.md — those
- * rules are what make this reconcilable with the single-source-of-truth constraint.
- *
- * All three tools are pinned to an exact version. Neither the overlay step nor the bundler is a
- * passive step: their output is the generator's input, so a minor in either changes the committed
- * Layer 1 without any spec change.
+ * Both tools are pinned to an exact version. The bundler is not a passive step: its output is the
+ * generator's input, so a minor changes the committed Layer 1 without any spec change.
  *
  * Cross-platform by design: pure Node + `npx`, so it runs identically on Windows (local) and Linux
  * (CI). Requires Node 18+ and a JDK — Java 17 is what this project runs. The generator is a Java
@@ -44,7 +34,7 @@
  */
 
 import { spawnSync } from 'node:child_process';
-import { existsSync, mkdirSync, readdirSync, writeFileSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -56,13 +46,6 @@ const BUILD_DIR = join(SDK_ROOT, 'build');
 const REDOCLY = '@redocly/cli@2.47.0';
 
 /**
- * Overlay applier — a second tool because Redocly applies no overlays: an `overlays:` key is
- * rejected at config root and under `apis.<name>`, and `bundle` then silently emits the unmodified
- * document. `--no-sort` is MANDATORY (see the invocation below).
- */
-const OVERLAY_TOOL = 'openapi-format@1.33.7';
-
-/**
  * Passed to every generator invocation as `--openapitools`. The wrapper's implicit lookup does not
  * honour `cwd` consistently across shells — spawned through a Windows shell it skips this file and
  * the pin silently floats, with no failure. Naming the file explicitly makes it hold on every
@@ -71,8 +54,6 @@ const OVERLAY_TOOL = 'openapi-format@1.33.7';
 const GENERATOR_CONFIG = join(SDK_ROOT, 'openapitools.json');
 
 const SPEC_IN = join(REPO_ROOT, 'api-integrations', 'upstream', 'turbo-smtp.yaml');
-const OVERLAY_DIR = join(REPO_ROOT, 'api-integrations', 'overlays');
-const OVERLAID = join(BUILD_DIR, 'turbo-smtp.overlaid.yaml');
 const BUNDLED = join(BUILD_DIR, 'turbo-smtp.bundled.yaml');
 
 // Domain → OpenAPI tag(s). Verified: mail, validation. Others are placeholders for later tiers —
@@ -152,41 +133,6 @@ function run(label, cmd) {
   if (r.status !== 0) fail(`${label} failed (exit ${r.status ?? r.signal}).`);
 }
 
-/** Overlay documents to apply, in lexicographic order. Empty is the normal state. */
-function listOverlays() {
-  if (!existsSync(OVERLAY_DIR)) return [];
-  return readdirSync(OVERLAY_DIR)
-    .filter((f) => f.endsWith('.yaml') || f.endsWith('.yml'))
-    .sort()
-    .map((f) => join(OVERLAY_DIR, f));
-}
-
-/**
- * Apply every overlay to the synced spec, returning the path the bundler should read.
- * With no overlays present this returns SPEC_IN untouched — the step costs nothing and changes
- * nothing, so Layer 1 stays byte-identical until an overlay is deliberately added.
- *
- * openapi-format takes one --overlayFile per run, so several are applied by chaining.
- */
-function applyOverlays() {
-  const overlays = listOverlays();
-  if (overlays.length === 0) {
-    console.log('\n▶ overlay\n  none in api-integrations/overlays/ — using the synced spec as-is');
-    return SPEC_IN;
-  }
-  let input = SPEC_IN;
-  overlays.forEach((overlay, i) => {
-    // Chain through distinct files so a failure leaves the inputs inspectable.
-    const output = i === overlays.length - 1 ? OVERLAID : join(BUILD_DIR, `_overlay-${i}.yaml`);
-    run(
-      `overlay ${i + 1}/${overlays.length} → ${overlay.split(/[\\/]/).pop()}`,
-      `npx --yes ${OVERLAY_TOOL} "${input}" -o "${output}" --overlayFile "${overlay}" --no-sort`,
-    );
-    input = output;
-  });
-  return OVERLAID;
-}
-
 function main() {
   const args = parseArgs(process.argv);
   const domain = args.domain || 'mail';
@@ -200,11 +146,9 @@ function main() {
 
   mkdirSync(BUILD_DIR, { recursive: true });
 
-  // 0-1. Apply overlays (generation-only), then bundle. Both are skipped by --skip-bundle, which
-  // reuses an existing BUNDLED: the overlay feeds the bundler, so skipping one must skip the other.
+  // 1. Bundle the synced spec. --skip-bundle reuses an existing BUNDLED instead.
   if (!args['skip-bundle']) {
-    const specForBundle = applyOverlays();
-    run('bundle spec', `npx --yes ${REDOCLY} bundle "${specForBundle}" -o "${BUNDLED}"`);
+    run('bundle spec', `npx --yes ${REDOCLY} bundle "${SPEC_IN}" -o "${BUNDLED}"`);
   }
 
   // 2. Filter to the domain's tag(s) and prune orphaned components.
