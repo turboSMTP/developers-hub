@@ -5,12 +5,24 @@
 >
 > Its sections are deliberately unnumbered. Nothing outside this document references a section of
 > it, so there is no numbering to preserve and it can be reorganised whenever that serves a reader.
+>
+> **Reading order:** orientation first, then detail — what this governs, which namespaces exist, the
+> conventions every domain obeys, the Mail domain in full, how it is verified, and the register of
+> spec-vs-reality gaps. Each section also stands on its own if you jump straight to it.
 
-## Purpose & scope
+**Sections**
 
-This defines the **single, canonical developer-facing surface** for the TurboSMTP client libraries
-in every supported language — **Node.js/TypeScript, Python, C#, Go, PHP** — independent of any one
-language's idioms. It exists to:
+- [Scope & what it governs](#scope--what-it-governs) — what this binds, and what it leaves to Layer 1.
+- [Namespaces & domain coverage](#namespaces--domain-coverage) — which namespaces exist, and which package carries them.
+- [Cross-cutting conventions](#cross-cutting-conventions) — naming, auth, region, errors, pagination, retries.
+- [Mail domain (full detail)](#mail-domain-full-detail) — parameters, wire mapping, return shape, errors, inline images.
+- [Mail conformance scenarios](#mail-conformance-scenarios) — what every SDK's tests must assert.
+- [Discrepancies register](#discrepancies-register) — spec-vs-reality gaps the facade papers over.
+
+## Scope & what it governs
+
+This defines the **single, canonical developer-facing surface** for the TurboSMTP client libraries,
+independent of any one language's idioms. It exists to:
 
 - guarantee cross-language consistency (same namespaces, methods, params, returns, errors);
 - serve as the reference for the shared conformance test matrix
@@ -18,12 +30,46 @@ language's idioms. It exists to:
 - prevent OpenAPI Generator's per-language naming conventions from drifting apart.
 
 **What it governs:** the **Layer 2 facade** surface — everything a developer touches. It does
-**not** dictate Layer 1 (generated) internals, which are per-language and regenerated from the spec.
+**not** dictate Layer 1 (generated) internals, which are per-language and regenerated from the spec,
+nor how Layer 3 (the conformance suite) is run — only what that suite must assert.
 
 **Spec source of truth:** the synced OpenAPI 3.1 copy under `../api-integrations/upstream/`. Every
 field, enum, host and status code below traces to it. Where the API's real behaviour differs from
 the spec, the difference is recorded in the [Discrepancies register](#discrepancies-register) and
 corrected upstream — never absorbed silently.
+
+## Namespaces & domain coverage
+
+The only namespace specified so far is **`mail`**.
+
+> **Namespaces are a *surface* guarantee, independent of distribution granularity.** This fixes what
+> a developer reaches (`client.mail`) and says nothing about how many packages the surface arrives
+> in. A change to a *distribution* name is not a change to an *import* name.
+
+| Namespace | Domain | Auth path | Status |
+|---|---|---|---|
+| `mail` | `/mail/send` | consumerKey+secret | built; not yet published |
+
+**Which distribution carries which namespace.** The `mail` namespace ships in the mail package
+(`@turbosmtp/mail`). Every other namespace, once specified, ships in a separate unified package
+(`@turbosmtp/sdk`); the two are independent — neither depends on the other, and the unified package
+is not a superset.
+
+Because the packages are independent, each carries its own copy of the
+[error taxonomy](#error-taxonomy): an error
+class from the mail package and the same-named class from the unified package are **distinct
+types**, and an `instanceof` or equivalent type check written against one does not match the other.
+A consumer using both handles each package's errors separately, and no SDK presents them as
+interchangeable.
+
+**Coverage caveat — orphaned operations (do NOT promise in any SDK).** These are defined in the
+upstream domain files but never wired into the root `paths:`, so they are pruned from the served
+bundle and are **not SDK-coverable** until fixed upstream in `turbo-smtp-openapi/`:
+`AuthenticationLoginByAPIKey`, `AuthenticationLogoutByAPIKey`, `getUserInfo`,
+`createContactBilling`, `deleteContactBilling`, `getContactsBilling`, `getPersonalDetailsBilling`,
+`updateContactBilling`, `updatePersonalDetailsBilling`. Nothing here may expose them, and an
+operation is checked against the **served bundle**, never against the domain files, before an SDK
+commits to it. This list changes whenever the upstream wiring does.
 
 ## Cross-cutting conventions
 
@@ -90,29 +136,6 @@ An unrecognised `region` **MUST be rejected at construction** with the SDK's bas
 than left to fall through: an unset base URL resolves to the global API host, which does not serve
 `/mail/send`, so the request succeeds against the wrong server
 ([discrepancy 12](#discrepancies-register); scenario 11).
-
-### Mail conformance scenarios
-
-Every SDK's Layer 3 tests must cover these **11 scenarios**. What each one asserts is fixed here;
-how the tests are run, gated and reported is not this document's concern.
-
-| # | Scenario | Asserts |
-|---|---|---|
-| 1 | **Minimal send** — `from`, `to`, `subject`, `text` | 200; returns `messageId` (non-empty string); body maps to `MailMessage` with `content` set |
-| 2 | **HTML send** — `from`, `to`, `subject`, `html` | 200; `html` maps to `html_content`; `content` omitted |
-| 3 | **Multi-recipient arrays** — `to`/`cc`/`bcc` as arrays of ≥2, mixing plain and structured addresses | serialized request has comma-joined CSV strings for `to`/`cc`/`bcc`; a display name containing specials is quoted and its `"`/`\` escaped |
-| 4 | **Reply-To mapping** — `replyTo` set | serialized `custom_headers["reply-to"]` equals the value; no top-level `replyTo` reaches the wire |
-| 5 | **Byte attachment** — one attachment with raw bytes, `filename`, `contentType`, plus one inline attachment with `contentId` referenced from HTML | `content` is base64 of the bytes, `name`=filename, `type`=contentType, and `content_id` stays bare; every exact HTML `cid:<id>` reference is rewritten to `cid:<id>@<sender-domain>` without matching the id as a prefix of a longer one; rewriting is suppressed when the id already contains `@`, there is no HTML body, or the sender has no parseable domain |
-| 6 | **EU region routing** — client with `region:"eu"` | `/mail/send` request targets `https://api.eu.turbo-smtp.com/api/v2`; a `global` client targets `https://api.turbo-smtp.com/api/v2` |
-| 7 | **Auth failure** — bad credentials → 401 | throws typed `AuthenticationError`; carries `errorCode`/`message`/`details` from the send 401 body |
-| 8 | **Validation error** — missing `from`/`to`, or `nocredit` → 400 | throws typed `BadRequestError`; exposes the `errors[]` array from the send 400 body |
-| 9 | **Reply-To precedence** — `replyTo` set alongside a `Reply-To` key in `headers`, in any casing | exactly one `reply-to` key reaches the wire and it carries the `replyTo` value; the header-supplied one does not survive beside it |
-| 10 | **Line-break rejection** — CR or LF in `from`, `to`, `cc`, `bcc` or `replyTo`, both as a display name and inside a pre-formatted string, or in a `headers` name or value | throws a typed error before the request is built; nothing reaches the transport |
-| 11 | **Region rejection** — client constructed with an unrecognised `region` | throws a typed error at construction, distinct from scenario 6, which asserts routing for the two valid values |
-
-**Scenario numbers are stable** — never renumbered, never reused, never retired. A rule that
-sharpens a scenario already present strengthens that row in place; a rule that is new *in kind*
-appends a new number, and the count is not a constraint.
 
 ### Error taxonomy
 
@@ -295,37 +318,29 @@ Rules:
 
 Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's job.
 
-## Namespaces & domain coverage
+## Mail conformance scenarios
 
-The only namespace specified so far is **`mail`**.
+Every SDK's conformance tests (Layer 3) must cover these **11 scenarios**, which pin down the rules
+set out above. What each one asserts is fixed here; how the tests are run, gated and reported is not
+this document's concern.
 
-> **Namespaces are a *surface* guarantee, independent of distribution granularity.** This fixes what
-> a developer reaches (`client.mail`) and says nothing about how many packages the surface arrives
-> in. A change to a *distribution* name is not a change to an *import* name.
+| # | Scenario | Asserts |
+|---|---|---|
+| 1 | **Minimal send** — `from`, `to`, `subject`, `text` | 200; returns `messageId` (non-empty string); body maps to `MailMessage` with `content` set |
+| 2 | **HTML send** — `from`, `to`, `subject`, `html` | 200; `html` maps to `html_content`; `content` omitted |
+| 3 | **Multi-recipient arrays** — `to`/`cc`/`bcc` as arrays of ≥2, mixing plain and structured addresses | serialized request has comma-joined CSV strings for `to`/`cc`/`bcc`; a display name containing specials is quoted and its `"`/`\` escaped |
+| 4 | **Reply-To mapping** — `replyTo` set | serialized `custom_headers["reply-to"]` equals the value; no top-level `replyTo` reaches the wire |
+| 5 | **Byte attachment** — one attachment with raw bytes, `filename`, `contentType`, plus one inline attachment with `contentId` referenced from HTML | `content` is base64 of the bytes, `name`=filename, `type`=contentType, and `content_id` stays bare; every exact HTML `cid:<id>` reference is rewritten to `cid:<id>@<sender-domain>` without matching the id as a prefix of a longer one; rewriting is suppressed when the id already contains `@`, there is no HTML body, or the sender has no parseable domain |
+| 6 | **EU region routing** — client with `region:"eu"` | `/mail/send` request targets `https://api.eu.turbo-smtp.com/api/v2`; a `global` client targets `https://api.turbo-smtp.com/api/v2` |
+| 7 | **Auth failure** — bad credentials → 401 | throws typed `AuthenticationError`; carries `errorCode`/`message`/`details` from the send 401 body |
+| 8 | **Validation error** — missing `from`/`to`, or `nocredit` → 400 | throws typed `BadRequestError`; exposes the `errors[]` array from the send 400 body |
+| 9 | **Reply-To precedence** — `replyTo` set alongside a `Reply-To` key in `headers`, in any casing | exactly one `reply-to` key reaches the wire and it carries the `replyTo` value; the header-supplied one does not survive beside it |
+| 10 | **Line-break rejection** — CR or LF in `from`, `to`, `cc`, `bcc` or `replyTo`, both as a display name and inside a pre-formatted string, or in a `headers` name or value | throws a typed error before the request is built; nothing reaches the transport |
+| 11 | **Region rejection** — client constructed with an unrecognised `region` | throws a typed error at construction, distinct from scenario 6, which asserts routing for the two valid values |
 
-| Namespace | Domain | Auth path | Status |
-|---|---|---|---|
-| `mail` | `/mail/send` | consumerKey+secret | built; not yet published |
-
-**Which distribution carries which namespace.** The `mail` namespace ships in the mail package
-(`@turbosmtp/mail`). Every other namespace, once specified, ships in a separate unified package
-(`@turbosmtp/sdk`); the two are independent — neither depends on the other, and the unified package
-is not a superset.
-
-Because the packages are independent, each carries its own copy of the error taxonomy: an error
-class from the mail package and the same-named class from the unified package are **distinct
-types**, and an `instanceof` or equivalent type check written against one does not match the other.
-A consumer using both handles each package's errors separately, and no SDK presents them as
-interchangeable.
-
-**Coverage caveat — orphaned operations (do NOT promise in any SDK).** These are defined in the
-upstream domain files but never wired into the root `paths:`, so they are pruned from the served
-bundle and are **not SDK-coverable** until fixed upstream in `turbo-smtp-openapi/`:
-`AuthenticationLoginByAPIKey`, `AuthenticationLogoutByAPIKey`, `getUserInfo`,
-`createContactBilling`, `deleteContactBilling`, `getContactsBilling`, `getPersonalDetailsBilling`,
-`updateContactBilling`, `updatePersonalDetailsBilling`. Nothing here may expose them, and an
-operation is checked against the **served bundle**, never against the domain files, before an SDK
-commits to it. This list changes whenever the upstream wiring does.
+**Scenario numbers are stable** — never renumbered, never reused, never retired. A rule that
+sharpens a scenario already present strengthens that row in place; a rule that is new *in kind*
+appends a new number, and the count is not a constraint.
 
 ## Discrepancies register
 
