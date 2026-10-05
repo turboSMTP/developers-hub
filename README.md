@@ -1,6 +1,6 @@
 # TurboSMTP Developers Hub
 
-Welcome to the official TurboSMTP developer portal. This repository is the single source of truth for integrating with TurboSMTP's transactional email, email validation, and AI-native tooling.
+Welcome to the official TurboSMTP developer portal — guides, SDKs and the API reference for TurboSMTP's transactional email, email validation and AI tooling.
 
 ---
 
