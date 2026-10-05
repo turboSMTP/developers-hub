@@ -37,7 +37,6 @@ language (idiomatic casing applies).
 | Client class | `TurboSMTPClient` |
 | Constructor | `new TurboSMTPClient(opts)` |
 | Mail namespace | `client.mail` |
-| Validation namespace | `client.validation` |
 | Send method | `mail.send(msg)` |
 | Async convention | Promise |
 | `from` field | `from` |
@@ -72,7 +71,7 @@ TurboSMTPClient({
 > configure.
 
 - Every operation today sends **both** `consumerKey` and `consumerSecret`; the SDK never sends `Authorization`.
-- When the `account` domain ships, the credential object gains an optional `apiKey` field, added without changing the shape above.
+- When a future domain requires `Authorization`-only operations, the credential object gains an optional `apiKey` field, added without changing the shape above.
 
 ### Region model
 
@@ -137,7 +136,7 @@ TurboSMTPError                 (base — all SDK errors)
 ```
 
 Every error carries: `status` (HTTP code, or null for `NetworkError`), `message`, and `raw` (the
-undecoded body). Generated-layer error types never reach a caller. Raw→typed mapping:
+undecoded body). Raw→typed mapping:
 
 | Raw source | Typed error | Notes |
 |---|---|---|
@@ -296,60 +295,22 @@ Rules:
 
 Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's job.
 
-## Email Validation (framework + `validateList` sketch)
-
-> **Full Email Validation method signatures and return schemas are not yet specified.** This section fixes the
-> namespace, the composed-helper shape and the result vocabulary; the rest lands when this domain is built.
-
-**Namespace:** `validation`. Backing operations are the served `/emailvalidation/*` set
-(`getEmailValidationSubscription`, `uploadEmailValidationFile`, `getEmailValidationLists`,
-`getEmailValidationListSummary`, `deleteEmailValidationListById`, `validateEmailValidatorList`,
-`getValidatedEmailsByList`, `getEmailValidationDataByEmailId`, `exportCSVValidatedEmailsByList`,
-`validateEmail`).
-
-Planned surface:
-
-- **`validation.verify(email)`** — single-address check (`validateEmail`).
-- **`validation.validateList(file)`** — the **composed helper** (Layer 2 only): `upload` →
-  `startValidate` → **poll** `getEmailValidationListSummary` on `is_processed` / `percentage` until
-  complete → fetch paged results via the
-  [auto-pagination iterator](#pagination-framework). This orchestration lives only in the facade; no
-  single endpoint corresponds to it, and every language implements the same composition.
-
-**Result vocabulary (stable now)** — from `EmailValidatorMailSharedDetails`:
-
-- `status` enum: `valid`, `invalid`, `catch_all`, `unknown`, `spamtrap`, `abuse`, `do_not_mail`.
-- `sub_status` enum (24 values incl. `''`, `role_based`, `disposable`, `mailbox_not_found`,
-  `greylisted`, `possible_typo`, …) — carried through verbatim.
-
 ## Namespaces & domain coverage
 
-Namespaces are confirmed as: **`mail`, `validation`, `analytics`, `suppressions`, `subaccounts`,
-`account`**.
+The only namespace specified so far is **`mail`**.
 
-> **Namespaces are a *surface* guarantee, independent of distribution granularity.** This table
-> fixes what a developer reaches (`client.mail`, `client.validation`, …) and says nothing about how
-> many packages the surface arrives in. A change to a *distribution* name is not a change to an
-> *import* name, and does not touch this table.
+> **Namespaces are a *surface* guarantee, independent of distribution granularity.** This fixes what
+> a developer reaches (`client.mail`) and says nothing about how many packages the surface arrives
+> in. A change to a *distribution* name is not a change to an *import* name.
 
 | Namespace | Domain | Auth path | Status |
 |---|---|---|---|
-| `mail` | `/mail/send` | consumerKey+secret | ship first (reference SDK) |
-| `validation` | `/emailvalidation/*` | consumerKey+secret | next; incl. `validateList` |
-| `analytics` | `/analytics*` | consumerKey+secret | later |
-| `suppressions` | `/suppressions*` | consumerKey+secret | later |
-| `subaccounts` | `/subaccounts*` | consumerKey+secret (plan-gated 403) | later |
-| `account` | `/user/consumerKeys*`, `/authorize`, `/deauthorize` | **`Authorization` (apiKey)** | later — **introduces the deferred `apiKey` credential** ([Auth model](#auth-model)) |
-| `billing` | `/billing/*` | — | implement only if justified |
-| `alerts` | alerts | — | low priority |
-| `meta` | countries/states | — | low priority |
+| `mail` | `/mail/send` | consumerKey+secret | built; not yet published |
 
-**Which distribution carries which namespace.** The `mail` namespace ships in the mail package;
-every other namespace in this table ships in the unified package. The two are independent — neither
-depends on the other, and the unified package is not a superset — so a consumer needing `mail` and
-`validation` installs both and constructs a client from each. The namespace names, method shapes and
-behaviour fixed in this document are identical either way: a namespace does not change because of
-the package it arrives in, which is what the note above fixes.
+**Which distribution carries which namespace.** The `mail` namespace ships in the mail package
+(`@turbosmtp/mail`). Every other namespace, once specified, ships in a separate unified package
+(`@turbosmtp/sdk`); the two are independent — neither depends on the other, and the unified package
+is not a superset.
 
 Because the packages are independent, each carries its own copy of the error taxonomy: an error
 class from the mail package and the same-named class from the unified package are **distinct
