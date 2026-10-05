@@ -47,11 +47,9 @@ each is documented by its own README, which is also what will ship to the regist
 - [`@turbosmtp/mail`](sdk-integrations/packages/node-mail/README.md) — sending, Node.js/TypeScript
 - [`@turbosmtp/webhook`](sdk-integrations/webhooks/node-webhook/README.md) — webhook receiver, Node.js/TypeScript
 
-> **Installing either name today gets retired code.** `@turbosmtp/mail` and `@turbosmtp/webhook` are
-> already live at `0.1.0` from `turboSMTP-js`, the superseded Node SDK that predates this programme.
-> This programme continues both names starting at `0.2.0`, because npm never frees a published
-> version number. `turboSMTP-js` and the `turboSMTP-csharp`, `turboSMTP-php` and `turboSMTP-python`
-> repositories are all superseded; each is deprecated as its replacement ships.
+Four repositories previously carried the official label — `turboSMTP-js`, `turboSMTP-csharp`,
+`turboSMTP-php` and `turboSMTP-python`. All are superseded by the SDKs above and are deprecated per
+language as each replacement ships.
 
 ---
 

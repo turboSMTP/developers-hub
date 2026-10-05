@@ -14,10 +14,9 @@ dependency-free client for sending transactional email through the TurboSMTP API
 - **Idiomatic** — recipient arrays, `text`/`html` bodies, byte attachments (base64 handled for you),
   a typed error hierarchy, and a single options object for configuration.
 
-> **Status:** `0.2.0` — this package is the `mail` namespace (`client.mail.send`). Email Validation
-> and every other domain ship in `@turbosmtp/sdk`, a separate package; the two are independent and
-> neither contains the other. `0.1.0` under this name came from a retired project and is not a
-> predecessor of this one.
+> **Status:** `0.2.0`, not yet published — this package is the `mail` namespace
+> (`client.mail.send`). Email Validation and every other domain will ship in `@turbosmtp/sdk`, a
+> separate package that is not yet built; the two are independent and neither contains the other.
 
 ---
 
