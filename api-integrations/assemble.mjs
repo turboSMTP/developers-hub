@@ -2,19 +2,15 @@
 // vendored Swagger UI in api-integrations/swagger-ui/, and the synced spec at
 // api-integrations/upstream/turbo-smtp.yaml.
 //
-// WHY THIS EXISTS. developers-hub does not serve GitHub Pages. The site is published
-// from turbosmtp-swagger-ui, a read-only mirror, and that mirror is FLAT: index.html
-// and turbo-smtp.yaml sit side by side. The flatness is what lets
-// swagger-ui/swagger-initializer.js keep `url: "./turbo-smtp.yaml"` exactly as shipped
-// -- the path already resolves in the mirror, so the UI assets need no local divergence
-// and can be refreshed by a blanket overwrite.
+// WHY THIS EXISTS. The mirror this publishes to is FLAT: index.html and turbo-smtp.yaml sit
+// side by side. That flatness is what lets swagger-ui/swagger-initializer.js keep
+// `url: "./turbo-smtp.yaml"` exactly as shipped -- the path already resolves there, so the UI
+// needs no local divergence and can be refreshed by a blanket overwrite.
 //
-// The spec is deliberately NOT stored flat here. It lives at upstream/turbo-smtp.yaml
-// because it is the source of truth for five SDKs, read by scripts/generate.mjs and
-// scripts/check-spec.mjs. Flattening happens at assembly and nowhere else.
+// The spec is deliberately NOT stored flat here: it lives at upstream/turbo-smtp.yaml because
+// that is the generation input. Flattening happens at assembly and nowhere else.
 //
-// Both publish-api-reference.yml and the local page check call this script, so what CI
-// publishes and what you verify by hand cannot drift apart.
+// CI and the local page check both run this script, so a change here moves both.
 //
 // Usage: node api-integrations/assemble.mjs --out <dir>
 
@@ -37,9 +33,7 @@ const i = argv.indexOf('--out');
 if (i === -1 || !argv[i + 1]) fail('usage: node api-integrations/assemble.mjs --out <dir>');
 const OUT = resolve(argv[i + 1]);
 
-// Refuse to write inside the repository. The output is generated and this repository is
-// public -- a generated tree committed here is what sdk-integrations/build/ is git-ignored
-// to prevent.
+// Refuse to write inside the repository: the output is generated and this repository is public.
 const rel = relative(REPO_ROOT, OUT);
 if (rel && !rel.startsWith('..')) fail(`--out must be outside the repository; got ${OUT}`);
 
