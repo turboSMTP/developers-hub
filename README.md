@@ -1,69 +1,65 @@
 # TurboSMTP Developers Hub
 
-Welcome to the official TurboSMTP developer portal — guides, SDKs and the API reference for TurboSMTP's transactional email, email validation and AI tooling.
+The source for TurboSMTP's developer documentation and SDK packages — the specification the API
+reference is built from, the topic guides, the client libraries, and the AI integration designs.
+
+**This repository serves no website and publishes nothing directly.** The API reference is built
+from here and served from a separate read-only mirror, and each SDK package subtree is mirrored to
+its own repository on release. Nothing here is a live artifact; everything here is what the live
+artifacts are built from.
 
 ---
 
-## Navigate the Hub
+## What is here
 
-| Section | Description |
+| Tree | Holds |
 |---|---|
-| [API Reference](api-integrations/README.md) | OpenAPI 3.1 spec overview, the integration guides, and the [live interactive Swagger UI](https://turbosmtp.github.io/turbosmtp-swagger-ui/) |
-| [SDKs](#sdks) | Official client libraries for all supported languages |
-| [AI Integrations](ai-integrations/mcp-server.md) | MCP Server and Agent Skills — designed, not yet built |
+| [`api-integrations/`](api-integrations/README.md) | The two halves the API reference is assembled from, and the hand-authored topic guides |
+| `sdk-integrations/` | The SDK packages, the contract they satisfy, and the generation pipeline |
+| `ai-integrations/` | The MCP Server and Agent Skills design documents |
+| `.github/` | Workflows, composite actions, and the issue and pull-request templates |
+
+Each area documents itself. [`api-integrations/README.md`](api-integrations/README.md) covers the
+specification and the guides; every SDK package carries its own `README.md`, which is also what the
+registry renders.
+
+## What is not hand-authored
+
+These trees are produced rather than written. An edit made in one of them is overwritten without
+warning — change the source instead.
+
+| Tree | Comes from |
+|---|---|
+| `api-integrations/upstream/` | Synced from the canonical specification repository |
+| `api-integrations/swagger-ui/` | Vendored; it must stay byte-identical to what upstream ships |
+| `src/generated/` in any SDK package | Generated from the specification |
+| `sdk-integrations/build/` | Generated on demand, and never committed |
+
+## Working on the SDK packages
+
+Each package under `sdk-integrations/` carries its own `package.json` and is built and tested from
+its own directory — this is not a workspace, and there is no root manifest. Continuous integration
+gates every pull request.
+
+[`sdk-integrations/semantic-layer.md`](sdk-integrations/semantic-layer.md) is the language-agnostic
+contract every SDK must satisfy. Read it before changing a package's public surface.
+
+## Reporting a problem
+
+- A discrepancy between the specification and a live endpoint, a broken example, or an SDK error —
+  open a [bug report](.github/ISSUE_TEMPLATE/bug_report.md).
+- A client library, guide or integration you need — open a
+  [feature request](.github/ISSUE_TEMPLATE/feature_request.md).
 
 ---
 
-## Quick Start
+## If you came here to use the API
 
-```bash
-# Send your first email using curl
-curl -X POST https://api.turbo-smtp.com/api/v2/mail/send \
-  -H "consumerKey: $CONSUMER_KEY" \
-  -H "consumerSecret: $CONSUMER_SECRET" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "from": "you@yourdomain.com",
-    "to": "recipient@example.com",
-    "subject": "Hello from TurboSMTP",
-    "content": "It works!",
-    "html_content": "<h1>It works!</h1>"
-  }'
-```
+- **[Interactive reference](https://turbosmtp.github.io/turbosmtp-swagger-ui/)** — a live "Try It"
+  playground for every endpoint.
+- **[Integration guides](api-integrations/README.md)** — the topic guide for each area of the API.
+- **Client libraries** — [`@turbosmtp/mail`](sdk-integrations/packages/node-mail/README.md) and
+  [`@turbosmtp/webhook`](sdk-integrations/webhooks/node-webhook/README.md), both Node.js and
+  TypeScript.
 
-See [Getting Started](api-integrations/docs/getting-started.md) for full authentication details.
-
----
-
-## SDKs
-
-Official client libraries for **Node.js/TypeScript, Python, C#, Go** and **PHP**, built on one
-shared surface so that the same operation behaves the same way in every language. That surface is
-defined in [`semantic-layer.md`](sdk-integrations/semantic-layer.md).
-
-**Nothing from this programme is published yet.** The following packages are built and pending publication —
-each is documented by its own README, which is also what will ship to the registry:
-
-- [`@turbosmtp/mail`](sdk-integrations/packages/node-mail/README.md) — sending, Node.js/TypeScript
-- [`@turbosmtp/webhook`](sdk-integrations/webhooks/node-webhook/README.md) — webhook receiver, Node.js/TypeScript
-
-The following repositories previously carried the official label — `turboSMTP-js`, `turboSMTP-csharp`,
-`turboSMTP-php` and `turboSMTP-python`. All are superseded by the SDKs above and are deprecated per
-language as each replacement ships.
-
----
-
-## AI Integrations
-
-Two AI integrations are designed but **not yet built** — nothing is available to install:
-
-- **[MCP Server](ai-integrations/mcp-server.md)** — would let any MCP-compatible agent reach TurboSMTP without bespoke integration code.
-- **[Agent Skills](ai-integrations/agent-skills.md)** — would package TurboSMTP deliverability expertise as SKILL.md files.
-
----
-
-## Resources
-
-- [API Reference](api-integrations/README.md) — narrative overview of the API surface
-- [Interactive API Reference (Swagger UI)](https://turbosmtp.github.io/turbosmtp-swagger-ui/) — live "Try It" playground for every endpoint
-- [TurboSMTP Website](https://turbo-smtp.com)
+[TurboSMTP](https://turbo-smtp.com)
