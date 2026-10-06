@@ -1,5 +1,10 @@
 name: SDKs CI
 
+# The lint job gates everything biome.json covers, which is a shade wider than the SDK tree:
+# api-integrations/assemble.mjs is first-party code too, and this is the only workflow that
+# runs on pull requests. publish-api-reference.yml would be the tidier home for that one path,
+# but it triggers on push to main only, so a gate there would fire after the merge it should
+# have blocked — and would fail a publish over a formatting nit.
 on:
   workflow_dispatch:
     inputs:
@@ -11,12 +16,14 @@ on:
     branches: [main]
     paths:
       - 'sdk-integrations/**'
+      - 'api-integrations/assemble.mjs'
       - 'biome.json'
       - '.github/workflows/sdk-integrations-ci.yml'
       - '.github/actions/**'
   pull_request:
     paths:
       - 'sdk-integrations/**'
+      - 'api-integrations/assemble.mjs'
       - 'biome.json'
       - '.github/workflows/sdk-integrations-ci.yml'
       - '.github/actions/**'

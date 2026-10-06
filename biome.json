@@ -3,10 +3,11 @@
   "files": {
     "includes": [
       "sdk-integrations/**",
-      "!sdk-integrations/*/*/src/generated/**",
-      "!sdk-integrations/build/**",
-      "!**/dist/**",
-      "!**/node_modules/**",
+      "api-integrations/assemble.mjs",
+      "!**/src/generated",
+      "!sdk-integrations/build",
+      "!**/dist",
+      "!**/node_modules",
       "!**/package-lock.json"
     ]
   },
@@ -26,7 +27,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "preset": "recommended"
     }
   }
 }

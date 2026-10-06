@@ -1,14 +1,8 @@
 name: Biome lint and format gate
 description: >-
-  Run Biome in CI mode over the SDK tree. Self-contained — it installs its own Node — so
-  that any workflow needing the lint gate gets the pinned version by construction rather
-  than by remembering to copy the command.
-
-inputs:
-  scope:
-    description: Path Biome checks. The default matches biome.json's own include scope.
-    required: false
-    default: sdk-integrations
+  Run Biome in CI mode over everything biome.json covers. Self-contained — it installs its
+  own Node — so that any workflow needing the lint gate gets the pinned version by
+  construction rather than by remembering to copy the command.
 
 runs:
   using: composite
@@ -17,11 +11,18 @@ runs:
       with:
         node-version: '22'
 
-    # Pinned exactly, not floated: this is a merge gate, and a Biome minor adding a rule
-    # to `recommended` would redden pull requests that never touched the files it fails
-    # on. Keep in step with biome.json's $schema.
+    # Pinned exactly, not floated: this is a merge gate, and a Biome minor adding a rule to
+    # `recommended` — for the linter or for the assist actions, which are a gate here too —
+    # would redden pull requests that never touched the files it fails on. Keep in step with
+    # biome.json's $schema.
     #
     # The version lives here and nowhere else in .github/. A second workflow that needs
     # linting calls this action; it does not paste the command.
-    - run: npx --yes @biomejs/biome@2.5.4 ci ${{ inputs.scope }}
+    #
+    # The scope is `.` and is deliberately not an input: biome.json's `files.includes` is the
+    # single source of truth for what gets checked. Biome does not treat a path outside that
+    # include set as an error — it reports "these paths were provided but ignored" and exits
+    # 0 — so a configurable scope here would be a merge gate that can pass green having
+    # checked nothing. Widen coverage in biome.json instead; this action follows it.
+    - run: npx --yes @biomejs/biome@2.5.4 ci .
       shell: bash
