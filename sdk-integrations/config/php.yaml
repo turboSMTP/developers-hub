@@ -4,3 +4,6 @@ additionalProperties:
   invokerPackage: "TurboSMTP\\Generated"
   packageName: turbosmtp
   enumUnknownDefaultCase: true            # forward-compat for unknown enum values
+globalProperties:
+  apiDocs: false                          # Layer 1 docs are never read; the facade owns the public surface
+  modelDocs: false

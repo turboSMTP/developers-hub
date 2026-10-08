@@ -8,3 +8,6 @@ additionalProperties:
   supportsES6: true
   useSingleRequestParameter: true    # single object param — matches the facade's option-object style
   enumUnknownDefaultCase: true       # forward-compat: unknown enum values (status/sub_status) don't break deserialization
+globalProperties:
+  apiDocs: false                     # Layer 1 docs are never read; the facade owns the public surface
+  modelDocs: false

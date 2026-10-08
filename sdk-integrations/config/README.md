@@ -47,3 +47,9 @@ run is passed by the script rather than baked in here.
   subaccount-logo.**
 - **Package name** — overridden per run via `--additional-properties`. A config that named one
   package would stop being reusable across the mail and unified packages.
+
+## Generated docs are off
+
+Every config sets `apiDocs` and `modelDocs` to `false`. The facade owns the public surface, so
+Layer 1's own Markdown docs would never be read. The generator's `.openapi-generator/` metadata
+cannot be switched off, so it is git-ignored instead.
