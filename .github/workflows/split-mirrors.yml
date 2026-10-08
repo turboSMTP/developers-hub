@@ -1,37 +1,37 @@
 name: Split packages to publish mirrors
 
-# Publishing topology "C+" — see sdks/plan.md decision #2 and sdks/TASKS.md 4.7.
+# Adding a package: add a line in the `case` below and a tag glob above; do not rely on a path convention.
 #
-# developers-hub is the only repo anyone commits to. A release tag pushes that one
-# package's subtree to its read-only mirror, which is what npm / pkg.go.dev / Packagist
-# link to and (for Go and PHP) actually consume.
-#
-# Tag convention:  <package>/vX.Y.Z  here  ->  vX.Y.Z  on the mirror.
-# The prefix is a package slug, not a language: it equals the language for the five
-# unified SDKs only because each one is that language's single publishable unit.
-# The mirror tag MUST be unprefixed: Go resolves versions from root-module tags, and
-# Packagist reads composer.json from the repository root. That translation is the whole
-# reason this workflow exists.
+# A slug equals its directory's own name, but not its parent: API packages live under
+# sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/.
 #
 # Requires a secret `MIRROR_TOKEN` — a PAT or GitHub App installation token with
-# `contents: write` on every turbosmtp-* mirror the `case` below resolves to
-# (six today: the five unified SDKs plus turbosmtp-node-webhook). A token scoped
-# to fewer repos passes every check here and 403s on the final push.
+# `contents: write` on every turbosmtp-* mirror the `case` below resolves to. A token
+# scoped to fewer repos passes every check here and 403s on the final push.
 
 on:
   push:
     tags:
       - 'node/v*'
+      - 'node-mail/v*'
       - 'python/v*'
+      - 'python-mail/v*'
       - 'csharp/v*'
+      - 'csharp-mail/v*'
       - 'go/v*'
+      - 'go-mail/v*'
       - 'php/v*'
+      - 'php-mail/v*'
       - 'node-webhook/v*'
   workflow_dispatch:
     inputs:
       tag:
         description: 'Existing <package>/vX.Y.Z tag to (re-)split'
         required: true
+
+# READ, not write — authenticates with MIRROR_TOKEN, not GITHUB_TOKEN.
+permissions:
+  contents: read
 
 jobs:
   split:
@@ -52,8 +52,7 @@ jobs:
 
       - uses: actions/checkout@v4
         with:
-          # `git subtree split` replays the directory's whole history — a shallow
-          # clone silently produces a truncated mirror.
+          # Shallow clone produces truncated mirror (see fetch-depth: 0 below).
           fetch-depth: 0
           ref: ${{ github.event.inputs.tag || github.ref }}
           # Do NOT leave GITHUB_TOKEN credentials in .git/config. Otherwise a bad or
@@ -76,13 +75,23 @@ jobs:
           tag="${INPUT_TAG:-$REF_NAME}"
           pkg="${tag%%/*}"
           version="${tag#*/}"
+          # This case is the authoritative slug -> (mirror, directory) map. The prefix is
+          # listed per slug rather than derived as sdk-integrations/packages/$pkg, because the webhook
+          # receivers live under sdk-integrations/webhooks/. A derived path would silently resolve to a
+          # directory that does not exist, and the check below would report it as a bad slug
+          # rather than a stale mapping.
           case "$pkg" in
-            node)         mirror=turbosmtp-node ;;
-            python)       mirror=turbosmtp-python ;;
-            csharp)       mirror=turbosmtp-dotnet ;;
-            go)           mirror=turbosmtp-go ;;
-            php)          mirror=turbosmtp-php ;;
-            node-webhook) mirror=turbosmtp-node-webhook ;;
+            node)         mirror=turbosmtp-node;         prefix=sdk-integrations/packages/node ;;
+            node-mail)    mirror=turbosmtp-node-mail;    prefix=sdk-integrations/packages/node-mail ;;
+            python)       mirror=turbosmtp-python;       prefix=sdk-integrations/packages/python ;;
+            python-mail)  mirror=turbosmtp-python-mail;  prefix=sdk-integrations/packages/python-mail ;;
+            csharp)       mirror=turbosmtp-dotnet;       prefix=sdk-integrations/packages/csharp ;;
+            csharp-mail)  mirror=turbosmtp-dotnet-mail;  prefix=sdk-integrations/packages/csharp-mail ;;
+            go)           mirror=turbosmtp-go;           prefix=sdk-integrations/packages/go ;;
+            go-mail)      mirror=turbosmtp-go-mail;      prefix=sdk-integrations/packages/go-mail ;;
+            php)          mirror=turbosmtp-php;          prefix=sdk-integrations/packages/php ;;
+            php-mail)     mirror=turbosmtp-php-mail;     prefix=sdk-integrations/packages/php-mail ;;
+            node-webhook) mirror=turbosmtp-node-webhook; prefix=sdk-integrations/webhooks/node-webhook ;;
             *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
           esac
           if [ "$version" = "$tag" ]; then
@@ -97,15 +106,16 @@ jobs:
             echo "pkg=$pkg"
             echo "version=$version"
             echo "mirror=$mirror"
-            echo "prefix=sdks/packages/$pkg"
+            echo "prefix=$prefix"
           } >> "$GITHUB_OUTPUT"
 
       - name: Verify the package directory exists
         env:
           PREFIX: ${{ steps.target.outputs.prefix }}
+          PKG: ${{ steps.target.outputs.pkg }}
         run: |
           if [ ! -d "$PREFIX" ]; then
-            echo "::error::No package directory at '$PREFIX'. A package slug must equal its directory name under sdks/packages/."; exit 1
+            echo "::error::No package directory at '$PREFIX' for slug '$PKG'. The slug must equal the directory's own name, and the case block in this workflow must map it to the right parent (sdk-integrations/packages/ or sdk-integrations/webhooks/)."; exit 1
           fi
 
       - name: Split the package subtree

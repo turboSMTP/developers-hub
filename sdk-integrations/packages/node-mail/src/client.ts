@@ -1,0 +1,70 @@
+import { TurboSMTPError } from './errors';
+import { Configuration, MailApi } from './generated/src';
+import { MailNamespace } from './mail';
+
+/** Sending region — selects the `/mail/send` host. */
+export type Region = 'global' | 'eu';
+
+export interface TurboSMTPClientOptions {
+  /** Consumer key (required). */
+  consumerKey: string;
+  /** Consumer secret (required). */
+  consumerSecret: string;
+  /** Sending region. Default `"global"`. `"eu"` routes to EU sending infrastructure. */
+  region?: Region;
+  /**
+   * Custom fetch implementation. Primarily a test seam (inject a fake to assert
+   * the serialized request or to return canned responses); also allows a custom
+   * transport. Defaults to the global `fetch`.
+   */
+  fetchApi?: typeof fetch;
+  /** Extra default headers merged into every request (escape hatch). */
+  headers?: Record<string, string>;
+}
+
+/** `/mail/send` hosts by region. Every other operation uses the global API host. */
+const SEND_HOSTS: Record<Region, string> = {
+  global: 'https://api.turbo-smtp.com/api/v2',
+  eu: 'https://api.eu.turbo-smtp.com/api/v2',
+};
+
+export class TurboSMTPClient {
+  /** The mail namespace — `client.mail.send(...)`. */
+  readonly mail: MailNamespace;
+
+  /**
+   * `consumerKey`, `consumerSecret` and `region` are the contracted surface every language
+   * presents, and `fetchApi` is this language's spelling of the transport seam. `headers` is
+   * neither: a local escape hatch, deliberately outside the cross-language contract, so no other
+   * SDK has to carry it. Promoting it is a decision for all five packages, not this one.
+   */
+  constructor(options: TurboSMTPClientOptions) {
+    if (!options?.consumerKey || !options.consumerSecret) {
+      throw new TurboSMTPError('TurboSMTPClient requires both `consumerKey` and `consumerSecret`.');
+    }
+
+    const region: Region = options.region ?? 'global';
+    // A JS caller gets no type checking, and an unknown region would leave basePath
+    // undefined — the generated layer then falls back to a host that does not serve
+    // /mail/send, so every send would fail opaquely instead of here.
+    if (!(region in SEND_HOSTS)) {
+      throw new TurboSMTPError(
+        `Unknown region "${region}". Expected one of: ${Object.keys(SEND_HOSTS).join(', ')}.`,
+      );
+    }
+
+    // Consumer credentials go on `headers` (sent on every request); `apiKey` is
+    // deliberately left unset so Layer 1 never emits an `Authorization` header.
+    const configuration = new Configuration({
+      basePath: SEND_HOSTS[region],
+      fetchApi: options.fetchApi,
+      headers: {
+        consumerKey: options.consumerKey,
+        consumerSecret: options.consumerSecret,
+        ...(options.headers ?? {}),
+      },
+    });
+
+    this.mail = new MailNamespace(new MailApi(configuration));
+  }
+}

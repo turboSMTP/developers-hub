@@ -1,0 +1,11 @@
+# See sdk-integrations/config/README.md for flavor rationale, layout, and domain partitioning.
+generatorName: go
+additionalProperties:
+  packageName: generated
+  packageVersion: 0.1.0
+  withGoMod: false                   # the facade owns the module (go.mod); Layer 1 is an internal package
+  isGoSubmodule: false
+  enumUnknownDefaultCase: true       # forward-compat for unknown enum values
+globalProperties:
+  apiDocs: false                     # Layer 1 docs are never read; the facade owns the public surface
+  modelDocs: false

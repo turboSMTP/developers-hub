@@ -2,11 +2,12 @@
   "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
   "files": {
     "includes": [
-      "sdks/**",
-      "!sdks/packages/*/src/generated/**",
-      "!sdks/build/**",
-      "!**/dist/**",
-      "!**/node_modules/**",
+      "sdk-integrations/**",
+      "api-integrations/assemble.mjs",
+      "!**/src/generated",
+      "!sdk-integrations/build",
+      "!**/dist",
+      "!**/node_modules",
       "!**/package-lock.json"
     ]
   },
@@ -26,7 +27,13 @@
   "linter": {
     "enabled": true,
     "rules": {
-      "recommended": true
+      "preset": "recommended"
+    }
+  },
+  "assist": {
+    "enabled": true,
+    "actions": {
+      "preset": "recommended"
     }
   }
 }

@@ -1,0 +1,90 @@
+# API Reference
+
+The TurboSMTP API is defined using the **OpenAPI 3.1 specification**, which serves as the single source of truth for all SDKs, documentation, and interactive references.
+
+This page is the narrative overview of the API surface. For the **interactive** reference, use the live Swagger UI below.
+
+## Integration guides
+
+Step-by-step guides for each area of the API. Start with **Getting Started** for authentication and
+your first send, then go to the area you need.
+
+| Guide | Description |
+|---|---|
+| [Getting Started](docs/getting-started.md) | Authentication, API Keys, Consumer Keys, base URLs, and your first send |
+| [Transactional Email](docs/transactional.md) | Send email via `/mail/send` — attachments, embedded images, custom headers |
+| [Analytics](docs/analytics.md) | Per-message delivery events, status lifecycle, and CSV export |
+| [Suppressions](docs/suppressions.md) | Query, import, export, and delete suppressed addresses |
+| [Email Validation](docs/validation.md) | Real-time single-address validation and bulk list workflows |
+| [Webhooks](docs/webhooks.md) | Real-time delivery and engagement event payloads |
+| [Account Management](docs/account.md) | Consumer keys, passwords, usage alerts, credits, reference data |
+| [Subaccounts](docs/subaccounts.md) | Multi-tenant client management for agency plans |
+
+---
+
+## Interactive Reference
+
+**Live Swagger UI:** [https://turbosmtp.github.io/turbosmtp-swagger-ui/](https://turbosmtp.github.io/turbosmtp-swagger-ui/)
+
+A live "Try It" playground for every endpoint, with no local setup required.
+
+**This repository does not serve it.** The site is published from
+[`turboSMTP/turbosmtp-swagger-ui`](https://github.com/turboSMTP/turbosmtp-swagger-ui), a read-only
+mirror assembled from the two halves below — the vendored UI in `swagger-ui/` and the synced spec in
+`upstream/` — and force-pushed by the
+[publish-api-reference workflow](../.github/workflows/publish-api-reference.yml) on every change.
+Never commit to the mirror; it is regenerated on every publish.
+
+---
+
+## Specification Source
+
+The spec is **authored** as a multi-file OpenAPI 3.1 document upstream, but what is **published** is a single pre-bundled file carrying internal `$ref`s only:
+
+```
+api-integrations/upstream/turbo-smtp.yaml   # the complete pre-bundled document, published verbatim
+api-integrations/swagger-ui/                # the vendored Swagger UI, exactly as turbo-api-2 ships it
+api-integrations/docs/                      # human-facing topic guides — never published
+api-integrations/assemble.mjs               # flattens the two into the publishable tree
+```
+
+Serving one file lets Swagger UI load it in a single request instead of the many separate requests a multi-file spec would need, which is the main render-speed win. There is no `Domains/` folder in this repository.
+
+`upstream/` is synced from the canonical source in the sibling repository `../turbo-smtp-openapi/turbo-api-2/` and is **never hand-edited**. Validity is checked on every change via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml), and an in-place edit is caught by the spec-drift guard, `sdk-integrations/scripts/check-spec.mjs`.
+
+`docs/` holds the topic guides. They are hand-authored — never generated, never synced — and are not published to the mirror. Note in particular that [`docs/webhooks.md`](docs/webhooks.md) defines the Event Webhook payload, which appears in **no** OpenAPI document: the upstream spec describes no callback and no event payload anywhere. Nothing derives that page, so a spec sync must never overwrite it.
+
+---
+
+## Specification Details
+
+| Property | Value |
+|---|---|
+| Specification Version | OpenAPI 3.1 |
+| Security Schemes | API Key (raw `Authorization` header) and Consumer Key/Secret header pair |
+
+---
+
+## API Surface
+
+| Domain | Endpoints | Description |
+|---|---|---|
+| Authentication | `/authorize`, `/deauthorize`, `/change-password`, `/forgot-password` | API key lifecycle and password management |
+| Mail | `/mail/send` | Send transactional email (dedicated host, consumer key auth) |
+| Analytics | `/analytics`, `/analytics/{Id}`, `/analytics/csv` | Per-message delivery events |
+| Suppressions | `/suppressions`, `/suppressions/import`, `/suppressions/csv`, … | Suppressed-address management |
+| Email Validation | `/emailvalidation/validateEmail`, `/emailvalidation/lists/*`, … | Single and bulk address validation |
+| Subaccounts | `/subaccounts/*` | Multi-tenant management (agency plans) |
+| Alerts | `/tools/alerts` | Usage-threshold notifications |
+| Consumer Keys | `/user/consumerKeys` | Permanent API credential management |
+| Billing | `/billing/buy_emailvalidation_credits` | Validation credit purchase |
+| Meta | `/meta/countries`, `/meta/state/{isoCode}` | Reference data |
+| Webhooks | Dashboard configuration | Delivery and engagement event streams (not an API endpoint) |
+
+---
+
+## Conformance Policy
+
+All TurboSMTP backend behavior must conform to this specification. If you discover a discrepancy between the spec and a live endpoint response (e.g., a type mismatch such as a stringified boolean instead of a JSON boolean), please open a [Bug Report](../.github/ISSUE_TEMPLATE/bug_report.md).
+
+Conformance is validated automatically on every commit via the [validate-openapi workflow](../.github/workflows/validate-openapi.yml).
