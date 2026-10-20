@@ -40,6 +40,25 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/biome-check
 
+  audit:
+    name: Audit dependencies
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package:
+          - { name: node-mail, path: sdk-integrations/packages/node-mail }
+          - { name: node-webhook, path: sdk-integrations/webhooks/node-webhook }
+    defaults:
+      run:
+        working-directory: ${{ matrix.package.path }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-sdk-package
+        with:
+          path: ${{ matrix.package.path }}
+      - run: npm audit --audit-level=high
+
   # Node 22 (consumer floor per engines) and 24 (current LTS). Tests the source tree only;
   # the artifact-based consumer-floor check is separate and not automated.
   test:
