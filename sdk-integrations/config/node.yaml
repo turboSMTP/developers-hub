@@ -1,0 +1,13 @@
+# See sdk-integrations/config/README.md for flavor rationale, layout, and domain partitioning.
+generatorName: typescript-fetch
+additionalProperties:
+  npmName: "@turbosmtp/sdk"          # fallback only — generate.mjs overrides this per run with the
+                                     # target API package's name (--additional-properties). Kept so a
+                                     # bare generator invocation still produces something coherent.
+  npmVersion: 0.1.0                  # not published from here — the facade's package.json is authoritative
+  supportsES6: true
+  useSingleRequestParameter: true    # single object param — matches the facade's option-object style
+  enumUnknownDefaultCase: true       # forward-compat: unknown enum values (status/sub_status) don't break deserialization
+globalProperties:
+  apiDocs: false                     # Layer 1 docs are never read; the facade owns the public surface
+  modelDocs: false
