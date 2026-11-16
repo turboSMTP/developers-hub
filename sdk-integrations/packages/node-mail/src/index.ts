@@ -19,5 +19,13 @@ export {
   TurboSMTPError,
   ValidationError,
 } from './errors';
-export type { Address, AddressInput, AddressObject, Attachment, SendMessage, SendResult } from './mail';
+export type {
+  Address,
+  AddressInput,
+  AddressObject,
+  Attachment,
+  SendMessage,
+  SendResponse,
+  SendResult,
+} from './mail';
 export { MailNamespace } from './mail';

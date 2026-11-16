@@ -7,13 +7,8 @@
  * Layer 1 `MailMessage` wire model and hides the dual-auth entirely.
  */
 
-import { TurboSMTPError, toTurboSMTPError } from '../errors';
-import type {
-  MailApi,
-  MailMessage,
-  SendSucessResponsetBody,
-  Attachment as WireAttachment,
-} from '../generated/src';
+import { ApiError, TurboSMTPError, toTurboSMTPError } from '../errors';
+import { type MailMessage, ResponseError, type Attachment as WireAttachment } from '../generated/src';
 import {
   type Address,
   type AddressInput,
@@ -58,20 +53,18 @@ export interface SendMessage {
   mimeRaw?: string;
 }
 
+/** Checked success fields owned by the facade, with an exact string identifier. */
+export interface SendResponse {
+  mid: string;
+  message?: string;
+}
+
 /** Result of a successful send. */
 export interface SendResult {
-  /** The message id (`mid`), stringified — a 64-bit id is unsafe as a JS number. */
+  /** The exact message id (`mid`), never a rounded JavaScript number. */
   messageId: string;
-  // TODO: decide what this field is for. Established so far — it is typed with a generated
-  // Layer 1 model, which is the only path by which a generated type reaches the published
-  // `.d.ts`; it is populated by a cast over unparsed JSON rather than a validated parse, so
-  // the type asserts a shape nothing checks; and nothing in this repository reads it. It is
-  // also not part of the cross-language contract, so its type is a local choice.
-  // The options are to remove it, give it a facade-owned type, or widen it to `unknown`.
-  // Removing it is free before `0.2.0` is published and breaking afterwards, so this is
-  // worth settling before the first release.
-  /** The raw success body (`{ message, mid }`), for callers who want it. */
-  raw?: SendSucessResponsetBody;
+  /** Checked success fields. Unknown wire fields are omitted. */
+  raw?: SendResponse;
 }
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -172,38 +165,88 @@ export function toMailMessage(msg: SendMessage): MailMessage {
   };
 }
 
-/**
- * Extract `mid` from the raw response text as an exact digit string.
- *
- * `mid` is a 64-bit id. Layer 1 (and `JSON.parse`) coerce it to a JS `number`,
- * which silently rounds any value above 2^53 — so we must read the exact digits
- * from the untouched response text. Falls back to the parsed
- * number only if the raw scan fails.
- */
-function extractMessageId(rawText: string, parsed: SendSucessResponsetBody | undefined): string {
-  const match = /"mid"\s*:\s*"?(\d+)"?/.exec(rawText);
-  if (match) return match[1];
-  return parsed?.mid != null ? String(parsed.mid) : '';
+/** Convert a JSON number token without ever rounding it through a JS number. */
+function integerToken(source: string): string | undefined {
+  const [coefficient, exponent = '0'] = source.toLowerCase().split('e');
+  const [whole, fraction = ''] = coefficient.split('.');
+  let digits = whole.replace('-', '') + fraction;
+  if (/^0+$/.test(digits)) return '0';
+  const scale = Number(exponent) - fraction.length;
+  if (scale < 0) {
+    const end = Math.max(0, digits.length + scale);
+    if (!/^0*$/.test(digits.slice(end))) return undefined;
+    digits = digits.slice(0, end) || '0';
+  } else {
+    digits += '0'.repeat(scale);
+  }
+  return BigInt((whole.startsWith('-') ? '-' : '') + digits).toString();
+}
+
+function parseSendResponse(rawText: string, status: number): SendResponse {
+  const invalid = () =>
+    new ApiError('Invalid send response; the send outcome is uncertain. Do not resend automatically.', {
+      status,
+      raw: rawText,
+    });
+  // Node 22+ supplies the original number token to the reviver, before precision is lost.
+  const sources = new WeakMap<object, string>();
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(
+      rawText,
+      function (this: object, key: string, value: unknown, context?: { source?: string }) {
+        if (key === 'mid' && typeof value === 'number' && context?.source) sources.set(this, context.source);
+        return value;
+      },
+    );
+  } catch {
+    throw invalid();
+  }
+  if (
+    typeof parsed !== 'object' ||
+    parsed === null ||
+    Array.isArray(parsed) ||
+    !('mid' in parsed) ||
+    !Object.getOwnPropertyDescriptor(parsed, 'mid')
+  ) {
+    throw invalid();
+  }
+  const message = 'message' in parsed ? parsed.message : undefined;
+  if (message !== undefined && typeof message !== 'string') throw invalid();
+  const mid = parsed.mid;
+  let messageId: string | undefined;
+  if (typeof mid === 'string' && /^-?\d+$/.test(mid)) {
+    messageId = mid;
+  } else if (typeof mid === 'number' && Number.isFinite(mid)) {
+    const source = sources.get(parsed);
+    messageId = source ? integerToken(source) : Number.isSafeInteger(mid) ? String(mid) : undefined;
+  }
+  if (messageId === undefined) throw invalid();
+  return message === undefined ? { mid: messageId } : { mid: messageId, message };
 }
 
 export class MailNamespace {
-  constructor(private readonly api: MailApi) {}
+  constructor(private readonly sendRequest: (message: SendMessage) => Promise<Response>) {}
 
   /** Send an email. Resolves with the `messageId`; throws a typed `TurboSMTPError` on failure. */
   async send(message: SendMessage): Promise<SendResult> {
-    const mailMessage = toMailMessage(message);
     try {
-      // Use the raw response so we can read `mid` without losing 64-bit precision
-      // (see extractMessageId). `sendEmailRaw` still throws on non-2xx.
-      const apiResponse = await this.api.sendEmailRaw({ mailMessage });
-      const rawText = await apiResponse.raw.text();
-      let parsed: SendSucessResponsetBody | undefined;
+      const response = await this.sendRequest(message);
+      if (!response.ok) throw new ResponseError(response);
+      let rawText: string;
       try {
-        parsed = rawText ? (JSON.parse(rawText) as SendSucessResponsetBody) : undefined;
-      } catch {
-        parsed = undefined;
+        rawText = await response.text();
+      } catch (cause) {
+        throw new ApiError(
+          'Cannot read send response; the send outcome is uncertain. Do not resend automatically.',
+          {
+            status: response.status,
+            cause,
+          },
+        );
       }
-      return { messageId: extractMessageId(rawText, parsed), raw: parsed };
+      const raw = parseSendResponse(rawText, response.status);
+      return { messageId: raw.mid, raw };
     } catch (err) {
       throw await toTurboSMTPError(err);
     }

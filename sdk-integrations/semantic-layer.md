@@ -286,6 +286,17 @@ SendResult { messageId: string }
   every language returns it as a string so the surface is identical across every language.
 - `message` (e.g. `"OK"`) is not surfaced as a primary field; SDKs may expose it as `SendResult.raw`
   but the contracted, tested field is `messageId`.
+- Before returning success, the facade MUST check that the response is a JSON object with a
+  root-level `mid` containing an integer identifier (a JSON integer or an integer digit string).
+  Preserve its exact value, including when a JSON number exceeds the runtime's safe integer range.
+  Nested fields and text inside strings are not the root identifier. A present `message` must be
+  a string. Invalid JSON, a missing or invalid `mid`, or a non-string `message` raises `ApiError`
+  with the response status and raw body; the send outcome is uncertain and MUST NOT be retried.
+- Any optional success-body field is facade-owned, never a generated model. Node's optional `raw`
+  is a checked `SendResponse { mid: string, message?: string }`; unknown wire fields are omitted.
+  `raw.mid` and `messageId` carry the same exact string. Other SDKs need not add this optional field.
+  Public namespace constructors must likewise avoid generated types; Node's `MailNamespace`
+  accepts a `(message: SendMessage) => Promise<Response>` callback.
 
 ### Errors
 
@@ -323,7 +334,7 @@ Callers keep writing the natural `cid:<id>` form; the qualification is the SDK's
 
 ## Mail conformance scenarios
 
-Every SDK's conformance tests (Layer 3) must cover these **11 scenarios**, which pin down the rules
+Every SDK's conformance tests (Layer 3) must cover these **14 scenarios**, which pin down the rules
 set out above. What each one asserts is fixed here; how the tests are run, gated and reported is not
 this document's concern.
 
@@ -340,6 +351,9 @@ this document's concern.
 | 9 | **Reply-To precedence** — `replyTo` set alongside a `Reply-To` key in `headers`, in any casing | exactly one `reply-to` key reaches the wire and it carries the `replyTo` value; the header-supplied one does not survive beside it |
 | 10 | **Line-break rejection** — CR or LF in `from`, `to`, `cc`, `bcc` or `replyTo`, both as a display name and inside a pre-formatted string, or in a `headers` name or value | throws a typed error before the request is built; nothing reaches the transport |
 | 11 | **Region rejection** — client constructed with an unrecognised `region` | throws a typed error at construction, distinct from scenario 6, which asserts routing for the two valid values |
+| 12 | **Checked success response** | invalid JSON, a missing/wrongly typed root `mid`, a fractional ID or a non-string `message` raises `ApiError` with status and raw body after one attempt; nested/string-embedded IDs cannot replace the root ID |
+| 13 | **Exact identifier and public type isolation** | large numeric IDs retain their exact value; optional success-body fields use facade-owned types and string IDs; generated types never reach the public facade, including namespace constructors |
+| 14 | **No send retries** | timeout, transport failure, 429, 5xx and simulated server acceptance followed by response loss each return a typed failure after exactly one attempt; failure does not establish that the message was not sent |
 
 **Scenario numbers are stable** — never renumbered, never reused, never retired. A rule that
 sharpens a scenario already present strengthens that row in place; a rule that is new *in kind*

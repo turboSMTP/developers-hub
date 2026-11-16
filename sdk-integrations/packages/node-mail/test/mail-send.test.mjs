@@ -309,3 +309,123 @@ test('a 429 carrying Retry-After exposes it as retryAfter', async () => {
     (err) => err instanceof RateLimitError && err.retryAfter === 30,
   );
 });
+
+// Scenarios 12-14: checked responses, exact IDs and single-attempt sending.
+test('malformed success responses fail through ApiError after one attempt', async () => {
+  for (const raw of [
+    '',
+    'not JSON',
+    '{}',
+    'null',
+    '[]',
+    '42',
+    '{"extra":{"mid":123}}',
+    JSON.stringify({ message: 'embedded "mid":123' }),
+    '{"mid":null}',
+    '{"mid":true}',
+    '{"mid":{}}',
+    '{"mid":[]}',
+    '{"mid":1.5}',
+    '{"mid":"123oops"}',
+    '{"mid":""}',
+    '{"mid":9007199254740993.5}',
+    '{"mid":1e400}',
+    '{"mid":1,"message":42}',
+    '{"mid":1,"message":null}',
+  ]) {
+    const fetchApi = makeFetch(200, raw);
+    await assert.rejects(
+      clientWith(fetchApi).mail.send({
+        from: 'noreply@spitzli.dev',
+        to: 'dominik@spitzli.dev',
+        text: 'offline',
+      }),
+      (err) => {
+        assert.ok(err instanceof ApiError, raw);
+        assert.equal(err.status, 200);
+        assert.equal(err.raw, raw);
+        assert.match(err.message, /outcome is uncertain/i);
+        return true;
+      },
+    );
+    assert.equal(fetchApi.calls.length, 1, raw);
+  }
+});
+
+test('only the root ID is used and both returned IDs preserve exact integers', async () => {
+  for (const [raw, expected] of [
+    ['{"message":"OK","mid":9007199254740993}', '9007199254740993'],
+    ['{"extra":{"mid":123},"mid":456}', '456'],
+    [JSON.stringify({ message: 'embedded "mid":123', mid: 456 }), '456'],
+    ['{"mid":123,"mid":456}', '456'],
+    ['{"m\\u0069d":9007199254740993}', '9007199254740993'],
+    ['{"mid":"9007199254740993"}', '9007199254740993'],
+    ['{"mid":1e3}', '1000'],
+    ['{"mid":9.007199254740993e15}', '9007199254740993'],
+    ['{"mid":1.00}', '1'],
+    ['{"mid":0e99999}', '0'],
+    ['{"mid":-123}', '-123'],
+  ]) {
+    const result = await clientWith(makeFetch(200, raw)).mail.send({
+      from: 'noreply@spitzli.dev',
+      to: 'dominik@spitzli.dev',
+      text: 'offline',
+    });
+    assert.equal(result.messageId, expected, raw);
+    assert.equal(result.raw.mid, expected, raw);
+    assert.equal(typeof result.raw.mid, 'string');
+    assert.ok(!('extra' in result.raw), 'raw exposes only the checked success fields');
+  }
+});
+
+test('failed sends never retry, including acceptance followed by response loss', async () => {
+  for (const failure of [429, 500, 503, 'timeout', 'transport', 'accepted-response-lost']) {
+    let attempts = 0;
+    let accepted = 0;
+    const fetchApi = async () => {
+      attempts++;
+      if (failure === 'accepted-response-lost') accepted++;
+      if (typeof failure === 'string') throw new TypeError(failure);
+      return new Response('{"message":"failure"}', { status: failure });
+    };
+    await assert.rejects(
+      clientWith(fetchApi).mail.send({
+        from: 'noreply@spitzli.dev',
+        to: 'dominik@spitzli.dev',
+        text: 'offline',
+      }),
+      typeof failure === 'string' ? NetworkError : failure === 429 ? RateLimitError : ApiError,
+    );
+    assert.equal(attempts, 1, String(failure));
+    assert.equal(accepted, failure === 'accepted-response-lost' ? 1 : 0);
+  }
+});
+
+test('a response body lost after acceptance fails once with an uncertain outcome', async () => {
+  let attempts = 0;
+  const fetchApi = async () => {
+    attempts++;
+    return new Response(
+      new ReadableStream({
+        start(controller) {
+          controller.error(new TypeError('connection lost after acceptance'));
+        },
+      }),
+      { status: 200 },
+    );
+  };
+  await assert.rejects(
+    clientWith(fetchApi).mail.send({
+      from: 'noreply@spitzli.dev',
+      to: 'dominik@spitzli.dev',
+      text: 'offline',
+    }),
+    (err) => {
+      assert.ok(err instanceof ApiError);
+      assert.equal(err.status, 200);
+      assert.match(err.message, /outcome is uncertain/i);
+      return true;
+    },
+  );
+  assert.equal(attempts, 1);
+});

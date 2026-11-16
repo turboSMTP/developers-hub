@@ -116,6 +116,27 @@ test('the public address types are declared on the entry point', async () => {
   }
 });
 
+test('the public result and namespace constructor use facade-owned types', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const { fileURLToPath } = await import('node:url');
+  const { dirname, resolve } = await import('node:path');
+  const compiler = resolve(
+    dirname(require.resolve('typescript/package.json')),
+    require('typescript/package.json').bin.tsc,
+  );
+  execFileSync(process.execPath, [
+    compiler,
+    '--ignoreConfig',
+    '--noEmit',
+    '--strict',
+    '--target',
+    'es2020',
+    '--module',
+    'node16',
+    fileURLToPath(new URL('./types/public-api.ts', import.meta.url)),
+  ]);
+});
+
 test('the shipped builds carry no dangling source map references', async () => {
   const { readFileSync } = await import('node:fs');
 
@@ -125,5 +146,22 @@ test('the shipped builds carry no dangling source map references', async () => {
       !text.includes('sourceMappingURL'),
       `${artifact} points at a source map the tarball does not ship`,
     );
+  }
+});
+
+test('both builds validate responses through the public namespace callback', async () => {
+  for (const mod of [require('../dist/cjs/index.js'), await import('../dist/esm/index.mjs')]) {
+    const message = { from: 'noreply@spitzli.dev', to: 'dominik@spitzli.dev', text: 'offline' };
+    const mail = new mod.MailNamespace(async () => new Response('{"mid":9007199254740993}'));
+    assert.deepEqual(await mail.send(message), {
+      messageId: '9007199254740993',
+      raw: { mid: '9007199254740993' },
+    });
+    const malformed = new mod.MailNamespace(async () => new Response('{}'));
+    await assert.rejects(malformed.send(message), mod.ApiError);
+    const unauthorized = new mod.MailNamespace(
+      async () => new Response('{"message":"unauthorized"}', { status: 401 }),
+    );
+    await assert.rejects(unauthorized.send(message), mod.AuthenticationError);
   }
 });
