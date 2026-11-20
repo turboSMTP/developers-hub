@@ -1,6 +1,6 @@
 import { TurboSMTPError } from './errors';
 import { Configuration, MailApi } from './generated/src';
-import { MailNamespace } from './mail';
+import { MailNamespace, toMailMessage } from './mail';
 
 /** Sending region — selects the `/mail/send` host. */
 export type Region = 'global' | 'eu';
@@ -65,6 +65,10 @@ export class TurboSMTPClient {
       },
     });
 
-    this.mail = new MailNamespace(new MailApi(configuration));
+    const api = new MailApi(configuration);
+    this.mail = new MailNamespace(async (message) => {
+      const response = await api.sendEmailRaw({ mailMessage: toMailMessage(message) });
+      return response.raw;
+    });
   }
 }

@@ -275,11 +275,19 @@ A successful send resolves to a `SendResult`:
 | Field | Type | Description |
 |---|---|---|
 | `messageId` | `string` | The message id (`mid`). |
-| `raw` | `object` | The raw success body (`{ message, mid }`), if you need it. |
+| `raw` | `SendResponse` (optional) | Checked success fields: `{ mid: string, message?: string }`. Unknown wire fields are omitted. |
 
 > **`messageId` is a string on purpose.** TurboSMTP message ids are 64-bit and exceed JavaScript's
 > safe integer range, so parsing them as a `number` silently corrupts the value. The SDK returns the
 > exact digits as a string — store and compare it as a string (or `BigInt`), never as a `number`.
+
+Both `messageId` and `raw.mid` preserve the exact identifier as a string. The facade checks the
+root response before returning success. Invalid JSON, a missing/invalid `mid`, or a non-string
+`message` throws `ApiError` carrying the HTTP status and original response text. The server may
+already have accepted the email, so this error does not mean it is safe to resend.
+
+The exported `MailNamespace` constructor accepts a `(message: SendMessage) => Promise<Response>`
+callback. Applications normally use `TurboSMTPClient`; generated API classes are internal.
 
 ---
 

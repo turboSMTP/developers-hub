@@ -4,5 +4,5 @@
  */
 
 export type { Address, AddressInput, AddressObject } from './address';
-export type { Attachment, SendMessage, SendResult } from './mail';
-export { MailNamespace } from './mail';
+export type { Attachment, SendMessage, SendResponse, SendResult } from './mail';
+export { MailNamespace, toMailMessage } from './mail';
