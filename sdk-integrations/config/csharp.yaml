@@ -1,0 +1,11 @@
+# See sdk-integrations/config/README.md for flavor rationale, layout, and domain partitioning.
+generatorName: csharp
+additionalProperties:
+  packageName: TurboSMTP.Generated
+  packageVersion: 0.1.0
+  library: httpclient
+  targetFramework: net8.0
+  nullableReferenceTypes: true       # maps the spec's type:[x,"null"] to C# nullable reference types
+globalProperties:
+  apiDocs: false                     # Layer 1 docs are never read; the facade owns the public surface
+  modelDocs: false

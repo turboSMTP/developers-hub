@@ -3,10 +3,19 @@ name: Validate OpenAPI Specification
 on:
   push:
     paths:
-      - 'api-reference/**'
+      - 'api-integrations/upstream/**'
+      - 'sdk-integrations/scripts/check-spec.mjs'
+      - '.github/workflows/validate-openapi.yml'
   pull_request:
     paths:
-      - 'api-reference/**'
+      - 'api-integrations/upstream/**'
+      - 'sdk-integrations/scripts/check-spec.mjs'
+      - '.github/workflows/validate-openapi.yml'
+
+# Read-only: this workflow checks out the repository, lints the spec and runs the
+# drift guard. It writes nothing and needs no other scope.
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -20,7 +29,9 @@ jobs:
         with:
           node-version: '20'
 
-      # Lint the multi-file spec entrypoint; Redocly resolves the
-      # ./Domains/*.yaml $refs. Matches the sync step in CLAUDE.md.
       - name: Validate OpenAPI spec
-        run: npx @redocly/cli@latest lint api-reference/turbo-smtp.yaml
+        run: npx @redocly/cli@2.47.0 lint api-integrations/upstream/turbo-smtp.yaml
+
+      # Runs after the lint so an invalid spec fails on the clearer error first.
+      - name: Spec-drift guard
+        run: node sdk-integrations/scripts/check-spec.mjs

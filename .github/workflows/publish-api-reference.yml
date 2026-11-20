@@ -1,0 +1,91 @@
+name: Publish API reference to the mirror
+
+# The mirror is FLAT: index.html and turbo-smtp.yaml sit side by side. That is why
+# api-integrations/swagger-ui/swagger-initializer.js keeps `url: "./turbo-smtp.yaml"`
+# exactly as shipped -- the path already resolves in the mirror, so the UI assets need
+# no local divergence and can be refreshed by a blanket overwrite.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api-integrations/swagger-ui/**'
+      - 'api-integrations/upstream/**'
+      - 'api-integrations/assemble.mjs'
+      - '.github/workflows/publish-api-reference.yml'
+  workflow_dispatch:
+
+# READ, not write -- same reasoning as split-mirrors.yml.
+permissions:
+  contents: read
+
+env:
+  MIRROR: turbosmtp-swagger-ui
+
+jobs:
+  publish:
+    name: Assemble and publish
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify MIRROR_TOKEN is present
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          [ -n "${MIRROR_TOKEN:-}" ] || { echo "::error::MIRROR_TOKEN is unset or empty."; exit 1; }
+          echo "MIRROR_TOKEN present (${#MIRROR_TOKEN} chars)."
+
+      # Listing collaborators requires push permission, so this proves write access without
+      # writing:  200 = can push . 403 = read-only . 404 = not in the token's scope.
+      # split-mirrors.yml documents the absence of this check -- a token scoped to fewer
+      # repositories passes everything else and 403s on the final push.
+      - name: Verify MIRROR_TOKEN can write to the mirror
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          code=$(curl -sS -o /dev/null -w '%{http_code}' \
+            -H "Authorization: Bearer ${MIRROR_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${OWNER}/${MIRROR}/collaborators")
+          case "$code" in
+            200) echo "MIRROR_TOKEN can write to ${OWNER}/${MIRROR}." ;;
+            403) echo "::error::MIRROR_TOKEN sees ${OWNER}/${MIRROR} but cannot push. Grant Contents: read and write."; exit 1 ;;
+            404) echo "::error::MIRROR_TOKEN cannot see ${OWNER}/${MIRROR}. Add the repo to the token's scope (fine-grained PAT) or the App installation."; exit 1 ;;
+            *)   echo "::error::Unexpected HTTP ${code} probing ${OWNER}/${MIRROR}."; exit 1 ;;
+          esac
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Assemble the publishable tree
+        run: node api-integrations/assemble.mjs --out "${RUNNER_TEMP}/site"
+
+      # Fail loudly rather than publish a broken or over-broad site.
+      - name: Assert what will be published
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/site"
+          test -f index.html && test -f turbo-smtp.yaml && test -f .nojekyll
+          test ! -e upstream && test ! -e docs && test ! -e assemble.mjs
+          test ! -e README.md && test ! -e turbo-smtp.sha256
+          ls -la
+
+      - name: Force-push the assembled site to the mirror
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/site"
+          git init -q -b main
+          git config user.name  "turbosmtp-publish"
+          git config user.email "noreply@serversmtp.com"
+          git add -A
+          git commit -q -m "Publish API reference from ${GITHUB_REPOSITORY}@${GITHUB_SHA}"
+          remote="https://x-access-token:${MIRROR_TOKEN}@github.com/${OWNER}/${MIRROR}.git"
+          git push --force "$remote" main
+          echo "Published to https://${OWNER,,}.github.io/${MIRROR}/"

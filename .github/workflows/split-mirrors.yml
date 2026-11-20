@@ -1,0 +1,144 @@
+name: Split packages to publish mirrors
+
+# Adding a package: add a line in the `case` below and a tag glob above; do not rely on a path convention.
+#
+# A slug equals its directory's own name, but not its parent: API packages live under
+# sdk-integrations/packages/ and webhook receivers under sdk-integrations/webhooks/.
+#
+# Requires a secret `MIRROR_TOKEN` — a PAT or GitHub App installation token with
+# `contents: write` on every turbosmtp-* mirror the `case` below resolves to. A token
+# scoped to fewer repos passes every check here and 403s on the final push.
+
+on:
+  push:
+    tags:
+      - 'node/v*'
+      - 'node-mail/v*'
+      - 'python/v*'
+      - 'python-mail/v*'
+      - 'csharp/v*'
+      - 'csharp-mail/v*'
+      - 'go/v*'
+      - 'go-mail/v*'
+      - 'php/v*'
+      - 'php-mail/v*'
+      - 'node-webhook/v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing <package>/vX.Y.Z tag to (re-)split'
+        required: true
+
+# READ, not write — authenticates with MIRROR_TOKEN, not GITHUB_TOKEN.
+permissions:
+  contents: read
+
+jobs:
+  split:
+    runs-on: ubuntu-latest
+    steps:
+      # Fail in seconds on a missing secret rather than after the split, and never
+      # print the value — only its length, which is enough to tell empty from set.
+      - name: Verify MIRROR_TOKEN is present
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -z "${MIRROR_TOKEN:-}" ]; then
+            echo "::error::MIRROR_TOKEN is empty or unset. Set it under developers-hub → Settings → Secrets and variables → Actions. Note that a non-interactive \`gh secret set\` can store an empty value."
+            exit 1
+          fi
+          echo "MIRROR_TOKEN present (${#MIRROR_TOKEN} chars)"
+
+      - uses: actions/checkout@v4
+        with:
+          # Shallow clone produces truncated mirror (see fetch-depth: 0 below).
+          fetch-depth: 0
+          ref: ${{ github.event.inputs.tag || github.ref }}
+          # Do NOT leave GITHUB_TOKEN credentials in .git/config. Otherwise a bad or
+          # empty MIRROR_TOKEN falls back to them silently and the push fails as an
+          # opaque "denied to github-actions[bot]" 403 instead of an auth error —
+          # observed on run 31105171893.
+          persist-credentials: false
+
+      # Every value below reaches the shell through `env:`, never through `${{ }}`
+      # inside `run:`. An expression is expanded while the script is rendered, so an
+      # attacker-supplied dispatch input would arrive as shell *source* and run before
+      # the case statement could reject it (issue #6). Quoted variables are data.
+      - name: Resolve package, version and mirror from the tag
+        id: target
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG:-$REF_NAME}"
+          pkg="${tag%%/*}"
+          version="${tag#*/}"
+          # This case is the authoritative slug -> (mirror, directory) map. The prefix is
+          # listed per slug rather than derived as sdk-integrations/packages/$pkg, because the webhook
+          # receivers live under sdk-integrations/webhooks/. A derived path would silently resolve to a
+          # directory that does not exist, and the check below would report it as a bad slug
+          # rather than a stale mapping.
+          case "$pkg" in
+            node)         mirror=turbosmtp-node;         prefix=sdk-integrations/packages/node ;;
+            node-mail)    mirror=turbosmtp-node-mail;    prefix=sdk-integrations/packages/node-mail ;;
+            python)       mirror=turbosmtp-python;       prefix=sdk-integrations/packages/python ;;
+            python-mail)  mirror=turbosmtp-python-mail;  prefix=sdk-integrations/packages/python-mail ;;
+            csharp)       mirror=turbosmtp-dotnet;       prefix=sdk-integrations/packages/csharp ;;
+            csharp-mail)  mirror=turbosmtp-dotnet-mail;  prefix=sdk-integrations/packages/csharp-mail ;;
+            go)           mirror=turbosmtp-go;           prefix=sdk-integrations/packages/go ;;
+            go-mail)      mirror=turbosmtp-go-mail;      prefix=sdk-integrations/packages/go-mail ;;
+            php)          mirror=turbosmtp-php;          prefix=sdk-integrations/packages/php ;;
+            php-mail)     mirror=turbosmtp-php-mail;     prefix=sdk-integrations/packages/php-mail ;;
+            node-webhook) mirror=turbosmtp-node-webhook; prefix=sdk-integrations/webhooks/node-webhook ;;
+            *) echo "::error::Unrecognised package prefix '$pkg' in tag '$tag'"; exit 1 ;;
+          esac
+          if [ "$version" = "$tag" ]; then
+            echo "::error::Tag '$tag' is not in <package>/vX.Y.Z form"; exit 1
+          fi
+          # The case statement constrains pkg, but version is whatever followed the
+          # slash and is pushed as a ref name, so it needs its own gate.
+          if ! [[ "$version" =~ ^v[0-9]+\.[0-9]+\.[0-9]+([-+][0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Version '$version' in tag '$tag' is not vX.Y.Z"; exit 1
+          fi
+          {
+            echo "pkg=$pkg"
+            echo "version=$version"
+            echo "mirror=$mirror"
+            echo "prefix=$prefix"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Verify the package directory exists
+        env:
+          PREFIX: ${{ steps.target.outputs.prefix }}
+          PKG: ${{ steps.target.outputs.pkg }}
+        run: |
+          if [ ! -d "$PREFIX" ]; then
+            echo "::error::No package directory at '$PREFIX' for slug '$PKG'. The slug must equal the directory's own name, and the case block in this workflow must map it to the right parent (sdk-integrations/packages/ or sdk-integrations/webhooks/)."; exit 1
+          fi
+
+      - name: Split the package subtree
+        id: split
+        env:
+          PREFIX: ${{ steps.target.outputs.prefix }}
+        run: |
+          set -euo pipefail
+          sha="$(git subtree split --prefix="$PREFIX")"
+          echo "Split $PREFIX -> $sha"
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+
+      - name: Push subtree and translated tag to the mirror
+        env:
+          MIRROR_TOKEN: ${{ secrets.MIRROR_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          MIRROR: ${{ steps.target.outputs.mirror }}
+          PKG: ${{ steps.target.outputs.pkg }}
+          VERSION: ${{ steps.target.outputs.version }}
+          SHA: ${{ steps.split.outputs.sha }}
+        run: |
+          set -euo pipefail
+          remote="https://x-access-token:${MIRROR_TOKEN}@github.com/${OWNER}/${MIRROR}.git"
+          git push --force "$remote" "${SHA}:refs/heads/main"
+          git push --force "$remote" "${SHA}:refs/tags/${VERSION}"
+          echo "Mirrored $PKG as ${MIRROR}@${VERSION}"
